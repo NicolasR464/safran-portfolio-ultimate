@@ -1,16 +1,40 @@
+import { type NextRequest } from 'next/server'
+
 import { VideoSchema } from '@/types/video/schema'
-import { collections } from '@/utils/constants'
+import {
+    collections,
+    DEFAULT_BATCH_SIZE,
+    searchParamsNames,
+} from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
 
 import { db } from '@/utils/mongo'
 import { NextResponse } from 'next/server'
+import { thumbnailsPipeline } from '@/utils/mongoPipelines/portfolio/thumbnails'
+import {
+    ThumbnailsCategory,
+    ThumbnailsResponse,
+} from '@/types/apiResponses/portfolio'
 
-export const GET = async () => {
+/** This returns the thumbnails info for the portfolio main page. */
+export const GET = async (request: NextRequest) => {
+    const searchParams = request.nextUrl.searchParams
+
+    const batchNumber = Number(searchParams.get(searchParamsNames.BATCH_NUMBER))
+
+    if (!batchNumber) {
+        return NextResponse.json(null, {
+            status: 400,
+            statusText: backErrors.INVALID_SEARCH_PARAMS,
+        })
+    }
+
     const database = await db()
 
     if (!database) {
-        return NextResponse.json({
-            error: backErrors.DATABASE_CONNECTION_ERROR,
+        return NextResponse.json(null, {
+            status: 500,
+            statusText: backErrors.DATABASE_CONNECTION_ERROR,
         })
     }
 
@@ -18,7 +42,25 @@ export const GET = async () => {
         collections.VIDEOS,
     )
 
-    const videos = await videosCollection.find().toArray()
+    const totalDocuments = await videosCollection.countDocuments()
 
-    return NextResponse.json(videos)
+    const results = await videosCollection
+        .aggregate<ThumbnailsCategory>(
+            thumbnailsPipeline(batchNumber, DEFAULT_BATCH_SIZE),
+        )
+        .toArray()
+
+    if (!results) {
+        return NextResponse.json(null, {
+            status: 500,
+            statusText: backErrors.DATABASE_QUERY_ERROR,
+        })
+    }
+
+    const hasMore = batchNumber * DEFAULT_BATCH_SIZE < totalDocuments
+
+    return NextResponse.json<ThumbnailsResponse>({
+        data: results,
+        hasMore,
+    })
 }

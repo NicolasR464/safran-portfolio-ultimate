@@ -1,5 +1,7 @@
 export const backErrors = {
     DATABASE_CONNECTION_ERROR: 'Database connection error',
+    DATABASE_QUERY_ERROR: 'Database query error',
+    INVALID_SEARCH_PARAMS: 'Invalid search params',
     INVALID_TOKEN: 'Invalid token',
     MISSING_TOKEN: 'Missing token',
     SERVER_ERROR: 'Server error',

@@ -1,17 +1,12 @@
-import ky from 'ky'
-
-import { localApiEndpoints } from '@/utils/constants'
+import { Thumbnails } from '@/components/Thumbnails'
 
 const Portfolio = async () => {
-    const portfolio = await ky(
-        `${process.env.LOCAL_API}${localApiEndpoints.PORTFOLIO}`,
-    ).json()
-    console.log(portfolio)
-
     return (
-        <div>
-            <main>Portfolio</main>
-        </div>
+        <>
+            <div>PORTFOLIO</div>
+
+            <Thumbnails />
+        </>
     )
 }
 
