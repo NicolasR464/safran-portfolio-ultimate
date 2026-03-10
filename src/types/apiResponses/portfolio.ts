@@ -17,9 +17,16 @@ const ThumbnailsCategory = z.object({
 
 export type ThumbnailsCategory = z.infer<typeof ThumbnailsCategory>
 
-const ThumbnailsResponse = z.object({
-    data: z.array(ThumbnailsCategory),
+const ThumbnailsPipeline = z.object({
+    thumbnails: z.array(ThumbnailsCategory),
+    categories: z.array(Thumbnail.shape.category),
+})
+
+export type ThumbnailsPipeline = z.infer<typeof ThumbnailsPipeline>
+
+const ThumbnailsResponseAPI = z.object({
+    data: ThumbnailsPipeline,
     hasMore: z.boolean(),
 })
 
-export type ThumbnailsResponse = z.infer<typeof ThumbnailsResponse>
+export type ThumbnailsResponseAPI = z.infer<typeof ThumbnailsResponseAPI>

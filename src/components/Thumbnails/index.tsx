@@ -2,7 +2,7 @@
 
 import {
     ThumbnailsCategory,
-    ThumbnailsResponse,
+    ThumbnailsResponseAPI,
 } from '@/types/apiResponses/portfolio'
 import ThumbnailCard from '@/components/ThumbnailCard'
 import { apiClientSide } from '@/utils/ky'
@@ -14,11 +14,15 @@ export const Thumbnails = () => {
     const [thumbnailsByCategories, setThumbnailsByCategories] =
         useState<ThumbnailsCategory[]>()
     const [batchNumber, setBatchNumber] = useState<number>(1)
-    const [isLoading, setIsLoading] = useState(false)
-    const [hasMore, setHasMore] = useState(true)
-    const [askingMore, setAskingMore] = useState(false)
+    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [hasMore, setHasMore] = useState<boolean>(true)
+    const [askingMore, setAskingMore] = useState<boolean>(false)
 
     const loaderRef = useRef<HTMLDivElement | null>(null)
+
+    useEffect(() => {
+        console.log(thumbnailsByCategories)
+    }, [thumbnailsByCategories])
 
     useEffect(() => {
         const fetchThumbnails = async () => {
@@ -33,38 +37,39 @@ export const Thumbnails = () => {
                 batchNumber.toString(),
             )
 
-            const thumbnailsResponse = await apiClientSide<ThumbnailsResponse>(
+            const apiResponse = await apiClientSide<ThumbnailsResponseAPI>(
                 `${localApiEndpoints.PORTFOLIO}?${searchParams}`,
             )
 
-            if (!thumbnailsResponse.ok) return
+            if (!apiResponse.ok) return
 
-            const thumbnails = await thumbnailsResponse.json()
+            const parsedResponse = await apiResponse.json()
 
-            setHasMore(thumbnails.hasMore)
+            console.log(parsedResponse.data.thumbnails)
+
+            setHasMore(parsedResponse.hasMore)
             setIsLoading(false)
             setBatchNumber((prev) => prev + 1)
             setAskingMore(false)
 
             setThumbnailsByCategories((prev) => {
-                if (!prev) return thumbnails.data
+                if (!prev) return parsedResponse.data.thumbnails
 
                 const previousBatches = structuredClone(prev)
 
-                for (const newCategory of thumbnails.data) {
-                    const existingCategory = previousBatches.find(
-                        (category) =>
-                            category.category === newCategory.category,
+                for (const newBatch of parsedResponse.data.thumbnails) {
+                    const existingBatch = previousBatches.find(
+                        (batch) => batch.category === newBatch.category,
                     )
 
-                    if (existingCategory) {
-                        existingCategory.items = [
-                            ...existingCategory.items,
-                            ...newCategory.items,
+                    if (existingBatch) {
+                        existingBatch.items = [
+                            ...existingBatch.items,
+                            ...newBatch.items,
                         ]
                     }
 
-                    if (!existingCategory) previousBatches.push(newCategory)
+                    if (!existingBatch) previousBatches.push(newBatch)
                 }
 
                 return previousBatches

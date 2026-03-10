@@ -12,8 +12,8 @@ import { db } from '@/utils/mongo'
 import { NextResponse } from 'next/server'
 import { thumbnailsPipeline } from '@/utils/mongoPipelines/portfolio/thumbnails'
 import {
-    ThumbnailsCategory,
-    ThumbnailsResponse,
+    ThumbnailsPipeline,
+    ThumbnailsResponseAPI,
 } from '@/types/apiResponses/portfolio'
 
 /** This returns the thumbnails info for the portfolio main page. */
@@ -44,8 +44,8 @@ export const GET = async (request: NextRequest) => {
 
     const totalDocuments = await videosCollection.countDocuments()
 
-    const results = await videosCollection
-        .aggregate<ThumbnailsCategory>(
+    const [results] = await videosCollection
+        .aggregate<ThumbnailsPipeline>(
             thumbnailsPipeline(batchNumber, DEFAULT_BATCH_SIZE),
         )
         .toArray()
@@ -59,7 +59,7 @@ export const GET = async (request: NextRequest) => {
 
     const hasMore = batchNumber * DEFAULT_BATCH_SIZE < totalDocuments
 
-    return NextResponse.json<ThumbnailsResponse>({
+    return NextResponse.json<ThumbnailsResponseAPI>({
         data: results,
         hasMore,
     })
