@@ -12,7 +12,14 @@ type ThumbnailCardProperties = {
 const ThumbnailCard = ({ title, imgUrl }: ThumbnailCardProperties) => {
     return (
         <div className="mw-[400px] p-4">
-            <Image src={imgUrl} alt={title} width={400} height={400} />
+            <Image
+                className="w-full h-auto"
+                src={imgUrl}
+                alt={title}
+                width={400}
+                height={400}
+                loading="eager"
+            />
         </div>
     )
 }

@@ -31,7 +31,9 @@ export const GET = async (request: NextRequest) => {
 
     const database = await db()
 
-    if (!database) {
+    const testErrorState = Math.random() > 0.5
+
+    if (!database || testErrorState < 0.5) {
         return NextResponse.json(null, {
             status: 500,
             statusText: backErrors.DATABASE_CONNECTION_ERROR,

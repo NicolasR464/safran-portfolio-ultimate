@@ -8,7 +8,8 @@ import ThumbnailCard from '@/components/ThumbnailCard'
 import { apiClientSide } from '@/utils/ky'
 import { useEffect, useRef, useState } from 'react'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
-import { searchParamsNames } from '@/utils/constants'
+import { keyToCategory, searchParamsNames } from '@/utils/constants'
+import { wait } from '@/utils'
 
 export const Thumbnails = () => {
     const [thumbnailsByCategories, setThumbnailsByCategories] =
@@ -21,11 +22,8 @@ export const Thumbnails = () => {
     const loaderRef = useRef<HTMLDivElement | null>(null)
 
     useEffect(() => {
-        console.log(thumbnailsByCategories)
-    }, [thumbnailsByCategories])
-
-    useEffect(() => {
         const fetchThumbnails = async () => {
+            console.count('🚀 fetchThumbnails')
             if (isLoading || !hasMore) return
 
             setIsLoading(true)
@@ -41,14 +39,17 @@ export const Thumbnails = () => {
                 `${localApiEndpoints.PORTFOLIO}?${searchParams}`,
             )
 
-            if (!apiResponse.ok) return
+            setIsLoading(false)
+            setAskingMore(false)
+
+            if (!apiResponse.ok) {
+                return
+            }
 
             const parsedResponse = await apiResponse.json()
 
             setHasMore(parsedResponse.hasMore)
-            setIsLoading(false)
             setBatchNumber((prev) => prev + 1)
-            setAskingMore(false)
 
             setThumbnailsByCategories((prev) => {
                 if (!prev) return parsedResponse.data.thumbnails
@@ -74,9 +75,7 @@ export const Thumbnails = () => {
             })
         }
 
-        if (!askingMore) return
-
-        fetchThumbnails()
+        if (askingMore) fetchThumbnails()
     }, [askingMore])
 
     useEffect(() => {
@@ -106,9 +105,12 @@ export const Thumbnails = () => {
         <>
             {thumbnailsByCategories &&
                 thumbnailsByCategories.map((thumbnailsCategory) => (
-                    <div className="w-full" key={thumbnailsCategory.category}>
-                        <h2 className="text-2xl font-bold text-center">
-                            {thumbnailsCategory.category}
+                    <div
+                        className="w-full p-[5%]"
+                        key={thumbnailsCategory.category}
+                    >
+                        <h2 className="text-2xl font-bold text-center p-4">
+                            {keyToCategory[thumbnailsCategory.category]}
                         </h2>
 
                         <div className="flex flex-wrap justify-center items-center ">
