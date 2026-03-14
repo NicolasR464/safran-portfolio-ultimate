@@ -45,8 +45,6 @@ export const Thumbnails = () => {
 
             const parsedResponse = await apiResponse.json()
 
-            console.log(parsedResponse.data.thumbnails)
-
             setHasMore(parsedResponse.hasMore)
             setIsLoading(false)
             setBatchNumber((prev) => prev + 1)
@@ -108,17 +106,18 @@ export const Thumbnails = () => {
         <>
             {thumbnailsByCategories &&
                 thumbnailsByCategories.map((thumbnailsCategory) => (
-                    <div key={thumbnailsCategory.category}>
-                        <h2>{thumbnailsCategory.category}</h2>
+                    <div className="w-full" key={thumbnailsCategory.category}>
+                        <h2 className="text-2xl font-bold text-center">
+                            {thumbnailsCategory.category}
+                        </h2>
 
-                        <div>
+                        <div className="flex flex-wrap justify-center items-center ">
                             {thumbnailsCategory.items.map((item) => (
-                                <div key={item._id}>
-                                    <ThumbnailCard
-                                        title={item.title}
-                                        imgUrl={item.imageUrl}
-                                    />
-                                </div>
+                                <ThumbnailCard
+                                    title={item.title}
+                                    imgUrl={item.imageUrl}
+                                    key={item._id}
+                                />
                             ))}
                         </div>
                     </div>

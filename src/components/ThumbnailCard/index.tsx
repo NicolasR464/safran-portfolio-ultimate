@@ -11,7 +11,7 @@ type ThumbnailCardProperties = {
 
 const ThumbnailCard = ({ title, imgUrl }: ThumbnailCardProperties) => {
     return (
-        <div>
+        <div className="mw-[400px] p-4">
             <Image src={imgUrl} alt={title} width={400} height={400} />
         </div>
     )
