@@ -1,15 +1,16 @@
 import { CategoriesResponse } from '@/types/apiResponses/portfolio'
+import { VideoSchema } from '@/types/video/schema'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
 type CategoriesStore = {
-    categories: string[]
+    categories: VideoSchema['category'][]
     isLoading: boolean
     initialized: boolean
     error: boolean
-    getCategories: () => Promise<void>
+    fetchCategories: () => Promise<void>
 }
 
 const initialState: CategoriesStore = {
@@ -17,14 +18,14 @@ const initialState: CategoriesStore = {
     isLoading: false,
     initialized: false,
     error: false,
-    getCategories: async () => {},
+    fetchCategories: async () => {},
 }
 
 export const useCategoriesStore = create<CategoriesStore>()(
     immer((set) => ({
         ...initialState,
 
-        getCategories: async () => {
+        fetchCategories: async () => {
             const apiResponse = await apiClientSide<CategoriesResponse>(
                 `${localApiEndpoints.CATEGORIES}`,
             )

@@ -2,12 +2,12 @@
 
 import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { useEffect } from 'react'
-import Button from '@/components/Button'
+import ButtonCategory from '@/components/ButtonCategory'
 
 const CategoriesIsland = () => {
     const categories = useCategoriesStore((state) => state.categories)
     const initialized = useCategoriesStore((state) => state.initialized)
-    const getCategories = useCategoriesStore((state) => state.getCategories)
+    const getCategories = useCategoriesStore((state) => state.fetchCategories)
 
     useEffect(() => {
         if (!initialized) {
@@ -17,9 +17,9 @@ const CategoriesIsland = () => {
 
     return (
         <div className="w-full flex justify-center">
-            <div className="fixed top-16 flex">
+            <div className="fixed top-16 flex flex-wrap justify-center gap-4">
                 {categories.map((category) => (
-                    <Button key={category} text={category} active />
+                    <ButtonCategory key={category} category={category} active />
                 ))}
             </div>
         </div>

@@ -2,6 +2,7 @@ import {
     ThumbnailsCategory,
     ThumbnailsResponse,
 } from '@/types/apiResponses/portfolio'
+import { VideoSchema } from '@/types/video/schema'
 import { searchParamsNames } from '@/utils/constants'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
@@ -10,18 +11,21 @@ import { immer } from 'zustand/middleware/immer'
 
 type ThumbnailsStore = {
     thumbnailsByCategories: ThumbnailsCategory[]
+    categoriesFetched: VideoSchema['category'][]
     batchNumber: number
     isLoading: boolean
     hasMore: boolean
     initialized: boolean
     error: boolean
 
-    fetchNextBatch: () => Promise<void>
+    fetchNextBatch: (category?: VideoSchema['category']) => Promise<void>
+    fetchNewCategory: (category: VideoSchema['category']) => Promise<void>
     reset: () => void
 }
 
 const initialState = {
     thumbnailsByCategories: [],
+    categoriesFetched: [],
     batchNumber: 1,
     isLoading: false,
     hasMore: true,
@@ -36,6 +40,7 @@ export const useThumbnailsStore = create<ThumbnailsStore>()(
         reset: () => {
             set((state) => {
                 state.thumbnailsByCategories = []
+                state.categoriesFetched = []
                 state.batchNumber = 1
                 state.isLoading = false
                 state.hasMore = true
@@ -44,7 +49,9 @@ export const useThumbnailsStore = create<ThumbnailsStore>()(
             })
         },
 
-        fetchNextBatch: async () => {
+        fetchNextBatch: async (category) => {
+            console.log('🔥 fetchNextBatch', category)
+
             const { isLoading, hasMore, batchNumber } = get()
 
             if (isLoading || !hasMore) return
@@ -55,6 +62,11 @@ export const useThumbnailsStore = create<ThumbnailsStore>()(
             })
 
             const searchParams = new URLSearchParams()
+
+            if (category) {
+                searchParams.set(searchParamsNames.CATEGORY, category)
+            }
+
             searchParams.set(
                 searchParamsNames.BATCH_NUMBER,
                 batchNumber.toString(),
@@ -90,9 +102,19 @@ export const useThumbnailsStore = create<ThumbnailsStore>()(
                         existingBatch.items.push(...newBatch.items)
                     } else {
                         state.thumbnailsByCategories.push(newBatch)
+                        state.categoriesFetched.push(newBatch.category)
                     }
                 }
             })
+        },
+
+        fetchNewCategory: async (category: VideoSchema['category']) => {
+            console.log('🔥 fetchNewCategory', category)
+
+            while (!get().categoriesFetched.includes(category)) {
+                if (!get().hasMore) break
+                await get().fetchNextBatch(category)
+            }
         },
     })),
 )

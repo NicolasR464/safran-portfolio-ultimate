@@ -21,6 +21,9 @@ export const GET = async (request: NextRequest) => {
     const searchParams = request.nextUrl.searchParams
 
     const batchNumber = Number(searchParams.get(searchParamsNames.BATCH_NUMBER))
+    const category = searchParams.get(searchParamsNames.CATEGORY)
+
+    console.log({ category })
 
     if (!batchNumber) {
         return NextResponse.json(null, {

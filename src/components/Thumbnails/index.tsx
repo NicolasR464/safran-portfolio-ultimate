@@ -4,6 +4,8 @@ import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
 import { keyToCategory } from '@/utils/constants'
 import { useEffect, useRef } from 'react'
 import ThumbnailCard from '../ThumbnailCard'
+import Loader from '../Loader'
+import Image from 'next/image'
 
 const Thumbnails = () => {
     const loaderRef = useRef<HTMLDivElement | null>(null)
@@ -53,9 +55,34 @@ const Thumbnails = () => {
                         className="w-full p-[5%]"
                         key={thumbnailsCategory.category}
                     >
-                        <h2 className="text-2xl font-bold text-center p-4">
-                            {keyToCategory[thumbnailsCategory.category]}
-                        </h2>
+                        <div className="select-none flex justify-center content-center p-4">
+                            <span>
+                                <Image
+                                    className="invert"
+                                    src="/reel.png"
+                                    alt="Cinema reel"
+                                    width={25}
+                                    height={25}
+                                />
+                            </span>
+
+                            <h2
+                                id={thumbnailsCategory.category}
+                                className="scroll-mt-36 mx-2 text-xl font-mono"
+                            >
+                                {keyToCategory[thumbnailsCategory.category]}
+                            </h2>
+
+                            <span>
+                                <Image
+                                    className="invert scale-x-[-1]"
+                                    src="/reel.png"
+                                    alt="Cinema reel"
+                                    width={25}
+                                    height={25}
+                                />
+                            </span>
+                        </div>
 
                         <div className="flex flex-wrap justify-center items-center ">
                             {thumbnailsCategory.items.map((item) => (
@@ -69,7 +96,7 @@ const Thumbnails = () => {
                     </div>
                 ))}
 
-            {isLoading && <p>Loading...</p>}
+            {isLoading && <Loader label="Loading more thumbnails" />}
 
             <div ref={loaderRef} />
         </div>
