@@ -5,7 +5,7 @@ import { keyToCategory } from '@/utils/constants'
 import { useEffect, useRef } from 'react'
 import ThumbnailCard from '../ThumbnailCard'
 
-export const Thumbnails = () => {
+const Thumbnails = () => {
     const loaderRef = useRef<HTMLDivElement | null>(null)
 
     const thumbnailsByCategories = useThumbnailsStore(
@@ -46,7 +46,7 @@ export const Thumbnails = () => {
     }, [fetchNextBatch])
 
     return (
-        <>
+        <div className="mt-16">
             {thumbnailsByCategories &&
                 thumbnailsByCategories.map((thumbnailsCategory) => (
                     <div
@@ -72,6 +72,8 @@ export const Thumbnails = () => {
             {isLoading && <p>Loading...</p>}
 
             <div ref={loaderRef} />
-        </>
+        </div>
     )
 }
+
+export default Thumbnails
