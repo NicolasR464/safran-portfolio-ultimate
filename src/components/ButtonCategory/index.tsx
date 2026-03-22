@@ -1,3 +1,4 @@
+import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
 import { keyToCategory } from '@/utils/constants'
 
@@ -5,33 +6,36 @@ import { Button as ReactAriaButton } from 'react-aria-components'
 
 type ButtonCategoryProperties = {
     category: string
-    active?: boolean
 }
 
-const ButtonCategory = ({
-    category,
-    active = true,
-}: ButtonCategoryProperties) => {
+const ButtonCategory = ({ category }: ButtonCategoryProperties) => {
+    const activeCategory = useCategoriesStore((state) => state.activeCategory)
+    const setActiveCategory = useCategoriesStore(
+        (state) => state.setActiveCategory,
+    )
     const categoriesFetched = useThumbnailsStore(
         (state) => state.categoriesFetched,
     )
     const fetchNewCategory = useThumbnailsStore(
         (state) => state.fetchNewCategory,
     )
+    const isFetchingToClickedCategory = useThumbnailsStore(
+        (state) => state.isFetchingToClickedCategory,
+    )
 
     const isCategoryAlreadyFetched = categoriesFetched.includes(category)
 
     const scrollToCategory = async () => {
-        // If the category is not already fetched, fetch it.
+        setActiveCategory(category)
+
         if (!isCategoryAlreadyFetched) {
             await fetchNewCategory(category)
         }
 
         const elementCategory = document.getElementById(category)
-
         if (!elementCategory) return
 
-        const offset = 440
+        const offset = 150
 
         const y =
             elementCategory.getBoundingClientRect().top +
@@ -42,56 +46,42 @@ const ButtonCategory = ({
             top: y,
             behavior: 'smooth',
         })
-
-        elementCategory.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start',
-        })
     }
+
+    const isActive = activeCategory === category
+    const isLoading = isFetchingToClickedCategory && isActive
 
     return (
         <ReactAriaButton
             onPress={scrollToCategory}
             className={`
-  group relative cursor-pointer
-  m-2 px-5 py-2.5
-  flex items-center justify-center gap-2
-  rounded-full text-sm font-medium
-  text-white/90
+                cursor-pointer
+                m-2 px-5 py-2.5
+                rounded-full
+                text-sm font-medium
+                text-white
 
-  border 
-  ${active ? 'border-white shadow-[0_0_10px_rgba(255,255,255,0.8)]' : 'border-white/30'}
-  backdrop-blur-2xl
+                border backdrop-blur-xl
+                transition-all duration-1000
 
-  transition-all duration-300 ease-out
-  hover:-translate-y-[1px]
-  active:scale-95
+                hover:-translate-y-[1px]
+                active:scale-95
 
-  before:absolute before:inset-0
-  before:rounded-full
-  before:bg-gradient-to-b
-  before:from-white/40
-  before:to-white/5
-  before:opacity-40
-  before:pointer-events-none
+                ${isActive ? 'active-button' : 'border-white/30 bg-white/[0.05]'}
 
-  after:absolute after:inset-0
-  after:rounded-full
-  after:ring-1
-  after:ring-inset
-  after:ring-white/20
-  after:pointer-events-none
-
-  ${
-      active
-          ? 'shadow-[0_0_25px_rgba(255,255,255,0.35),0_0_60px_rgba(255,255,255,0.15)]'
-          : 'bg-white/[0.08] shadow-[0_8px_30px_rgba(0,0,0,0.25)]'
-  }
-`}
+                ${isLoading && 'animate-glow'}
+            `}
         >
             <span
-                className={`select-none text-shadow-[0_0_10px_rgba(255,255,255,0.8)] text-white font-poiret
-text-xl ${active && 'font-bold'}`}
+                className={`
+                    font-poiret 
+                    text-xl 
+                    transition-all 
+                    duration-500
+
+                    ${isActive ? 'font-bold' : 'opacity-80'}
+                        ${isLoading ? 'opacity-70' : ''}
+                `}
             >
                 {keyToCategory[category]}
             </span>

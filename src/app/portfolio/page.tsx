@@ -4,9 +4,9 @@ import Thumbnails from '@/components/Thumbnails'
 const Portfolio = async () => {
     return (
         <>
-            <CategoriesIsland />
-
             <Thumbnails />
+
+            <CategoriesIsland />
         </>
     )
 }

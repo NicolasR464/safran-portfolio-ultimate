@@ -10,20 +10,18 @@ type CategoriesStore = {
     isLoading: boolean
     initialized: boolean
     error: boolean
+    activeCategory: VideoSchema['category']
+    setActiveCategory: (category: VideoSchema['category']) => void
     fetchCategories: () => Promise<void>
-}
-
-const initialState: CategoriesStore = {
-    categories: [],
-    isLoading: false,
-    initialized: false,
-    error: false,
-    fetchCategories: async () => {},
 }
 
 export const useCategoriesStore = create<CategoriesStore>()(
     immer((set) => ({
-        ...initialState,
+        categories: [],
+        isLoading: false,
+        initialized: false,
+        error: false,
+        activeCategory: '',
 
         fetchCategories: async () => {
             const apiResponse = await apiClientSide<CategoriesResponse>(
@@ -45,6 +43,12 @@ export const useCategoriesStore = create<CategoriesStore>()(
                 state.isLoading = false
                 state.initialized = true
                 state.categories = parsedResponse.data
+            })
+        },
+
+        setActiveCategory: (category: VideoSchema['category']) => {
+            set((state) => {
+                state.activeCategory = category
             })
         },
     })),

@@ -17,7 +17,7 @@ type ThumbnailsStore = {
     hasMore: boolean
     initialized: boolean
     error: boolean
-
+    isFetchingToClickedCategory: boolean
     fetchNextBatch: (category?: VideoSchema['category']) => Promise<void>
     fetchNewCategory: (category: VideoSchema['category']) => Promise<void>
     reset: () => void
@@ -31,6 +31,7 @@ const initialState = {
     hasMore: true,
     initialized: false,
     error: false,
+    isFetchingToClickedCategory: false,
 }
 
 export const useThumbnailsStore = create<ThumbnailsStore>()(
@@ -111,10 +112,18 @@ export const useThumbnailsStore = create<ThumbnailsStore>()(
         fetchNewCategory: async (category: VideoSchema['category']) => {
             console.log('🔥 fetchNewCategory', category)
 
+            set((state) => {
+                state.isFetchingToClickedCategory = true
+            })
+
             while (!get().categoriesFetched.includes(category)) {
                 if (!get().hasMore) break
                 await get().fetchNextBatch(category)
             }
+
+            set((state) => {
+                state.isFetchingToClickedCategory = false
+            })
         },
     })),
 )

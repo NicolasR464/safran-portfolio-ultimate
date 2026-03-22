@@ -17,9 +17,9 @@ const CategoriesIsland = () => {
 
     return (
         <div className="w-full flex justify-center">
-            <div className="fixed top-16 flex flex-wrap justify-center gap-4">
+            <div className="fixed bottom-12 flex flex-wrap justify-center gap-4">
                 {categories.map((category) => (
-                    <ButtonCategory key={category} category={category} active />
+                    <ButtonCategory key={category} category={category} />
                 ))}
             </div>
         </div>
