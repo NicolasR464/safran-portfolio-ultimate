@@ -8,6 +8,7 @@ import Loader from '@/components/Loader'
 import Image from 'next/image'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { VideoSchema } from '@/types/video/schema'
+import { Separator } from '../Separator'
 
 const Thumbnails = () => {
     const loaderRef = useRef<HTMLDivElement | null>(null)
@@ -112,7 +113,7 @@ const Thumbnails = () => {
             {thumbnailsByCategories &&
                 thumbnailsByCategories.map((thumbnailsCategory) => (
                     <div className="w-full" key={thumbnailsCategory.category}>
-                        <div className="select-none flex justify-center content-center p-4">
+                        <div className="select-none sticky top-0 flex justify-center content-center p-4">
                             <span>
                                 <Image
                                     className="invert"
@@ -124,7 +125,6 @@ const Thumbnails = () => {
                             </span>
 
                             <h2
-                                id={thumbnailsCategory.category}
                                 ref={(titleElement) => {
                                     headingRefs.current[
                                         thumbnailsCategory.category
@@ -147,14 +147,19 @@ const Thumbnails = () => {
                         </div>
 
                         <div className="flex flex-wrap justify-center items-center">
-                            {thumbnailsCategory.items.map((item) => (
+                            {thumbnailsCategory.items.map((item, index) => (
                                 <ThumbnailCard
+                                    {...(index === 0 && {
+                                        topCard: thumbnailsCategory.category,
+                                    })}
                                     title={item.title}
                                     imgUrl={item.imageUrl}
                                     key={item._id}
                                 />
                             ))}
                         </div>
+
+                        <Separator />
                     </div>
                 ))}
 

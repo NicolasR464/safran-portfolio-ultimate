@@ -54,18 +54,18 @@ const ButtonCategory = ({ category }: ButtonCategoryProperties) => {
     return (
         <ReactAriaButton
             onPress={scrollToCategory}
+            isDisabled={isFetchingToClickedCategory}
             className={`
                 cursor-pointer
                 m-2 px-5 py-2.5
                 rounded-full
-                text-sm font-medium
-                text-white
-
-                border backdrop-blur-xl
-                transition-all duration-1000
+            
+                border 
+                backdrop-blur-sm
+                transition-all duration-700
 
                 hover:-translate-y-[1px]
-                active:scale-95
+                hover:brightness-110
 
                 ${isActive ? 'active-button' : 'border-white/30 bg-white/[0.05]'}
 
@@ -76,11 +76,13 @@ const ButtonCategory = ({ category }: ButtonCategoryProperties) => {
                 className={`
                     font-poiret 
                     text-xl 
-                    transition-all 
-                    duration-500
+                    font-semibold
+                    text-white
 
-                    ${isActive ? 'font-bold' : 'opacity-80'}
-                        ${isLoading ? 'opacity-70' : ''}
+                    transition-all 
+                    duration-700
+
+                    ${isActive ? 'font-bold' : 'opacity-60'}
                 `}
             >
                 {keyToCategory[category]}
