@@ -35,7 +35,7 @@ const ButtonCategory = ({ category }: ButtonCategoryProperties) => {
         const elementCategory = document.getElementById(category)
         if (!elementCategory) return
 
-        const offset = 150
+        const offset = 200
 
         const y =
             elementCategory.getBoundingClientRect().top +

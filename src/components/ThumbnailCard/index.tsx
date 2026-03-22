@@ -11,7 +11,7 @@ type ThumbnailCardProperties = {
 
 const ThumbnailCard = ({ title, imgUrl }: ThumbnailCardProperties) => {
     return (
-        <div className="min-w-[550px] mw-[400px] p-4">
+        <div className="min-w-[550px] mw-[400px] p-4 cursor-pointer">
             <Image
                 className="w-full h-auto"
                 src={imgUrl}
@@ -20,6 +20,10 @@ const ThumbnailCard = ({ title, imgUrl }: ThumbnailCardProperties) => {
                 height={500}
                 loading="eager"
             />
+
+            <h3 className="block text-center text-gray-500 text-sm font-poiret-one">
+                {title}
+            </h3>
         </div>
     )
 }
