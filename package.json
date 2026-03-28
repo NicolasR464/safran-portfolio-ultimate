@@ -7,7 +7,8 @@
         "build": "next build --turbopack",
         "start": "next start",
         "lint": "eslint",
-        "knip": "knip"
+        "knip": "knip",
+        "typecheck": "tsc --noEmit"
     },
     "dependencies": {
         "immer": "^11.1.4",

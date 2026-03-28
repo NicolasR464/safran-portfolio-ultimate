@@ -36,7 +36,13 @@ const CategoriesIsland = () => {
                 {isMobile && (
                     <Select>
                         {categories.map((category) => (
-                            <SelectItem key={category}>{category}</SelectItem>
+                            <SelectItem
+                                category={category}
+                                key={category}
+                                id={category}
+                            >
+                                {category}
+                            </SelectItem>
                         ))}
                     </Select>
                 )}
