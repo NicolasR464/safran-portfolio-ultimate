@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
-import { VideoSchema } from '@/types/video/schema'
 import { urls } from '@/utils/constants/urls'
 import { Thumbnail } from '@/types/apiResponses/portfolio'
 
