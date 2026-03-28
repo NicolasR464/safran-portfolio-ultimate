@@ -1,12 +1,9 @@
 import { z } from 'zod'
 import { ImageMetadata, VideoPlayer } from './index'
-
-const objectId = z
-    .string()
-    .regex(/^[0-9a-fA-F]{24}$/, 'Expected a 24-char hex Mongo ObjectId')
+import { ObjectId } from 'mongodb'
 
 export const VideoSchema = z.object({
-    _id: objectId,
+    _id: z.instanceof(ObjectId),
     title: z.string().min(1),
     vidId: z.string().min(1),
     player: VideoPlayer,

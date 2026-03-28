@@ -159,9 +159,8 @@ const Thumbnails = () => {
                         <div className="flex flex-wrap justify-center items-center">
                             {thumbnailsCategory.items.map((item) => (
                                 <ThumbnailCard
-                                    title={item.title}
-                                    imgUrl={item.imageUrl}
-                                    key={item._id}
+                                    metadata={item}
+                                    key={item._id.toString()}
                                 />
                             ))}
                         </div>
