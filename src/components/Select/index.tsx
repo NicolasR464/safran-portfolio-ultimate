@@ -107,7 +107,11 @@ export function Select<
     )
 }
 
-export function SelectItem(props: ListBoxItemProps) {
+type SelectItemProps = ListBoxItemProps & {
+    category: string
+}
+
+export function SelectItem({ category, ...props }: SelectItemProps) {
     const setActiveCategory = useCategoriesStore(
         (state) => state.setActiveCategory,
     )
@@ -118,16 +122,16 @@ export function SelectItem(props: ListBoxItemProps) {
         (state) => state.fetchNewCategory,
     )
 
-    const isCategoryAlreadyFetched = categoriesFetched.includes(props.children)
+    const isCategoryAlreadyFetched = categoriesFetched.includes(category)
 
     const scrollToCategory = async () => {
-        setActiveCategory(props.children)
+        setActiveCategory(category)
 
         if (!isCategoryAlreadyFetched) {
-            await fetchNewCategory(props.children)
+            await fetchNewCategory(category)
         }
 
-        const elementCategory = document.getElementById(props.children)
+        const elementCategory = document.getElementById(category)
         if (!elementCategory) return
 
         const offset = 50
