@@ -15,3 +15,8 @@ export const keyToCategory: any = {
     narrative: 'Narrative',
     reel: 'Reel',
 }
+
+export const localLogos = {
+    reel: { SRC: '/reel.png', ALT: 'Cinema reel' },
+    loaderCinemaReel: { SRC: '/cinema-reel-white.png', ALT: 'Loading' },
+}

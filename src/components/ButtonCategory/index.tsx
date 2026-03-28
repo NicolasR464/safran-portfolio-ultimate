@@ -25,6 +25,15 @@ const ButtonCategory = ({ category }: ButtonCategoryProperties) => {
 
     const isCategoryAlreadyFetched = categoriesFetched.includes(category)
 
+    const waitForElement = async (id: string, maxFrames = 30) => {
+        for (let i = 0; i < maxFrames; i++) {
+            const el = document.getElementById(id)
+            if (el) return el
+            await new Promise((resolve) => requestAnimationFrame(resolve))
+        }
+        return null
+    }
+
     const scrollToCategory = async () => {
         setActiveCategory(category)
 
@@ -32,19 +41,14 @@ const ButtonCategory = ({ category }: ButtonCategoryProperties) => {
             await fetchNewCategory(category)
         }
 
-        const elementCategory = document.getElementById(category)
+        await new Promise((resolve) => requestAnimationFrame(resolve))
+
+        const elementCategory = await waitForElement(category)
         if (!elementCategory) return
 
-        const offset = 200
-
-        const y =
-            elementCategory.getBoundingClientRect().top +
-            window.scrollY -
-            offset
-
-        window.scrollTo({
-            top: y,
+        elementCategory.scrollIntoView({
             behavior: 'smooth',
+            block: 'start',
         })
     }
 

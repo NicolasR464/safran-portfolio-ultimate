@@ -1,18 +1,18 @@
 'use client'
 
 import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
-import { keyToCategory } from '@/utils/constants'
+import { keyToCategory, localLogos } from '@/utils/constants'
 import { useEffect, useRef, useState } from 'react'
 import ThumbnailCard from '@/components/ThumbnailCard'
-import Loader from '@/components/Loader'
 import Image from 'next/image'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { VideoSchema } from '@/types/video/schema'
-import { Separator } from '../Separator'
+import { Separator } from '@/components/Separator'
+import LoaderCinemaReel from '@/components/Loader'
 
 const Thumbnails = () => {
     const loaderRef = useRef<HTMLDivElement | null>(null)
-    const headingRefs = useRef<Record<string, HTMLHeadingElement | null>>({})
+    const separatorsRefs = useRef<Record<string, HTMLElement | null>>({})
     const setActiveCategory = useCategoriesStore(
         (state) => state.setActiveCategory,
     )
@@ -37,6 +37,7 @@ const Thumbnails = () => {
         const node = loaderRef.current
         if (!node) return
 
+        /** Fetches the next batch of thumbnails on scroll. */
         const observer = new IntersectionObserver(
             (entries) => {
                 const firstEntry = entries[0]
@@ -58,6 +59,7 @@ const Thumbnails = () => {
     }, [fetchNextBatch])
 
     useEffect(() => {
+        /** Update the active category button style based on the viewport middle. */
         const updateMiddleCategory = () => {
             const viewportMiddle = window.innerHeight / 2
 
@@ -66,7 +68,7 @@ const Thumbnails = () => {
             let closestDistance = Infinity
 
             for (const [category, element] of Object.entries(
-                headingRefs.current,
+                separatorsRefs.current,
             )) {
                 if (!element) continue
 
@@ -108,38 +110,46 @@ const Thumbnails = () => {
         }
     }, [thumbnailsByCategories])
 
+    const lastCategory = thumbnailsByCategories.at(-1)?.category
+
     return (
         <div className="mb-32">
             {thumbnailsByCategories &&
                 thumbnailsByCategories.map((thumbnailsCategory) => (
-                    <div className="w-full" key={thumbnailsCategory.category}>
-                        <div className="select-none sticky top-0 flex justify-center content-center p-4">
+                    <div
+                        className={`w-full scroll-mt-(--header-height) ${lastCategory === thumbnailsCategory.category && 'min-h-screen'}`}
+                        key={thumbnailsCategory.category}
+                        id={thumbnailsCategory.category}
+                    >
+                        <Separator />
+
+                        <div
+                            className={`select-none sticky top-(--header-height) flex justify-center content-center p-4`}
+                            ref={(separatorElement) => {
+                                separatorsRefs.current[
+                                    thumbnailsCategory.category
+                                ] = separatorElement
+                            }}
+                        >
                             <span>
                                 <Image
                                     className="invert"
-                                    src="/reel.png"
-                                    alt="Cinema reel"
+                                    src={localLogos.reel.SRC}
+                                    alt={localLogos.reel.ALT}
                                     width={25}
                                     height={25}
                                 />
                             </span>
 
-                            <h2
-                                ref={(titleElement) => {
-                                    headingRefs.current[
-                                        thumbnailsCategory.category
-                                    ] = titleElement
-                                }}
-                                className="scroll-mt-36 mx-2 text-xl font-mono"
-                            >
+                            <h2 className="mx-2 text-white text-xl font-mono">
                                 {keyToCategory[thumbnailsCategory.category]}
                             </h2>
 
                             <span>
                                 <Image
                                     className="invert scale-x-[-1]"
-                                    src="/reel.png"
-                                    alt="Cinema reel"
+                                    src={localLogos.reel.SRC}
+                                    alt={localLogos.reel.ALT}
                                     width={25}
                                     height={25}
                                 />
@@ -147,23 +157,18 @@ const Thumbnails = () => {
                         </div>
 
                         <div className="flex flex-wrap justify-center items-center">
-                            {thumbnailsCategory.items.map((item, index) => (
+                            {thumbnailsCategory.items.map((item) => (
                                 <ThumbnailCard
-                                    {...(index === 0 && {
-                                        topCard: thumbnailsCategory.category,
-                                    })}
                                     title={item.title}
                                     imgUrl={item.imageUrl}
                                     key={item._id}
                                 />
                             ))}
                         </div>
-
-                        <Separator />
                     </div>
                 ))}
 
-            {isLoading && <Loader label="Loading more thumbnails" />}
+            {isLoading && <LoaderCinemaReel />}
 
             <div ref={loaderRef} />
         </div>

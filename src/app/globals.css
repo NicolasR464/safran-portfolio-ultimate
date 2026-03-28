@@ -2,15 +2,13 @@
 
 :root {
     --background: #000000;
-    --poiret-display-size: 1.75rem;
-    --poiret-display-line: 1.2;
+    --header-height: 50px;
 }
 
 @theme inline {
     --color-background: var(--background);
     --font-mono: var(--font-cairo);
     --font-poiret: var(--font-poiret-one);
-    --poiret-display: var(--font-poiret);
 }
 
 body {
@@ -18,11 +16,8 @@ body {
     color: var(--foreground);
 }
 
-.poiret {
-    font: var(--font-poiret);
-}
-
 .active-button {
+    border: 1px solid #bcbcbc;
     box-shadow:
         0 0 10px rgba(255, 255, 255, 0.4),
         0 0 20px rgba(255, 255, 255, 0.2);
