@@ -99,13 +99,13 @@ const Thumbnails = () => {
 
         if (!isFetchingToClickedCategory) updateMiddleCategory()
 
-        window.addEventListener('scroll', updateMiddleCategory, {
+        window.addEventListener('scrollend', updateMiddleCategory, {
             passive: true,
         })
         window.addEventListener('resize', updateMiddleCategory)
 
         return () => {
-            window.removeEventListener('scroll', updateMiddleCategory)
+            window.removeEventListener('scrollend', updateMiddleCategory)
             window.removeEventListener('resize', updateMiddleCategory)
         }
     }, [thumbnailsByCategories])
