@@ -10,6 +10,7 @@ const CategoriesIsland = () => {
     const categories = useCategoriesStore((state) => state.categories)
     const initialized = useCategoriesStore((state) => state.initialized)
     const getCategories = useCategoriesStore((state) => state.fetchCategories)
+    const activeCategory = useCategoriesStore((state) => state.activeCategory)
 
     const isMobile = useIsMobile()
 
@@ -34,7 +35,7 @@ const CategoriesIsland = () => {
                 )}
 
                 {isMobile && (
-                    <Select>
+                    <Select value={activeCategory}>
                         {categories.map((category) => (
                             <SelectItem
                                 category={category}

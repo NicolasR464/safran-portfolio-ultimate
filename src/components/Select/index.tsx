@@ -125,8 +125,6 @@ export function SelectItem({ category, ...props }: SelectItemProps) {
     const isCategoryAlreadyFetched = categoriesFetched.includes(category)
 
     const scrollToCategory = async () => {
-        setActiveCategory(category)
-
         if (!isCategoryAlreadyFetched) {
             await fetchNewCategory(category)
         }
@@ -145,6 +143,8 @@ export function SelectItem({ category, ...props }: SelectItemProps) {
             top: y,
             behavior: 'smooth',
         })
+
+        setActiveCategory(category)
     }
 
     return <DropdownItem onPress={scrollToCategory} {...props} />
