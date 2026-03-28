@@ -2,19 +2,15 @@
 
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 
 import { VideoSchema } from '@/types/video/schema'
+import { urls } from '@/utils/constants/urls'
+import { Thumbnail } from '@/types/apiResponses/portfolio'
 
-type ThumbnailCardProperties = {
-    title: VideoSchema['title']
-    imgUrl: VideoSchema['image']['url']
-    topCard?: string
-}
+const ThumbnailCard = ({ metadata }: { metadata: Thumbnail }) => {
+    const { title, _id, imageUrl } = metadata
 
-const ThumbnailCard = ({
-    title,
-    imgUrl,
-}: ThumbnailCardProperties & { topCard?: string }) => {
     const ref = useRef<HTMLDivElement | null>(null)
     const [opacity, setOpacity] = useState(0)
 
@@ -51,26 +47,28 @@ const ThumbnailCard = ({
     }, [])
 
     return (
-        <div
-            ref={ref}
-            className="p-4 mx-2 cursor-pointer transition-opacity duration-200"
-        >
-            <Image
-                className="w-full h-auto"
-                src={imgUrl}
-                alt={title}
-                width={500}
-                height={500}
-                loading="eager"
-            />
-
-            <h3
-                style={{ opacity }}
-                className="block text-center text-white text-sm font-poiret-one"
+        <Link href={`${urls.PORTFOLIO}/${_id}`}>
+            <div
+                ref={ref}
+                className="p-4 mx-2 cursor-pointer transition-opacity duration-200"
             >
-                {title}
-            </h3>
-        </div>
+                <Image
+                    className="w-full h-auto"
+                    src={imageUrl}
+                    alt={title}
+                    width={500}
+                    height={500}
+                    loading="eager"
+                />
+
+                <h3
+                    style={{ opacity }}
+                    className="block text-center text-white text-sm font-poiret-one"
+                >
+                    {title}
+                </h3>
+            </div>
+        </Link>
     )
 }
 
