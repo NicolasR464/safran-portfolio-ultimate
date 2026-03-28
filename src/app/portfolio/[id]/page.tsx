@@ -35,9 +35,9 @@ const Video = async ({ params }: { params: Promise<{ id: string }> }) => {
 
     return (
         <div className="relative h-[calc(100dvh-var(--header-height))] overflow-hidden bg-black text-white">
-            <div className="fixed inset-0">
-                <ButtonBack />
+            <ButtonBack />
 
+            <div className="fixed inset-0">
                 <Image
                     src={video.image.url}
                     alt={video.title}
@@ -63,7 +63,7 @@ const Video = async ({ params }: { params: Promise<{ id: string }> }) => {
                 </div>
 
                 <div className="flex w-full max-w-3xl flex-col items-center text-center">
-                    <h1 className="text-3xl font-black font-mono tracking-tight md:text-6xl">
+                    <h1 className="text-3xl font-black font-mono tracking-tight md:text-5xl">
                         {video.title}
                     </h1>
 
