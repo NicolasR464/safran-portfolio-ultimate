@@ -1,0 +1,48 @@
+'use client'
+
+import { useEffect } from 'react'
+import useIsMobile from '@/hooks/useIsMobile'
+import { useCategoriesStore } from '@/stores/portfolio/categories'
+import ButtonCategory from '@/components/ButtonCategory'
+import { Select, SelectItem } from '@/components/Select'
+
+const CategoriesIsland = () => {
+    const categories = useCategoriesStore((state) => state.categories)
+    const initialized = useCategoriesStore((state) => state.initialized)
+    const getCategories = useCategoriesStore((state) => state.fetchCategories)
+
+    const isMobile = useIsMobile()
+
+    useEffect(() => {
+        if (!initialized) {
+            getCategories()
+        }
+    }, [initialized, getCategories])
+
+    return (
+        <div className="w-full flex justify-center">
+            <div className="fixed bottom-12 flex flex-wrap justify-center gap-4">
+                {!isMobile && (
+                    <>
+                        {categories.map((category) => (
+                            <ButtonCategory
+                                key={category}
+                                category={category}
+                            />
+                        ))}
+                    </>
+                )}
+
+                {isMobile && (
+                    <Select>
+                        {categories.map((category) => (
+                            <SelectItem key={category}>{category}</SelectItem>
+                        ))}
+                    </Select>
+                )}
+            </div>
+        </div>
+    )
+}
+
+export default CategoriesIsland

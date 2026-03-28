@@ -1,97 +1,54 @@
 'use client'
 
-import {
-    ThumbnailsCategory,
-    ThumbnailsResponseAPI,
-} from '@/types/apiResponses/portfolio'
-import ThumbnailCard from '@/components/ThumbnailCard'
-import { apiClientSide } from '@/utils/ky'
+import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
+import { keyToCategory, localLogos } from '@/utils/constants'
 import { useEffect, useRef, useState } from 'react'
-import { localApiEndpoints } from '@/utils/constants/endpoints'
-import { keyToCategory, searchParamsNames } from '@/utils/constants'
-import { wait } from '@/utils'
+import ThumbnailCard from '@/components/ThumbnailCard'
+import Image from 'next/image'
+import { useCategoriesStore } from '@/stores/portfolio/categories'
+import { VideoSchema } from '@/types/video/schema'
+import { Separator } from '@/components/Separator'
+import LoaderCinemaReel from '@/components/Loader'
 
-export const Thumbnails = () => {
-    const [thumbnailsByCategories, setThumbnailsByCategories] =
-        useState<ThumbnailsCategory[]>()
-    const [batchNumber, setBatchNumber] = useState<number>(1)
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [hasMore, setHasMore] = useState<boolean>(true)
-    const [askingMore, setAskingMore] = useState<boolean>(false)
-
+const Thumbnails = () => {
     const loaderRef = useRef<HTMLDivElement | null>(null)
+    const separatorsRefs = useRef<Record<string, HTMLElement | null>>({})
+    const setActiveCategory = useCategoriesStore(
+        (state) => state.setActiveCategory,
+    )
+
+    const thumbnailsByCategories = useThumbnailsStore(
+        (state) => state.thumbnailsByCategories,
+    )
+    const isLoading = useThumbnailsStore((state) => state.isLoading)
+    const initialized = useThumbnailsStore((state) => state.initialized)
+    const fetchNextBatch = useThumbnailsStore((state) => state.fetchNextBatch)
+    const isFetchingToClickedCategory = useThumbnailsStore(
+        (state) => state.isFetchingToClickedCategory,
+    )
 
     useEffect(() => {
-        const fetchThumbnails = async () => {
-            console.count('🚀 fetchThumbnails')
-            if (isLoading || !hasMore) return
-
-            setIsLoading(true)
-
-            const searchParams = new URLSearchParams()
-
-            searchParams.set(
-                searchParamsNames.BATCH_NUMBER,
-                batchNumber.toString(),
-            )
-
-            const apiResponse = await apiClientSide<ThumbnailsResponseAPI>(
-                `${localApiEndpoints.PORTFOLIO}?${searchParams}`,
-            )
-
-            setIsLoading(false)
-            setAskingMore(false)
-
-            if (!apiResponse.ok) {
-                return
-            }
-
-            const parsedResponse = await apiResponse.json()
-
-            setHasMore(parsedResponse.hasMore)
-            setBatchNumber((prev) => prev + 1)
-
-            setThumbnailsByCategories((prev) => {
-                if (!prev) return parsedResponse.data.thumbnails
-
-                const previousBatches = structuredClone(prev)
-
-                for (const newBatch of parsedResponse.data.thumbnails) {
-                    const existingBatch = previousBatches.find(
-                        (batch) => batch.category === newBatch.category,
-                    )
-
-                    if (existingBatch) {
-                        existingBatch.items = [
-                            ...existingBatch.items,
-                            ...newBatch.items,
-                        ]
-                    }
-
-                    if (!existingBatch) previousBatches.push(newBatch)
-                }
-
-                return previousBatches
-            })
+        if (!initialized) {
+            fetchNextBatch()
         }
-
-        if (askingMore) fetchThumbnails()
-    }, [askingMore])
+    }, [initialized, fetchNextBatch])
 
     useEffect(() => {
         const node = loaderRef.current
         if (!node) return
 
+        /** Fetches the next batch of thumbnails on scroll. */
         const observer = new IntersectionObserver(
             (entries) => {
                 const firstEntry = entries[0]
 
-                if (firstEntry.isIntersecting && !isLoading && hasMore)
-                    setAskingMore(true)
+                if (firstEntry?.isIntersecting) {
+                    fetchNextBatch()
+                }
             },
             {
                 root: null,
-                rootMargin: '0px 0px 200px 0px',
+                rootMargin: '0px 0px 150px 0px',
                 threshold: 0,
             },
         )
@@ -99,21 +56,107 @@ export const Thumbnails = () => {
         observer.observe(node)
 
         return () => observer.disconnect()
-    }, [isLoading, hasMore])
+    }, [fetchNextBatch])
+
+    useEffect(() => {
+        /** Update the active category button style based on the viewport middle. */
+        const updateMiddleCategory = () => {
+            const viewportMiddle = window.innerHeight / 2
+
+            let currentCategory: VideoSchema['category'] | null = null
+            let closestCategory: VideoSchema['category'] | null = null
+            let closestDistance = Infinity
+
+            for (const [category, element] of Object.entries(
+                separatorsRefs.current,
+            )) {
+                if (!element) continue
+
+                const rect = element.getBoundingClientRect()
+
+                // Case 1: the center of the viewport is inside this h2
+                if (
+                    rect.top <= viewportMiddle &&
+                    rect.bottom >= viewportMiddle
+                ) {
+                    currentCategory = category
+                    break
+                }
+
+                // Case 2: fallback -> nearest h2 to the center
+                const elementMiddle = rect.top + rect.height / 2
+                const distance = Math.abs(elementMiddle - viewportMiddle)
+
+                if (distance < closestDistance) {
+                    closestDistance = distance
+                    closestCategory = category
+                }
+            }
+
+            if (currentCategory) setActiveCategory(currentCategory)
+            if (closestCategory) setActiveCategory(closestCategory)
+        }
+
+        if (!isFetchingToClickedCategory) updateMiddleCategory()
+
+        window.addEventListener('scroll', updateMiddleCategory, {
+            passive: true,
+        })
+        window.addEventListener('resize', updateMiddleCategory)
+
+        return () => {
+            window.removeEventListener('scroll', updateMiddleCategory)
+            window.removeEventListener('resize', updateMiddleCategory)
+        }
+    }, [thumbnailsByCategories])
+
+    const lastCategory = thumbnailsByCategories.at(-1)?.category
 
     return (
-        <>
+        <div className="mb-32">
             {thumbnailsByCategories &&
                 thumbnailsByCategories.map((thumbnailsCategory) => (
                     <div
-                        className="w-full p-[5%]"
+                        className={`w-full scroll-mt-(--header-height) ${lastCategory === thumbnailsCategory.category && 'min-h-screen'}`}
                         key={thumbnailsCategory.category}
+                        id={thumbnailsCategory.category}
                     >
-                        <h2 className="text-2xl font-bold text-center p-4">
-                            {keyToCategory[thumbnailsCategory.category]}
-                        </h2>
+                        <Separator />
 
-                        <div className="flex flex-wrap justify-center items-center ">
+                        <div
+                            className={`select-none sticky top-(--header-height) flex justify-center content-center p-4`}
+                            ref={(separatorElement) => {
+                                separatorsRefs.current[
+                                    thumbnailsCategory.category
+                                ] = separatorElement
+                            }}
+                        >
+                            <span>
+                                <Image
+                                    className="invert"
+                                    src={localLogos.reel.SRC}
+                                    alt={localLogos.reel.ALT}
+                                    width={25}
+                                    height={25}
+                                />
+                            </span>
+
+                            <h2 className="mx-2 text-white text-xl font-mono">
+                                {keyToCategory[thumbnailsCategory.category]}
+                            </h2>
+
+                            <span>
+                                <Image
+                                    className="invert scale-x-[-1]"
+                                    src={localLogos.reel.SRC}
+                                    alt={localLogos.reel.ALT}
+                                    width={25}
+                                    height={25}
+                                />
+                            </span>
+                        </div>
+
+                        <div className="flex flex-wrap justify-center items-center">
                             {thumbnailsCategory.items.map((item) => (
                                 <ThumbnailCard
                                     title={item.title}
@@ -125,9 +168,11 @@ export const Thumbnails = () => {
                     </div>
                 ))}
 
-            {isLoading && <p>Loading...</p>}
+            {isLoading && <LoaderCinemaReel />}
 
             <div ref={loaderRef} />
-        </>
+        </div>
     )
 }
+
+export default Thumbnails

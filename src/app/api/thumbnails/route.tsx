@@ -12,8 +12,8 @@ import { db } from '@/utils/mongo'
 import { NextResponse } from 'next/server'
 import { thumbnailsPipeline } from '@/utils/mongoPipelines/portfolio/thumbnails'
 import {
-    ThumbnailsPipeline,
-    ThumbnailsResponseAPI,
+    ThumbnailsCategory,
+    ThumbnailsResponse,
 } from '@/types/apiResponses/portfolio'
 
 /** This returns the thumbnails info for the portfolio main page. */
@@ -21,6 +21,9 @@ export const GET = async (request: NextRequest) => {
     const searchParams = request.nextUrl.searchParams
 
     const batchNumber = Number(searchParams.get(searchParamsNames.BATCH_NUMBER))
+    const category = searchParams.get(searchParamsNames.CATEGORY)
+
+    console.log({ category })
 
     if (!batchNumber) {
         return NextResponse.json(null, {
@@ -31,9 +34,7 @@ export const GET = async (request: NextRequest) => {
 
     const database = await db()
 
-    const testErrorState = Math.random() > 0.5
-
-    if (!database || testErrorState < 0.5) {
+    if (!database) {
         return NextResponse.json(null, {
             status: 500,
             statusText: backErrors.DATABASE_CONNECTION_ERROR,
@@ -46,8 +47,8 @@ export const GET = async (request: NextRequest) => {
 
     const totalDocuments = await videosCollection.countDocuments()
 
-    const [results] = await videosCollection
-        .aggregate<ThumbnailsPipeline>(
+    const results = await videosCollection
+        .aggregate<ThumbnailsCategory>(
             thumbnailsPipeline(batchNumber, DEFAULT_BATCH_SIZE),
         )
         .toArray()
@@ -61,7 +62,7 @@ export const GET = async (request: NextRequest) => {
 
     const hasMore = batchNumber * DEFAULT_BATCH_SIZE < totalDocuments
 
-    return NextResponse.json<ThumbnailsResponseAPI>({
+    return NextResponse.json<ThumbnailsResponse>({
         data: results,
         hasMore,
     })

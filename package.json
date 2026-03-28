@@ -10,12 +10,20 @@
         "knip": "knip"
     },
     "dependencies": {
+        "immer": "^11.1.4",
         "ky": "^1.14.3",
+        "lucide-react": "^0.577.0",
         "mongodb": "^7.1.0",
         "next": "16.1.3",
         "react": "19.2.3",
+        "react-aria-components": "^1.16.0",
         "react-dom": "19.2.3",
-        "zod": "^4.3.6"
+        "tailwind-merge": "^3.5.0",
+        "tailwind-variants": "^3.2.2",
+        "tailwindcss-animate": "^1.0.7",
+        "tailwindcss-react-aria-components": "^2.0.1",
+        "zod": "^4.3.6",
+        "zustand": "^5.0.11"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3",
