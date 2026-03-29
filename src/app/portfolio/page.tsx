@@ -1,4 +1,4 @@
-import CategoriesIsland from '@/components/CategoriesIsland'
+import IslandCategories from '@/components/islands/IslandCategories'
 import Thumbnails from '@/components/Thumbnails'
 
 const Portfolio = async () => {
@@ -6,7 +6,7 @@ const Portfolio = async () => {
         <>
             <Thumbnails />
 
-            <CategoriesIsland />
+            <IslandCategories />
         </>
     )
 }

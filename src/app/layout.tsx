@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Poiret_One, Cairo } from 'next/font/google'
 import './globals.css'
 import { Separator } from '@/components/Separator'
+import Link from 'next/link'
 
 const poiretOne = Poiret_One({
     variable: '--font-poiret-one',
@@ -30,9 +31,11 @@ export default function RootLayout({
                 className={`${poiretOne.variable} ${cairo.variable} antialiased`}
             >
                 <header className="sticky top-0 z-[100] h-(--header-height) backdrop-blur-[2px]">
-                    <h1 className="ml-4 font-semibold flex h-full items-center text-2xl text-white font-poiret ">
-                        Safran Lecuivre
-                    </h1>
+                    <Link href={'/'}>
+                        <h1 className="ml-4 font-semibold flex h-full items-center text-2xl text-white font-poiret ">
+                            Safran Lecuivre
+                        </h1>
+                    </Link>
 
                     <Separator />
                 </header>
