@@ -35,6 +35,8 @@ const ButtonCategory = ({ category }: ButtonCategoryProperties) => {
     }
 
     const scrollToCategory = async () => {
+        setActiveCategory(category)
+
         if (!isCategoryAlreadyFetched) {
             await fetchNewCategory(category)
         }
@@ -48,8 +50,6 @@ const ButtonCategory = ({ category }: ButtonCategoryProperties) => {
             behavior: 'smooth',
             block: 'start',
         })
-
-        setActiveCategory(category)
     }
 
     const isActive = activeCategory === category

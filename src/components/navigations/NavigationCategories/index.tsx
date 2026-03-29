@@ -6,7 +6,7 @@ import { useCategoriesStore } from '@/stores/portfolio/categories'
 import ButtonCategory from '@/components/buttons/ButtonCategory'
 import { Select, SelectItem } from '@/components/Select'
 
-const IslandCategories = () => {
+const NavigationCategories = () => {
     const categories = useCategoriesStore((state) => state.categories)
     const initialized = useCategoriesStore((state) => state.initialized)
     const getCategories = useCategoriesStore((state) => state.fetchCategories)
@@ -52,4 +52,4 @@ const IslandCategories = () => {
     )
 }
 
-export default IslandCategories
+export default NavigationCategories
