@@ -1,4 +1,4 @@
-import IslandHomeLinks from '@/components/islands/IslandHomeLinks'
+import NavigationHome from '@/components/navigations/NavigationHome'
 
 const Home = () => {
     return (
@@ -16,7 +16,7 @@ const Home = () => {
                 />
             </video>
 
-            <IslandHomeLinks />
+            <NavigationHome />
         </div>
     )
 }
