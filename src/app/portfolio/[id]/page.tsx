@@ -5,7 +5,7 @@ import { ObjectId } from 'mongodb'
 import { VideoSchema } from '@/types/video/schema'
 import { collections } from '@/utils/constants'
 import { db } from '@/utils/mongo'
-import ButtonBack from '@/components/ButtonBack'
+import ButtonBack from '@/components/buttons/ButtonBack'
 
 const Video = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params

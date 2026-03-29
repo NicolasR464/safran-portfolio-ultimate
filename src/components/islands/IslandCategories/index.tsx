@@ -3,10 +3,10 @@
 import { useEffect } from 'react'
 import useIsMobile from '@/hooks/useIsMobile'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
-import ButtonCategory from '@/components/ButtonCategory'
+import ButtonCategory from '@/components/buttons/ButtonCategory'
 import { Select, SelectItem } from '@/components/Select'
 
-const CategoriesIsland = () => {
+const IslandCategories = () => {
     const categories = useCategoriesStore((state) => state.categories)
     const initialized = useCategoriesStore((state) => state.initialized)
     const getCategories = useCategoriesStore((state) => state.fetchCategories)
@@ -52,4 +52,4 @@ const CategoriesIsland = () => {
     )
 }
 
-export default CategoriesIsland
+export default IslandCategories
