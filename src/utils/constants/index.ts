@@ -19,5 +19,5 @@ export const keyToCategory: any = {
 export const localLogos = {
     reel: { SRC: '/reel.png', ALT: 'Cinema reel' },
     loaderCinemaReel: { SRC: '/cinema-reel-white.png', ALT: 'Loading' },
-    instagramLogo: { SRC: '/ig.png', ALT: 'Instagram logo' },
+    instagramLogo: { SRC: '/IG.webp', ALT: 'Instagram logo' },
 }
