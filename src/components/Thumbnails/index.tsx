@@ -115,13 +115,13 @@ const Thumbnails = () => {
     return (
         <div className="mb-32">
             {thumbnailsByCategories &&
-                thumbnailsByCategories.map((thumbnailsCategory) => (
+                thumbnailsByCategories.map((thumbnailsCategory, index) => (
                     <div
                         className={`w-full scroll-mt-(--header-height) ${lastCategory === thumbnailsCategory.category && 'min-h-screen'}`}
                         key={thumbnailsCategory.category}
                         id={thumbnailsCategory.category}
                     >
-                        <Separator />
+                        {index !== 0 && <Separator />}
 
                         <div
                             className={`select-none sticky top-(--header-height) flex justify-center content-center p-4`}
