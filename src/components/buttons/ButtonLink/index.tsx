@@ -5,21 +5,23 @@ import { Button as ReactAriaButton } from 'react-aria-components'
 import { ComponentType } from 'react'
 
 type ButtonProperties = {
-    name?: string
+    text?: string
     href: string
     logo?: ComponentType<{ className?: string }>
 }
 
-const ButtonLink = ({ name, href, logo: Logo }: ButtonProperties) => {
+const ButtonLink = ({ text, href, logo: Logo }: ButtonProperties) => {
     return (
         <Link href={href}>
             <ReactAriaButton
                 className={`
                 cursor-pointer
-                m-2 px-5 py-2.5
+                m-5
+                sm:m-2
+                px-5 py-2.5
                 rounded-full
             
-                border 
+                border
                 backdrop-blur-sm
                 transition-all duration-700
 
@@ -29,7 +31,7 @@ const ButtonLink = ({ name, href, logo: Logo }: ButtonProperties) => {
             >
                 {Logo && <Logo className="h-7 w-7 text-white" />}
 
-                {name && (
+                {text && (
                     <span
                         className={`
                     font-poiret 
@@ -41,7 +43,7 @@ const ButtonLink = ({ name, href, logo: Logo }: ButtonProperties) => {
                     duration-700
                 `}
                     >
-                        {name}
+                        {text}
                     </span>
                 )}
             </ReactAriaButton>
