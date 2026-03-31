@@ -3,6 +3,7 @@ import { Poiret_One, Cairo } from 'next/font/google'
 import './globals.css'
 import { Separator } from '@/components/Separator'
 import Link from 'next/link'
+import StagingCapsule from '@/components/StagingCapsule'
 
 const poiretOne = Poiret_One({
     variable: '--font-poiret-one',
@@ -36,6 +37,8 @@ export default function RootLayout({
                             Safran Lecuivre
                         </h1>
                     </Link>
+
+                    {process.env.IS_STAGING && <StagingCapsule />}
 
                     <Separator />
                 </header>
