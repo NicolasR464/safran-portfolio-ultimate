@@ -32,14 +32,15 @@ export default function RootLayout({
                 className={`${poiretOne.variable} ${cairo.variable} antialiased`}
             >
                 <header className="sticky top-0 z-[100] h-(--header-height) backdrop-blur-[2px]">
-                    <Link href={'/'}>
-                        <h1 className="ml-4 font-semibold flex h-full items-center text-2xl text-white font-poiret ">
-                            Safran Lecuivre
-                        </h1>
-                    </Link>
+                    <div className="flex w-screen justify-between">
+                        <Link href={'/'}>
+                            <h1 className="ml-4 font-semibold h-full text-2xl text-white font-poiret ">
+                                Safran Lecuivre
+                            </h1>
+                        </Link>
 
-                    {process.env.IS_STAGING && <StagingCapsule />}
-
+                        {process.env.IS_STAGING && <StagingCapsule />}
+                    </div>
                     <Separator />
                 </header>
 
