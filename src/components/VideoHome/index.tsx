@@ -9,7 +9,7 @@ import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
 import { useEffect, useState } from 'react'
 import LoaderCinemaReel from '@/components/LoaderCinemaReel'
-import VideoPlr from '../VideoPlr'
+import VideoPlr from '@/components/VideoPlr'
 
 /** Video displayed on the home page */
 const VideoHome = () => {

@@ -12,6 +12,9 @@ const VideoPlr = ({ videoID }: { videoID: VideoSchema['vidId'] }) => {
             controls={false}
             bigPlayButton={false}
             src={videoID}
+            id={videoID}
+            height={500}
+            width={500}
             className="w-full"
         />
     )
