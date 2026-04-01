@@ -5,6 +5,7 @@ export const collections = {
 export const searchParamsNames = {
     BATCH_NUMBER: 'batch_number',
     CATEGORY: 'category',
+    SCREEN_SIZE: 'screen_size',
 }
 
 export const DEFAULT_BATCH_SIZE = 10

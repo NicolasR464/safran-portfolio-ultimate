@@ -7,7 +7,11 @@ import { collections } from '@/utils/constants'
 import { db } from '@/utils/mongo'
 import ButtonBack from '@/components/buttons/ButtonBack'
 
-const Video = async ({ params }: { params: Promise<{ id: string }> }) => {
+const PortfolioSingle = async ({
+    params,
+}: {
+    params: Promise<{ id: string }>
+}) => {
     const { id } = await params
 
     if (!ObjectId.isValid(id)) {
@@ -38,13 +42,16 @@ const Video = async ({ params }: { params: Promise<{ id: string }> }) => {
             <ButtonBack />
 
             <div className="fixed inset-0">
-                <Image
-                    src={video.image.url}
-                    alt={video.title}
-                    fill
-                    priority
-                    className="object-cover object-center opacity-70"
-                />
+                {!!video.image && !!video.title && (
+                    <Image
+                        src={video.image.url}
+                        alt={video.title}
+                        fill
+                        priority
+                        className="object-cover object-center opacity-70"
+                    />
+                )}
+
                 <div className="absolute inset-0 bg-black/45" />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/35 to-black" />
             </div>
@@ -76,4 +83,4 @@ const Video = async ({ params }: { params: Promise<{ id: string }> }) => {
     )
 }
 
-export default Video
+export default PortfolioSingle

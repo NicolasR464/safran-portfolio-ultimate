@@ -8,7 +8,7 @@ import Image from 'next/image'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { VideoSchema } from '@/types/video/schema'
 import { Separator } from '@/components/Separator'
-import LoaderCinemaReel from '@/components/Loader'
+import LoaderCinemaReel from '@/components/LoaderCinemaReel'
 
 const Thumbnails = () => {
     const loaderRef = useRef<HTMLDivElement | null>(null)

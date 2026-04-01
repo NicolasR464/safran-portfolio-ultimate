@@ -5,7 +5,7 @@ const Thumbnail = z.object({
     _id: VideoSchema.shape._id,
     title: VideoSchema.shape.title,
     category: VideoSchema.shape.category,
-    imageUrl: VideoSchema.shape.image.shape.url,
+    imageUrl: VideoSchema.shape.image.unwrap().shape.url,
 })
 
 export type Thumbnail = z.infer<typeof Thumbnail>
