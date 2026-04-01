@@ -51,15 +51,16 @@ const ThumbnailCard = ({ metadata }: { metadata: Thumbnail }) => {
                 ref={ref}
                 className="p-4 mx-2 cursor-pointer transition-opacity duration-200"
             >
-                <Image
-                    className="w-full h-auto"
-                    src={imageUrl}
-                    alt={title}
-                    width={500}
-                    height={500}
-                    loading="eager"
-                />
-
+                {title && (
+                    <Image
+                        className="w-full h-auto"
+                        src={imageUrl}
+                        alt={title}
+                        width={500}
+                        height={500}
+                        loading="eager"
+                    />
+                )}
                 <h3
                     style={{ opacity }}
                     className="block text-center text-white text-sm font-poiret-one"
