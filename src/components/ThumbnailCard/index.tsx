@@ -46,7 +46,7 @@ const ThumbnailCard = ({ metadata }: { metadata: Thumbnail }) => {
     }, [])
 
     return (
-        <Link href={`${urls.PORTFOLIO}/${_id}`}>
+        <Link href={`${urls.visitor.PORTFOLIO}/${_id}`}>
             <div
                 ref={ref}
                 className="p-4 mx-2 cursor-pointer transition-opacity duration-200"

@@ -21,7 +21,9 @@ const ButtonLink = ({ text, href, logo: Logo }: ButtonProperties) => {
                 px-5 py-2.5
                 rounded-full
             
-                border
+                border-2
+                border-white/20
+                
                 backdrop-blur-sm
                 transition-all duration-700
 

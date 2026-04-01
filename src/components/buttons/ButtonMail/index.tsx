@@ -15,7 +15,8 @@ const ButtonMail = () => {
                 m-2 px-5 py-2.5
                 rounded-full
             
-                border 
+                border
+                border-white/20 
                 backdrop-blur-sm
                 transition-all duration-700
 
