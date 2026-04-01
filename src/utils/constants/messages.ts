@@ -9,4 +9,6 @@ export const backErrors = {
     USER_ERROR: 'User CRUD error',
     VIDEO_ERROR: 'Video CRUD error',
     VIDEO_NAME_ALREADY_TAKEN: 'Video name already taken',
+    VIDEO_NOT_FOUND: 'Video not found',
+    VIDEOS_NOT_FOUND: 'Videos not found',
 }
