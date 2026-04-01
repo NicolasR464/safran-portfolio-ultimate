@@ -6,6 +6,7 @@ import { useCategoriesStore } from '@/stores/portfolio/categories'
 import ButtonCategory from '@/components/buttons/ButtonCategory'
 import { Select, SelectItem } from '@/components/Select'
 
+/** Navigation by categories for the portfolio page */
 const NavigationCategories = () => {
     const categories = useCategoriesStore((state) => state.categories)
     const initialized = useCategoriesStore((state) => state.initialized)

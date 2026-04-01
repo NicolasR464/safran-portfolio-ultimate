@@ -39,8 +39,9 @@ export default function RootLayout({
                             </h1>
                         </Link>
 
-                        {process.env.IS_STAGING && <StagingCapsule />}
+                        {!!process.env.IS_STAGING && <StagingCapsule />}
                     </div>
+
                     <Separator />
                 </header>
 

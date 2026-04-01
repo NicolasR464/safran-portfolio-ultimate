@@ -16,6 +16,7 @@ const ButtonIG = () => {
                 rounded-full
             
                 border 
+                border-white/20
                 backdrop-blur-sm
                 transition-all duration-700
 
