@@ -15,7 +15,7 @@ const VideoPlr = ({ videoID }: { videoID: VideoSchema['vidId'] }) => {
             id={videoID}
             height={500}
             width={500}
-            className="w-full"
+            className="w-screen"
         />
     )
 }
