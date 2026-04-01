@@ -22,7 +22,9 @@ export const GET = async () => {
         collections.VIDEOS,
     )
 
-    const categories = await videosCollection.distinct('category')
+    const categories = await videosCollection.distinct('category', {
+        category: { $ne: 'home' },
+    })
 
     if (!categories) {
         return NextResponse.json(null, {
