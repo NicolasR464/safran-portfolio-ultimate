@@ -1,5 +1,11 @@
 export const thumbnailsPipeline = (batch: number, batchSize: number) => [
     {
+        $match: {
+            category: { $ne: 'home' },
+        },
+    },
+
+    {
         $project: {
             _id: 1,
             title: 1,
