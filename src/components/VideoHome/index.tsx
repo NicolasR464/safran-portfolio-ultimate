@@ -45,7 +45,7 @@ const VideoHome = () => {
     }, [isMobile])
 
     return (
-        <div className="flex justify-center items-center w-screen h-[80vh] small:h-screen">
+        <div className="flex justify-center items-center w-screen h-[80vh] sm:h-screen">
             {isLoading && <LoaderCinemaReel size={100} />}
 
             {videoID && <VideoPlr videoID={videoID} />}
