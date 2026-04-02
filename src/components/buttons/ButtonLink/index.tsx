@@ -16,8 +16,8 @@ const ButtonLink = ({ text, href, logo: Logo }: ButtonProperties) => {
             <ReactAriaButton
                 className={`
                 cursor-pointer
-                m-5
-                sm:m-2
+                m-2
+                mx-5
                 px-5 py-2.5
                 rounded-full
             
