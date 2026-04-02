@@ -14,7 +14,7 @@ import VideoPlr from '@/components/VideoPlr'
 /** Video displayed on the home page */
 const VideoHome = () => {
     const [videoID, setVideoID] = useState<VideoSchema['vidId']>('')
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isLoading, setIsLoading] = useState<boolean>(true)
 
     const isMobile = useIsMobile()
 
@@ -22,8 +22,6 @@ const VideoHome = () => {
 
     useEffect(() => {
         const getVideoID = async () => {
-            setIsLoading(true)
-
             const screenSize = isMobile
                 ? ScreenSize.enum['1:1']
                 : ScreenSize.enum['16:9']
