@@ -11,12 +11,15 @@ const ButtonIG = () => {
         <Link href={urls.INSTAGRAM} target="blank">
             <ReactAriaButton
                 className={`
-                cursor-pointer
-                m-2 px-5 py-2.5
+               cursor-pointer
+                mx-5
+                m-2
+                px-5 py-2.5
                 rounded-full
             
-                border 
+                border-2
                 border-white/20
+                
                 backdrop-blur-sm
                 transition-all duration-700
 

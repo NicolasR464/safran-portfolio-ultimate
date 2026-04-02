@@ -12,11 +12,13 @@ const ButtonMail = () => {
         <ReactAriaButton
             className={`
                 cursor-pointer
-                m-2 px-5 py-2.5
+                m-2
+                px-5 py-2.5
                 rounded-full
             
-                border
-                border-white/20 
+                border-2
+                border-white/20
+                
                 backdrop-blur-sm
                 transition-all duration-700
 
