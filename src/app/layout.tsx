@@ -31,10 +31,10 @@ export default function RootLayout({
             <body
                 className={`${poiretOne.variable} ${cairo.variable} antialiased`}
             >
-                <header className="sticky top-0 z-[100] h-(--header-height) backdrop-blur-[2px]">
-                    <div className="flex w-screen justify-between">
+                <header className="sticky top-0 z-[100] h-(--header-height) backdrop-blur-sm">
+                    <div className="flex w-screen h-full justify-between items-center">
                         <Link href={'/'}>
-                            <h1 className="ml-4 font-semibold h-full text-2xl text-white font-poiret ">
+                            <h1 className="ml-4 font-semibold text-2xl text-white font-poiret ">
                                 Safran Lecuivre
                             </h1>
                         </Link>
