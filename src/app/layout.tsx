@@ -5,12 +5,14 @@ import { Separator } from '@/components/Separator'
 import Link from 'next/link'
 import StagingCapsule from '@/components/StagingCapsule'
 
+// Main Font
 const poiretOne = Poiret_One({
     variable: '--font-poiret-one',
     subsets: ['latin'],
     weight: '400',
 })
 
+// Secondary Font
 const cairo = Cairo({
     variable: '--font-cairo',
     subsets: ['latin'],
