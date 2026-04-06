@@ -18,8 +18,6 @@ const VideoHome = () => {
 
     const isMobile = useIsMobile()
 
-    console.log('isMobile: ' + isMobile.toString())
-
     useEffect(() => {
         const getVideoID = async () => {
             const screenSize = isMobile

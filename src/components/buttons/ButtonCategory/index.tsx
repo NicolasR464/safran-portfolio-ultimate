@@ -3,6 +3,7 @@ import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
 import { keyToCategory } from '@/utils/constants'
 
 import { Button as ReactAriaButton } from 'react-aria-components'
+import ButtonGeneric from '../ButtonGeneric'
 
 type ButtonCategoryProperties = {
     category: string
@@ -56,42 +57,18 @@ const ButtonCategory = ({ category }: ButtonCategoryProperties) => {
     const isLoading = isFetchingToClickedCategory && isActive
 
     return (
-        <ReactAriaButton
+        <ButtonGeneric
             onPress={scrollToCategory}
             isDisabled={isFetchingToClickedCategory}
             className={`
-                cursor-pointer
-                m-2 px-5 py-2.5
-                rounded-full
             
-                border 
-                backdrop-blur-sm
-                transition-all duration-700
-
-                hover:-translate-y-[1px]
-                hover:brightness-110
-
-                ${isActive ? 'active-button' : 'border-white/30 bg-white/[0.05]'}
+                ${isActive && 'active-button'}
 
                 ${isLoading && 'animate-glow'}
             `}
         >
-            <span
-                className={`
-                    font-poiret 
-                    text-xl 
-                    font-semibold
-                    text-white
-
-                    transition-all 
-                    duration-700
-
-                    ${isActive ? 'font-bold' : 'opacity-60'}
-                `}
-            >
-                {keyToCategory[category]}
-            </span>
-        </ReactAriaButton>
+            {keyToCategory[category]}
+        </ButtonGeneric>
     )
 }
 

@@ -51,8 +51,6 @@ export const useThumbnailsStore = create<ThumbnailsStore>()(
         },
 
         fetchNextBatch: async (category) => {
-            console.log('🔥 fetchNextBatch', category)
-
             const { isLoading, hasMore, batchNumber } = get()
 
             if (isLoading || !hasMore) return
@@ -110,8 +108,6 @@ export const useThumbnailsStore = create<ThumbnailsStore>()(
         },
 
         fetchNewCategory: async (category: VideoSchema['category']) => {
-            console.log('🔥 fetchNewCategory', category)
-
             set((state) => {
                 state.isFetchingToClickedCategory = true
             })

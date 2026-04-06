@@ -1,4 +1,4 @@
-import NavigationHome from '@/components/navigations/NavigationHome'
+import NavigationsHome from '@/components/navigations/NavigationsHome'
 import VideoHome from '@/components/VideoHome'
 
 const Home = () => {
@@ -6,7 +6,7 @@ const Home = () => {
         <div className="fixed top-0 h-screen w-screen overflow-hidden bg-black">
             <VideoHome />
 
-            <NavigationHome />
+            <NavigationsHome />
         </div>
     )
 }
