@@ -156,7 +156,7 @@ const Thumbnails = () => {
                             </span>
                         </div>
 
-                        <div className="flex flex-wrap justify-center items-center">
+                        <div className="flex flex-wrap justify-center items-stretch">
                             {thumbnailsCategory.items.map((item) => (
                                 <ThumbnailCard
                                     metadata={item}

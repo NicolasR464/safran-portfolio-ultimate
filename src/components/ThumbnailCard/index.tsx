@@ -49,21 +49,24 @@ const ThumbnailCard = ({ metadata }: { metadata: Thumbnail }) => {
         <Link href={`${urls.visitor.PORTFOLIO}/${_id}`}>
             <div
                 ref={ref}
-                className="p-4 mx-2 cursor-pointer transition-opacity duration-200"
+                className="p-4 mx-2 cursor-pointer transition-opacity duration-200 flex h-full flex-col"
             >
                 {title && (
-                    <Image
-                        className="w-full h-auto"
-                        src={imageUrl}
-                        alt={title}
-                        width={500}
-                        height={500}
-                        loading="eager"
-                    />
+                    <div className="flex-1 flex items-center justify-center">
+                        <Image
+                            className="mx-auto h-auto max-w-full"
+                            src={imageUrl}
+                            alt={title}
+                            width={500}
+                            height={500}
+                            loading="eager"
+                        />
+                    </div>
                 )}
+
                 <h3
                     style={{ opacity }}
-                    className="block text-center text-white text-sm font-poiret-one"
+                    className="mt-auto truncate pt-2 text-center text-sm leading-tight text-white font-poiret-one"
                 >
                     {title}
                 </h3>
