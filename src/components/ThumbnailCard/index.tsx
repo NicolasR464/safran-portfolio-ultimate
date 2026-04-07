@@ -66,7 +66,7 @@ const ThumbnailCard = ({ metadata }: { metadata: Thumbnail }) => {
 
                 <h3
                     style={{ opacity }}
-                    className="mt-auto truncate pt-2 text-center text-sm leading-tight text-white font-poiret-one"
+                    className="mt-auto pt-2 text-center text-sm text-white font-poiret-one"
                 >
                     {title}
                 </h3>

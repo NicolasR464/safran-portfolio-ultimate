@@ -38,6 +38,7 @@ const NavigationsHome = () => {
                     />
                 }
                 href={urls.INSTAGRAM}
+                target="_blank"
             />
         </ButtonsGroup>
     )
