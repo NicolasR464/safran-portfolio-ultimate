@@ -1,11 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 
-import { urls } from '@/utils/constants/urls'
 import { Thumbnail } from '@/types/apiResponses/portfolio'
+import { urls } from '@/utils/constants/urls'
 
 const ThumbnailCard = ({ metadata }: { metadata: Thumbnail }) => {
     const { title, _id, imageUrl } = metadata
@@ -49,24 +49,24 @@ const ThumbnailCard = ({ metadata }: { metadata: Thumbnail }) => {
         <Link href={`${urls.visitor.PORTFOLIO}/${_id}`}>
             <div
                 ref={ref}
-                className="p-4 mx-2 cursor-pointer transition-opacity duration-200 flex h-full flex-col"
+                className='p-4 mx-2 cursor-pointer transition-opacity duration-200 flex h-full flex-col'
             >
                 {title && (
-                    <div className="flex-1 flex items-center justify-center">
+                    <div className='flex-1 flex items-center justify-center'>
                         <Image
-                            className="mx-auto h-auto max-w-full"
+                            className='mx-auto h-auto max-w-full'
                             src={imageUrl}
                             alt={title}
                             width={500}
                             height={500}
-                            loading="eager"
+                            loading='eager'
                         />
                     </div>
                 )}
 
                 <h3
                     style={{ opacity }}
-                    className="mt-auto pt-2 text-center text-sm text-white font-poiret-one"
+                    className='mt-auto pt-2 text-center text-sm text-white font-poiret-one'
                 >
                     {title}
                 </h3>

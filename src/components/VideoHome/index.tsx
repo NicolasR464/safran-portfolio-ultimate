@@ -1,15 +1,15 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
+import LoaderCinemaReel from '@/components/LoaderCinemaReel'
+import VideoPlr from '@/components/VideoPlr'
 import useIsMobile from '@/hooks/useIsMobile'
 import { ScreenSize } from '@/types/video'
 import { VideoSchema } from '@/types/video/schema'
 import { searchParamsNames } from '@/utils/constants'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
-
 import { apiClientSide } from '@/utils/ky'
-import { useEffect, useState } from 'react'
-import LoaderCinemaReel from '@/components/LoaderCinemaReel'
-import VideoPlr from '@/components/VideoPlr'
 
 /** Video displayed on the home page */
 const VideoHome = () => {
@@ -43,7 +43,7 @@ const VideoHome = () => {
     }, [isMobile])
 
     return (
-        <div className="flex justify-center items-center w-screen h-[80vh] sm:h-screen">
+        <div className='flex justify-center items-center w-screen h-[80vh] sm:h-screen'>
             {isLoading && <LoaderCinemaReel size={100} />}
 
             {videoID && <VideoPlr videoID={videoID} />}

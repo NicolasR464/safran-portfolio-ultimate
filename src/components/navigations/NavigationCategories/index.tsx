@@ -1,11 +1,12 @@
 'use client'
 
 import { useEffect } from 'react'
+
+import ButtonCategory from '@/components/buttons/ButtonCategory'
+import ButtonsGroup from '@/components/buttons/ButtonsGroup'
+import { Select, SelectItem } from '@/components/Select'
 import useIsMobile from '@/hooks/useIsMobile'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
-import ButtonCategory from '@/components/buttons/ButtonCategory'
-import { Select, SelectItem } from '@/components/Select'
-import ButtonsGroup from '@/components/buttons/ButtonsGroup'
 
 /** Navigation by categories for the portfolio page */
 const NavigationCategories = () => {
@@ -26,9 +27,12 @@ const NavigationCategories = () => {
         <ButtonsGroup>
             {/* Desktop */}
             {!isMobile && (
-                <div className="flex flex-wrap justify-center gap-4">
+                <div className='flex flex-wrap justify-center gap-4'>
                     {categories.map((category) => (
-                        <ButtonCategory key={category} category={category} />
+                        <ButtonCategory
+                            key={category}
+                            category={category}
+                        />
                     ))}
                 </div>
             )}

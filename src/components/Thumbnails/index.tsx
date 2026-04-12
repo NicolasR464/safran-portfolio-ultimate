@@ -1,14 +1,15 @@
 'use client'
 
-import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
-import { keyToCategory, localLogos } from '@/utils/constants'
-import { useEffect, useRef, useState } from 'react'
-import ThumbnailCard from '@/components/ThumbnailCard'
 import Image from 'next/image'
-import { useCategoriesStore } from '@/stores/portfolio/categories'
-import { VideoSchema } from '@/types/video/schema'
-import { Separator } from '@/components/Separator'
+import { useEffect, useRef } from 'react'
+
 import LoaderCinemaReel from '@/components/LoaderCinemaReel'
+import { Separator } from '@/components/Separator'
+import ThumbnailCard from '@/components/ThumbnailCard'
+import { useCategoriesStore } from '@/stores/portfolio/categories'
+import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
+import { VideoSchema } from '@/types/video/schema'
+import { keyToCategory, localLogos } from '@/utils/constants'
 
 const Thumbnails = () => {
     const loaderRef = useRef<HTMLDivElement | null>(null)
@@ -108,12 +109,12 @@ const Thumbnails = () => {
             window.removeEventListener('scrollend', updateMiddleCategory)
             window.removeEventListener('resize', updateMiddleCategory)
         }
-    }, [thumbnailsByCategories])
+    }, [isFetchingToClickedCategory, setActiveCategory, thumbnailsByCategories])
 
     const lastCategory = thumbnailsByCategories.at(-1)?.category
 
     return (
-        <div className="mb-32">
+        <div className='mb-32'>
             {thumbnailsByCategories &&
                 thumbnailsByCategories.map((thumbnailsCategory, index) => (
                     <div
@@ -133,7 +134,7 @@ const Thumbnails = () => {
                         >
                             <span>
                                 <Image
-                                    className="invert"
+                                    className='invert'
                                     src={localLogos.reel.SRC}
                                     alt={localLogos.reel.ALT}
                                     width={25}
@@ -141,13 +142,13 @@ const Thumbnails = () => {
                                 />
                             </span>
 
-                            <h2 className="mx-2 text-white text-xl font-mono">
+                            <h2 className='mx-2 text-white text-xl font-mono'>
                                 {keyToCategory[thumbnailsCategory.category]}
                             </h2>
 
                             <span>
                                 <Image
-                                    className="invert scale-x-[-1]"
+                                    className='invert scale-x-[-1]'
                                     src={localLogos.reel.SRC}
                                     alt={localLogos.reel.ALT}
                                     width={25}
@@ -156,7 +157,7 @@ const Thumbnails = () => {
                             </span>
                         </div>
 
-                        <div className="flex flex-wrap justify-center items-stretch">
+                        <div className='flex flex-wrap justify-center items-stretch'>
                             {thumbnailsCategory.items.map((item) => (
                                 <ThumbnailCard
                                     metadata={item}

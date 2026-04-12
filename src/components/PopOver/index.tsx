@@ -1,13 +1,13 @@
+import React from 'react'
 import {
+    composeRenderProps,
     OverlayArrow,
     Popover as AriaPopover,
     PopoverProps as AriaPopoverProps,
-    composeRenderProps,
 } from 'react-aria-components'
-import React from 'react'
 import { tv } from 'tailwind-variants'
 
-export interface PopoverProps extends Omit<AriaPopoverProps, 'children'> {
+interface PopoverProps extends Omit<AriaPopoverProps, 'children'> {
     showArrow?: boolean
     children: React.ReactNode
 }
@@ -24,13 +24,14 @@ const styles = tv({
     },
 })
 
-export function Popover({
+export const Popover = ({
     children,
     showArrow,
     className,
     ...props
-}: PopoverProps) {
-    let offset = showArrow ? 12 : 8
+}: PopoverProps) => {
+    const offset = showArrow ? 12 : 8
+
     return (
         <AriaPopover
             offset={offset}
@@ -40,14 +41,14 @@ export function Popover({
             )}
         >
             {showArrow && (
-                <OverlayArrow className="group">
+                <OverlayArrow className='group'>
                     <svg
                         width={12}
                         height={12}
-                        viewBox="0 0 12 12"
-                        className="block fill-white dark:fill-[#1f1f21] forced-colors:fill-[Canvas] stroke-1 stroke-black/10 dark:stroke-neutral-700 forced-colors:stroke-[ButtonBorder] group-placement-bottom:rotate-180 group-placement-left:-rotate-90 group-placement-right:rotate-90"
+                        viewBox='0 0 12 12'
+                        className='block fill-white dark:fill-[#1f1f21] forced-colors:fill-[Canvas] stroke-1 stroke-black/10 dark:stroke-neutral-700 forced-colors:stroke-[ButtonBorder] group-placement-bottom:rotate-180 group-placement-left:-rotate-90 group-placement-right:rotate-90'
                     >
-                        <path d="M0 0 L6 6 L12 0" />
+                        <path d='M0 0 L6 6 L12 0' />
                     </svg>
                 </OverlayArrow>
             )}

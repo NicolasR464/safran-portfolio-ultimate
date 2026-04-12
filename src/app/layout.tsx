@@ -1,8 +1,10 @@
-import type { Metadata } from 'next'
-import { Poiret_One, Cairo } from 'next/font/google'
 import './globals.css'
-import { Separator } from '@/components/Separator'
+
+import type { Metadata } from 'next'
+import { Cairo, Poiret_One } from 'next/font/google'
 import Link from 'next/link'
+
+import { Separator } from '@/components/Separator'
 import StagingCapsule from '@/components/StagingCapsule'
 
 // Main Font
@@ -29,14 +31,18 @@ export default function RootLayout({
     children: React.ReactNode
 }>) {
     return (
-        <html className="bg-black" lang="en" suppressHydrationWarning={true}>
+        <html
+            className='bg-black'
+            lang='en'
+            suppressHydrationWarning={true}
+        >
             <body
                 className={`${poiretOne.variable} ${cairo.variable} antialiased`}
             >
-                <header className="sticky top-0 z-[10] h-(--header-height) backdrop-blur-sm">
-                    <div className="flex w-screen h-full justify-between items-center">
+                <header className='sticky top-0 z-[10] h-(--header-height) backdrop-blur-sm'>
+                    <div className='flex w-screen h-full justify-between items-center'>
                         <Link href={'/'}>
-                            <h1 className="ml-4 font-semibold text-2xl text-white font-poiret ">
+                            <h1 className='ml-4 font-semibold text-2xl text-white font-poiret '>
                                 Safran Lecuivre
                             </h1>
                         </Link>

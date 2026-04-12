@@ -1,27 +1,23 @@
 import { ChevronUp } from 'lucide-react'
 import React from 'react'
 import {
-    Select as AriaSelect,
-    SelectProps as AriaSelectProps,
     Button,
     ListBox,
     ListBoxItemProps,
+    Select as AriaSelect,
+    SelectProps as AriaSelectProps,
     SelectValue,
     ValidationResult,
 } from 'react-aria-components'
 import { tv } from 'tailwind-variants'
-import { Description, FieldError, Label } from '@/components/Field'
-import {
-    DropdownItem,
-    DropdownSection,
-    DropdownSectionProps,
-} from '@/components/ListBox'
 
-import { composeTailwindRenderProps, focusRing } from '@/utils/ui'
+import { Description, FieldError, Label } from '@/components/Field'
+import { DropdownItem } from '@/components/ListBox'
 import { Popover } from '@/components/PopOver'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
 import { keyToCategory } from '@/utils/constants'
+import { composeTailwindRenderProps, focusRing } from '@/utils/ui'
 
 const styles = tv({
     extend: focusRing,
@@ -52,7 +48,7 @@ const styles = tv({
     },
 })
 
-export interface SelectProps<
+interface SelectProps<
     T extends object,
     M extends 'single' | 'multiple',
 > extends Omit<AriaSelectProps<T, M>, 'children'> {
@@ -63,7 +59,7 @@ export interface SelectProps<
     children: React.ReactNode | ((item: T) => React.ReactNode)
 }
 
-export function Select<
+export const Select = <
     T extends object,
     M extends 'single' | 'multiple' = 'single',
 >({
@@ -73,7 +69,7 @@ export function Select<
     children,
     items,
     ...props
-}: SelectProps<T, M>) {
+}: SelectProps<T, M>) => {
     return (
         <AriaSelect
             {...props}
@@ -85,7 +81,7 @@ export function Select<
             {label && <Label>{label}</Label>}
 
             <Button className={styles}>
-                <SelectValue className="flex-1 text-sm text-white/80">
+                <SelectValue className='flex-1 text-sm text-white/80'>
                     {({ selectedText, defaultChildren }) =>
                         keyToCategory[selectedText] || defaultChildren
                     }
@@ -93,14 +89,14 @@ export function Select<
 
                 <ChevronUp
                     aria-hidden
-                    className="h-4 w-4 shrink-0 text-white/70 transition-transform duration-700"
+                    className='h-4 w-4 shrink-0 text-white/70 transition-transform duration-700'
                 />
             </Button>
 
             {description && <Description>{description}</Description>}
             <FieldError>{errorMessage}</FieldError>
 
-            <Popover className="min-w-(--trigger-width)">
+            <Popover className='min-w-(--trigger-width)'>
                 <ListBox items={items}>{children}</ListBox>
             </Popover>
         </AriaSelect>
@@ -111,7 +107,7 @@ type SelectItemProps = ListBoxItemProps & {
     category: string
 }
 
-export function SelectItem({ category, ...props }: SelectItemProps) {
+export const SelectItem = ({ category, ...props }: SelectItemProps) => {
     const setActiveCategory = useCategoriesStore(
         (state) => state.setActiveCategory,
     )
@@ -147,11 +143,10 @@ export function SelectItem({ category, ...props }: SelectItemProps) {
         setActiveCategory(category)
     }
 
-    return <DropdownItem onPress={scrollToCategory} {...props} />
-}
-
-export function SelectSection<T extends object>(
-    props: DropdownSectionProps<T>,
-) {
-    return <DropdownSection {...props} />
+    return (
+        <DropdownItem
+            onPress={scrollToCategory}
+            {...props}
+        />
+    )
 }

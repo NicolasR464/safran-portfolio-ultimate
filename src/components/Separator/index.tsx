@@ -19,7 +19,7 @@ const styles = tv({
     },
 })
 
-export function Separator(props: SeparatorProps) {
+export const Separator = (props: SeparatorProps) => {
     return (
         <RACSeparator
             {...props}

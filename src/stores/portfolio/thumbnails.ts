@@ -1,3 +1,6 @@
+import { create } from 'zustand'
+import { immer } from 'zustand/middleware/immer'
+
 import {
     ThumbnailsCategory,
     ThumbnailsResponse,
@@ -6,8 +9,6 @@ import { VideoSchema } from '@/types/video/schema'
 import { searchParamsNames } from '@/utils/constants'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
-import { create } from 'zustand'
-import { immer } from 'zustand/middleware/immer'
 
 type ThumbnailsStore = {
     thumbnailsByCategories: ThumbnailsCategory[]

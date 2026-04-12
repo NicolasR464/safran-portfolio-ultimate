@@ -1,4 +1,5 @@
 import z from 'zod'
+
 import { VideoSchema } from '@/types/video/schema'
 
 const Thumbnail = z.object({

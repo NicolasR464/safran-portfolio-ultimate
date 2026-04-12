@@ -10,7 +10,7 @@ export const searchParamsNames = {
 
 export const DEFAULT_BATCH_SIZE = 10
 
-export const keyToCategory: any = {
+export const keyToCategory: Record<string, string> = {
     mv: 'Music Video',
     commercial: 'Commercial',
     narrative: 'Narrative',
