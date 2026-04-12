@@ -1,6 +1,7 @@
-import { z } from 'zod'
-import { ImageMetadata, ScreenSize, VideoPlayer } from './index'
 import { ObjectId } from 'mongodb'
+import { z } from 'zod'
+
+import { ImageMetadata, ScreenSize, VideoPlayer } from './index'
 
 export const VideoSchema = z.object({
     _id: z.instanceof(ObjectId),

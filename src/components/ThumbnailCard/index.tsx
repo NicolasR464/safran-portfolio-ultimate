@@ -1,11 +1,11 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useEffect, useRef, useState } from 'react'
 
-import { urls } from '@/utils/constants/urls'
 import { Thumbnail } from '@/types/apiResponses/portfolio'
+import { urls } from '@/utils/constants/urls'
 
 const ThumbnailCard = ({ metadata }: { metadata: Thumbnail }) => {
     const { title, _id, imageUrl } = metadata

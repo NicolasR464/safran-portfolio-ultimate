@@ -1,22 +1,23 @@
 import React from 'react'
 import {
+    composeRenderProps,
+    FieldError as RACFieldError,
     FieldErrorProps,
     Group,
     GroupProps,
-    InputProps,
-    LabelProps,
-    FieldError as RACFieldError,
     Input as RACInput,
+    InputProps,
     Label as RACLabel,
+    LabelProps,
     Text,
     TextProps,
-    composeRenderProps,
 } from 'react-aria-components'
 import { twMerge } from 'tailwind-merge'
 import { tv } from 'tailwind-variants'
+
 import { composeTailwindRenderProps, focusRing } from '@/utils/ui'
 
-export function Label(props: LabelProps) {
+export const Label = (props: LabelProps) => {
     return (
         <RACLabel
             {...props}
@@ -28,7 +29,7 @@ export function Label(props: LabelProps) {
     )
 }
 
-export function Description(props: TextProps) {
+export const Description = (props: TextProps) => {
     return (
         <Text
             {...props}
@@ -38,7 +39,7 @@ export function Description(props: TextProps) {
     )
 }
 
-export function FieldError(props: FieldErrorProps) {
+export const FieldError = (props: FieldErrorProps) => {
     return (
         <RACFieldError
             {...props}
@@ -72,7 +73,7 @@ export const fieldGroupStyles = tv({
     variants: fieldBorderStyles.variants,
 })
 
-export function FieldGroup(props: GroupProps) {
+export const FieldGroup = (props: GroupProps) => {
     return (
         <Group
             {...props}
@@ -85,13 +86,13 @@ export function FieldGroup(props: GroupProps) {
     )
 }
 
-export function Input(props: InputProps) {
+export const Input = (props: InputProps) => {
     return (
         <RACInput
             {...props}
             className={composeTailwindRenderProps(
                 props.className,
-                'px-3 py-0 min-h-9 flex-1 min-w-0 border-0 outline outline-0 bg-white dark:bg-neutral-900 font-sans text-sm text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-600 dark:placeholder:text-neutral-400 disabled:text-neutral-200 dark:disabled:text-neutral-600 disabled:placeholder:text-neutral-200 dark:disabled:placeholder:text-neutral-600 [-webkit-tap-highlight-color:transparent]',
+                'px-3 py-0 min-h-9 flex-1 min-w-0 border-0 outline-0 bg-white dark:bg-neutral-900 font-sans text-sm text-neutral-800 dark:text-neutral-200 placeholder:text-neutral-600 dark:placeholder:text-neutral-400 disabled:text-neutral-200 dark:disabled:text-neutral-600 disabled:placeholder:text-neutral-200 dark:disabled:placeholder:text-neutral-600 [-webkit-tap-highlight-color:transparent]',
             )}
         />
     )

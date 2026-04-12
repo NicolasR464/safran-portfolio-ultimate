@@ -1,10 +1,10 @@
+import { NextRequest,NextResponse } from 'next/server'
+
 import { ScreenSize } from '@/types/video'
 import { VideoSchema } from '@/types/video/schema'
 import { collections, searchParamsNames } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
-
 import { db } from '@/utils/mongo'
-import { NextResponse, NextRequest } from 'next/server'
 
 /** This returns video properties. */
 export const GET = async (request: NextRequest) => {

@@ -1,9 +1,7 @@
+import ButtonGeneric from '@/components/buttons/ButtonGeneric'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
 import { keyToCategory } from '@/utils/constants'
-
-import { Button as ReactAriaButton } from 'react-aria-components'
-import ButtonGeneric from '../ButtonGeneric'
 
 type ButtonCategoryProperties = {
     category: string

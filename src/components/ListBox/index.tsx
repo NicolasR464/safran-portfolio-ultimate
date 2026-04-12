@@ -1,28 +1,26 @@
 import { Check } from 'lucide-react'
 import {
+    Collection,
+    composeRenderProps,
+    Header,
     ListBox as AriaListBox,
     ListBoxItem as AriaListBoxItem,
-    ListBoxProps as AriaListBoxProps,
-    Collection,
-    Header,
     ListBoxItemProps,
+    ListBoxProps as AriaListBoxProps,
     ListBoxSection,
     SectionProps,
-    composeRenderProps,
 } from 'react-aria-components'
 import { tv } from 'tailwind-variants'
-import { composeTailwindRenderProps, focusRing } from '@/utils/ui'
+
 import { keyToCategory } from '@/utils/constants'
+import { composeTailwindRenderProps, focusRing } from '@/utils/ui'
 
-interface ListBoxProps<T> extends Omit<
-    AriaListBoxProps<T>,
-    'layout' | 'orientation'
-> {}
+type ListBoxProps<T> = Omit<AriaListBoxProps<T>, 'layout' | 'orientation'>
 
-export function ListBox<T extends object>({
+export const ListBox = <T extends object>({
     children,
     ...props
-}: ListBoxProps<T>) {
+}: ListBoxProps<T>) => {
     return (
         <AriaListBox
             {...props}
@@ -70,7 +68,7 @@ export const itemStyles = tv({
     },
 })
 
-export function ListBoxItem(props: ListBoxItemProps) {
+export const ListBoxItem = (props: ListBoxItemProps) => {
     const textValue =
         props.textValue ||
         (typeof props.children === 'string' ? props.children : undefined)
@@ -120,7 +118,7 @@ export const dropdownItemStyles = tv({
     },
 })
 
-export function DropdownItem(props: ListBoxItemProps) {
+export const DropdownItem = (props: ListBoxItemProps) => {
     const textValue =
         props.textValue ||
         (typeof props.children === 'string' ? props.children : undefined)
@@ -147,12 +145,12 @@ export function DropdownItem(props: ListBoxItemProps) {
 
 export interface DropdownSectionProps<T> extends SectionProps<T> {
     title?: string
-    items?: any
+    items?: T[]
 }
 
-export function DropdownSection<T extends object>(
+export const DropdownSection = <T extends object>(
     props: DropdownSectionProps<T>,
-) {
+) => {
     return (
         <ListBoxSection className="first:-mt-[5px] after:block after:h-[5px] after:content-[''] last:after:hidden">
             <Header

@@ -1,12 +1,13 @@
 'use client'
 
+import { Mail } from 'lucide-react'
+import Image from 'next/image'
+
 import ButtonGeneric from '@/components/buttons/ButtonGeneric'
 import ButtonLink from '@/components/buttons/ButtonLink'
+import ButtonsGroup from '@/components/buttons/ButtonsGroup'
 import { localLogos } from '@/utils/constants'
 import { urls } from '@/utils/constants/urls'
-import Image from 'next/image'
-import { Mail } from 'lucide-react'
-import ButtonsGroup from '@/components/buttons/ButtonsGroup'
 
 const handleMailPress = () => {
     window.location.href = `mailto:${process.env.NEXT_PUBLIC_MAIL_ADDRESS}`

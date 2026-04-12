@@ -1,8 +1,10 @@
-import type { Metadata } from 'next'
-import { Poiret_One, Cairo } from 'next/font/google'
 import './globals.css'
-import { Separator } from '@/components/Separator'
+
+import type { Metadata } from 'next'
+import { Cairo, Poiret_One } from 'next/font/google'
 import Link from 'next/link'
+
+import { Separator } from '@/components/Separator'
 import StagingCapsule from '@/components/StagingCapsule'
 
 // Main Font

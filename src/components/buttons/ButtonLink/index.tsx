@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { ReactNode } from 'react'
-import ButtonGeneric from '../ButtonGeneric'
+
+import ButtonGeneric from '@/components/buttons/ButtonGeneric'
 
 type ButtonProperties = {
     text?: string

@@ -1,5 +1,6 @@
-import { localLogos } from '@/utils/constants'
 import Image from 'next/image'
+
+import { localLogos } from '@/utils/constants'
 
 export default function LoaderCinemaReel({ size = 50 }): React.ReactElement {
     return (

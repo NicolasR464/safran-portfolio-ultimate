@@ -6,9 +6,12 @@
         "dev": "next dev --turbopack",
         "build": "next build --turbopack",
         "start": "next start",
-        "lint": "eslint",
+        "typecheck": "tsc --noEmit",
+        "lint": "oxlint",
         "knip": "knip",
-        "typecheck": "tsc --noEmit"
+        "test": "vitest",
+        "playwright": "playwright test",
+        "shield": "pnpm typecheck && pnpm lint && pnpm knip && pnpm test && pnpm playwright"
     },
     "dependencies": {
         "immer": "^11.1.4",
@@ -27,15 +30,19 @@
         "zustand": "^5.0.11"
     },
     "devDependencies": {
-        "@eslint/eslintrc": "^3",
+        "@oxlint/migrate": "^1.59.0",
         "@tailwindcss/postcss": "^4",
         "@types/node": "^20.19.13",
         "@types/react": "^19",
         "@types/react-dom": "^19",
-        "eslint": "^9",
+        "eslint": "^9.39.1",
         "eslint-config-next": "16.1.3",
+        "eslint-import-resolver-typescript": "^4.4.4",
+        "eslint-plugin-import": "^2.32.0",
+        "eslint-plugin-prefer-arrow-functions": "^3.9.1",
         "knip": "^5.86.0",
+        "oxlint": "^1.59.0",
         "tailwindcss": "^4",
-        "typescript": "^5.9.2"
+        "typescript": "^6.0.2"
     }
 }

@@ -1,27 +1,27 @@
 import { ChevronUp } from 'lucide-react'
 import React from 'react'
 import {
-    Select as AriaSelect,
-    SelectProps as AriaSelectProps,
     Button,
     ListBox,
     ListBoxItemProps,
+    Select as AriaSelect,
+    SelectProps as AriaSelectProps,
     SelectValue,
     ValidationResult,
 } from 'react-aria-components'
 import { tv } from 'tailwind-variants'
+
 import { Description, FieldError, Label } from '@/components/Field'
 import {
     DropdownItem,
     DropdownSection,
     DropdownSectionProps,
 } from '@/components/ListBox'
-
-import { composeTailwindRenderProps, focusRing } from '@/utils/ui'
 import { Popover } from '@/components/PopOver'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
 import { keyToCategory } from '@/utils/constants'
+import { composeTailwindRenderProps, focusRing } from '@/utils/ui'
 
 const styles = tv({
     extend: focusRing,
@@ -63,7 +63,7 @@ export interface SelectProps<
     children: React.ReactNode | ((item: T) => React.ReactNode)
 }
 
-export function Select<
+export const Select = <
     T extends object,
     M extends 'single' | 'multiple' = 'single',
 >({
@@ -73,7 +73,7 @@ export function Select<
     children,
     items,
     ...props
-}: SelectProps<T, M>) {
+}: SelectProps<T, M>) => {
     return (
         <AriaSelect
             {...props}
@@ -111,7 +111,7 @@ type SelectItemProps = ListBoxItemProps & {
     category: string
 }
 
-export function SelectItem({ category, ...props }: SelectItemProps) {
+export const SelectItem = ({ category, ...props }: SelectItemProps) => {
     const setActiveCategory = useCategoriesStore(
         (state) => state.setActiveCategory,
     )
@@ -150,8 +150,8 @@ export function SelectItem({ category, ...props }: SelectItemProps) {
     return <DropdownItem onPress={scrollToCategory} {...props} />
 }
 
-export function SelectSection<T extends object>(
+export const SelectSection = <T extends object>(
     props: DropdownSectionProps<T>,
-) {
+) => {
     return <DropdownSection {...props} />
 }

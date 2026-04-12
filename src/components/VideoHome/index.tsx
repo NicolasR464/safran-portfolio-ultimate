@@ -1,15 +1,15 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
+import LoaderCinemaReel from '@/components/LoaderCinemaReel'
+import VideoPlr from '@/components/VideoPlr'
 import useIsMobile from '@/hooks/useIsMobile'
 import { ScreenSize } from '@/types/video'
 import { VideoSchema } from '@/types/video/schema'
 import { searchParamsNames } from '@/utils/constants'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
-
 import { apiClientSide } from '@/utils/ky'
-import { useEffect, useState } from 'react'
-import LoaderCinemaReel from '@/components/LoaderCinemaReel'
-import VideoPlr from '@/components/VideoPlr'
 
 /** Video displayed on the home page */
 const VideoHome = () => {

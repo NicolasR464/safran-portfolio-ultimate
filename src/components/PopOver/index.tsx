@@ -1,10 +1,10 @@
+import React from 'react'
 import {
+    composeRenderProps,
     OverlayArrow,
     Popover as AriaPopover,
     PopoverProps as AriaPopoverProps,
-    composeRenderProps,
 } from 'react-aria-components'
-import React from 'react'
 import { tv } from 'tailwind-variants'
 
 export interface PopoverProps extends Omit<AriaPopoverProps, 'children'> {
@@ -24,13 +24,14 @@ const styles = tv({
     },
 })
 
-export function Popover({
+export const Popover = ({
     children,
     showArrow,
     className,
     ...props
-}: PopoverProps) {
-    let offset = showArrow ? 12 : 8
+}: PopoverProps) => {
+    const offset = showArrow ? 12 : 8
+
     return (
         <AriaPopover
             offset={offset}
