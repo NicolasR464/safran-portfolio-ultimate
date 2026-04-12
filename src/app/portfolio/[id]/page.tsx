@@ -62,7 +62,6 @@ const PortfolioSingle = async ({
                         <iframe
                             src={embedSrc}
                             title={video.title}
-                            allow='autoplay; fullscreen; picture-in-picture'
                             allowFullScreen
                             className='absolute inset-0 h-full w-full'
                         />

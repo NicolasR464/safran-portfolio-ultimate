@@ -1,5 +1,10 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "tags": ["-lintignore"],
-  "ignoreDependencies": ["eslint-plugin-prefer-arrow-functions"]
+  "ignoreDependencies": ["eslint-plugin-prefer-arrow-functions"],
+  "vitest": {
+    "config": [],
+    "entry": ["src/**/*.test.ts", "src/**/*.test.tsx"]
+  },
+  "ignore": ["vitest.config.ts"]
 }
