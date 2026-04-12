@@ -17,7 +17,7 @@ const clientPromise =
     global._mongoClientPromise ??
     (global._mongoClientPromise = client.connect())
 
-export const getMongoClient = async (): Promise<MongoClient> => {
+const getMongoClient = async (): Promise<MongoClient> => {
     return clientPromise
 }
 
@@ -25,5 +25,3 @@ export const getDb = async (name?: string) => {
     const c = await getMongoClient()
     return c.db(name ?? DEFAULT_DB)
 }
-
-export const db = getDb

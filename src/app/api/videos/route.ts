@@ -1,14 +1,14 @@
-import { NextRequest,NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 import { ScreenSize } from '@/types/video'
 import { VideoSchema } from '@/types/video/schema'
 import { collections, searchParamsNames } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
-import { db } from '@/utils/mongo'
+import { getDb } from '@/utils/mongo'
 
 /** This returns video properties. */
 export const GET = async (request: NextRequest) => {
-    const database = await db()
+    const database = await getDb()
 
     if (!database) {
         return NextResponse.json(null, {

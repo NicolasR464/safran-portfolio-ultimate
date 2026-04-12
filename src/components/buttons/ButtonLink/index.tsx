@@ -19,7 +19,10 @@ const ButtonLink = ({
     target = '_self',
 }: ButtonProperties) => {
     return (
-        <Link href={href} target={target}>
+        <Link
+            href={href}
+            target={target}
+        >
             <ButtonGeneric>
                 {Logo && Logo}
 

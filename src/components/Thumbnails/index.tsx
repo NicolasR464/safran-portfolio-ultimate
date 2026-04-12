@@ -114,7 +114,7 @@ const Thumbnails = () => {
     const lastCategory = thumbnailsByCategories.at(-1)?.category
 
     return (
-        <div className="mb-32">
+        <div className='mb-32'>
             {thumbnailsByCategories &&
                 thumbnailsByCategories.map((thumbnailsCategory, index) => (
                     <div
@@ -134,7 +134,7 @@ const Thumbnails = () => {
                         >
                             <span>
                                 <Image
-                                    className="invert"
+                                    className='invert'
                                     src={localLogos.reel.SRC}
                                     alt={localLogos.reel.ALT}
                                     width={25}
@@ -142,13 +142,13 @@ const Thumbnails = () => {
                                 />
                             </span>
 
-                            <h2 className="mx-2 text-white text-xl font-mono">
+                            <h2 className='mx-2 text-white text-xl font-mono'>
                                 {keyToCategory[thumbnailsCategory.category]}
                             </h2>
 
                             <span>
                                 <Image
-                                    className="invert scale-x-[-1]"
+                                    className='invert scale-x-[-1]'
                                     src={localLogos.reel.SRC}
                                     alt={localLogos.reel.ALT}
                                     width={25}
@@ -157,7 +157,7 @@ const Thumbnails = () => {
                             </span>
                         </div>
 
-                        <div className="flex flex-wrap justify-center items-stretch">
+                        <div className='flex flex-wrap justify-center items-stretch'>
                             {thumbnailsCategory.items.map((item) => (
                                 <ThumbnailCard
                                     metadata={item}

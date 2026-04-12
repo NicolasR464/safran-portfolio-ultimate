@@ -12,7 +12,7 @@ import {
     searchParamsNames,
 } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
-import { db } from '@/utils/mongo'
+import { getDb } from '@/utils/mongo'
 import { thumbnailsPipeline } from '@/utils/mongoPipelines/portfolio/thumbnails'
 
 /** This returns the thumbnails info for the portfolio main page. */
@@ -28,7 +28,7 @@ export const GET = async (request: NextRequest) => {
         })
     }
 
-    const database = await db()
+    const database = await getDb()
 
     if (!database) {
         return NextResponse.json(null, {

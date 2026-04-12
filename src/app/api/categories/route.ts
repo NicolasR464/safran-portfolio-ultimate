@@ -4,11 +4,11 @@ import { CategoriesResponse } from '@/types/apiResponses/portfolio'
 import { VideoSchema } from '@/types/video/schema'
 import { collections } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
-import { db } from '@/utils/mongo'
+import { getDb } from '@/utils/mongo'
 
 /** This returns the list portfolio categories. */
 export const GET = async () => {
-    const database = await db()
+    const database = await getDb()
 
     if (!database) {
         return NextResponse.json(null, {

@@ -1,4 +1,4 @@
 {
-    "oxc.enable.oxlint": true,
-    "eslint.enable": false
+  "oxc.enable.oxlint": true,
+  "eslint.enable": false
 }

@@ -18,14 +18,20 @@ const NavigationsHome = () => {
     return (
         <ButtonsGroup>
             {/* Portfolio */}
-            <ButtonLink text="Portfolio" href={urls.visitor.PORTFOLIO} />
+            <ButtonLink
+                text='Portfolio'
+                href={urls.visitor.PORTFOLIO}
+            />
 
             {/* About */}
-            <ButtonLink text="About" href={urls.visitor.ABOUT} />
+            <ButtonLink
+                text='About'
+                href={urls.visitor.ABOUT}
+            />
 
             {/* Mail */}
             <ButtonGeneric onPress={handleMailPress}>
-                <Mail className="h-7 w-7 text-white" />
+                <Mail className='h-7 w-7 text-white' />
             </ButtonGeneric>
 
             {/* Instagram */}
@@ -39,7 +45,7 @@ const NavigationsHome = () => {
                     />
                 }
                 href={urls.INSTAGRAM}
-                target="_blank"
+                target='_blank'
             />
         </ButtonsGroup>
     )

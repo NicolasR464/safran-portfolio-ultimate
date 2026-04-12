@@ -7,7 +7,7 @@ import {
 } from 'react-aria-components'
 import { tv } from 'tailwind-variants'
 
-export interface PopoverProps extends Omit<AriaPopoverProps, 'children'> {
+interface PopoverProps extends Omit<AriaPopoverProps, 'children'> {
     showArrow?: boolean
     children: React.ReactNode
 }
@@ -41,14 +41,14 @@ export const Popover = ({
             )}
         >
             {showArrow && (
-                <OverlayArrow className="group">
+                <OverlayArrow className='group'>
                     <svg
                         width={12}
                         height={12}
-                        viewBox="0 0 12 12"
-                        className="block fill-white dark:fill-[#1f1f21] forced-colors:fill-[Canvas] stroke-1 stroke-black/10 dark:stroke-neutral-700 forced-colors:stroke-[ButtonBorder] group-placement-bottom:rotate-180 group-placement-left:-rotate-90 group-placement-right:rotate-90"
+                        viewBox='0 0 12 12'
+                        className='block fill-white dark:fill-[#1f1f21] forced-colors:fill-[Canvas] stroke-1 stroke-black/10 dark:stroke-neutral-700 forced-colors:stroke-[ButtonBorder] group-placement-bottom:rotate-180 group-placement-left:-rotate-90 group-placement-right:rotate-90'
                     >
-                        <path d="M0 0 L6 6 L12 0" />
+                        <path d='M0 0 L6 6 L12 0' />
                     </svg>
                 </OverlayArrow>
             )}

@@ -9,7 +9,7 @@ const VideoPlr = ({ videoID }: { videoID: VideoSchema['vidId'] }) => {
             loop
             muted
             src={videoID}
-            className="w-full"
+            className='w-full'
         />
     )
 }

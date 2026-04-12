@@ -12,11 +12,7 @@ import {
 import { tv } from 'tailwind-variants'
 
 import { Description, FieldError, Label } from '@/components/Field'
-import {
-    DropdownItem,
-    DropdownSection,
-    DropdownSectionProps,
-} from '@/components/ListBox'
+import { DropdownItem } from '@/components/ListBox'
 import { Popover } from '@/components/PopOver'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
@@ -52,7 +48,7 @@ const styles = tv({
     },
 })
 
-export interface SelectProps<
+interface SelectProps<
     T extends object,
     M extends 'single' | 'multiple',
 > extends Omit<AriaSelectProps<T, M>, 'children'> {
@@ -85,7 +81,7 @@ export const Select = <
             {label && <Label>{label}</Label>}
 
             <Button className={styles}>
-                <SelectValue className="flex-1 text-sm text-white/80">
+                <SelectValue className='flex-1 text-sm text-white/80'>
                     {({ selectedText, defaultChildren }) =>
                         keyToCategory[selectedText] || defaultChildren
                     }
@@ -93,14 +89,14 @@ export const Select = <
 
                 <ChevronUp
                     aria-hidden
-                    className="h-4 w-4 shrink-0 text-white/70 transition-transform duration-700"
+                    className='h-4 w-4 shrink-0 text-white/70 transition-transform duration-700'
                 />
             </Button>
 
             {description && <Description>{description}</Description>}
             <FieldError>{errorMessage}</FieldError>
 
-            <Popover className="min-w-(--trigger-width)">
+            <Popover className='min-w-(--trigger-width)'>
                 <ListBox items={items}>{children}</ListBox>
             </Popover>
         </AriaSelect>
@@ -147,11 +143,10 @@ export const SelectItem = ({ category, ...props }: SelectItemProps) => {
         setActiveCategory(category)
     }
 
-    return <DropdownItem onPress={scrollToCategory} {...props} />
-}
-
-export const SelectSection = <T extends object>(
-    props: DropdownSectionProps<T>,
-) => {
-    return <DropdownSection {...props} />
+    return (
+        <DropdownItem
+            onPress={scrollToCategory}
+            {...props}
+        />
+    )
 }
