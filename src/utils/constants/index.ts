@@ -1,5 +1,6 @@
 export const collections = {
     VIDEOS: 'videos',
+    ABOUT: 'about',
 }
 
 export const searchParamsNames = {
