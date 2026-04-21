@@ -1,6 +1,20 @@
+import { AboutSchema } from '@/types/about'
+import { collections } from '@/utils/constants'
+import { getDb } from '@/utils/mongo'
 import Image from 'next/image'
+import { notFound } from 'next/navigation'
 
-const About = () => {
+const About = async () => {
+    const database = await getDb()
+
+    const aboutCollection = database.collection<AboutSchema>(collections.ABOUT)
+
+    const aboutData = await aboutCollection.findOne()
+
+    if (!aboutData) {
+        notFound()
+    }
+
     return (
         <div className='flex justify-center w-screen text-white font-mono'>
             <div className='relative isolate'>
@@ -21,34 +35,17 @@ const About = () => {
                             Cinematographer · Visual Storyteller
                         </p>
 
-                        <div className='mt-10 max-w-2xl space-y-6 text-base leading-8 text-white/78 md:text-lg md:leading-9'>
-                            Hi, I am Safran Lecuivre, a cinematographer of
-                            French Guyanese and Belgian origins. At the age of
-                            18, I was a photographer for the AFP and South China
-                            Morning Post (local most popular Anglo-Saxon
-                            newspaper in HK).
-                            <br />
-                            The year after I went on to study at an American
-                            film academy in Cebu, Philippines, and back to Hong
-                            Kong, I crafted my skills on a wide variety of
-                            projects in advertising, fiction, and documentaries;
-                            working with production houses as well as developing
-                            personal projects alongside talented directors.
-                            <br />
-                            Early in 2020, just before any sign of global
-                            pandemic, the urge to explore new professional
-                            horizons and to escape a worsening political
-                            situation in Hong Kong took me to Paris .
-                            <br />
-                            Since then, I have found myself shooting commercials
-                            for such clients as Nike, Durex, Vacheron
-                            Constantin, Christie’s etc.. as well as fiction,
-                            music videos, dance projects, fictional
-                            documentaries that have taken me all over Europe.
-                            <br />
-                            My biggest care and attention is oriented towards
-                            lighting and movement. It’s my passion for Kungfu
-                            and music that give me an urge to dance my films.
+                        <div className='mt-10 max-w-2xl text-base text-white/80 md:text-lg'>
+                            {aboutData.text
+                                .split('\n\n')
+                                .map((paragraph, index) => (
+                                    <p
+                                        key={index}
+                                        className='mb-4 leading-7 md:leading-8'
+                                    >
+                                        {paragraph.trim()}
+                                    </p>
+                                ))}
                         </div>
                     </div>
 
@@ -61,7 +58,7 @@ const About = () => {
 
                                 <div className='relative aspect-[4/5] w-full lg:h-full lg:aspect-auto'>
                                     <Image
-                                        src='https://res.cloudinary.com/niikkoo/image/upload/v1746193290/saf_portfolio/about/iypwlpe12fyovmo0inqg.jpg'
+                                        src={aboutData.image.url}
                                         alt='Portrait of Safran Lecuivre'
                                         fill
                                         priority
