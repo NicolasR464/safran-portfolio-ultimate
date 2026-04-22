@@ -25,7 +25,7 @@ const VideoHome = () => {
                 : ScreenSize.enum['16:9']
 
             const apiResponse = await apiClientSide<VideoSchema['vidId']>(
-                `${localApiEndpoints.VIDEOS}?${searchParamsNames.SCREEN_SIZE}=${screenSize}`,
+                `${localApiEndpoints.PROJECTS}?${searchParamsNames.SCREEN_SIZE}=${screenSize}`,
             )
 
             setIsLoading(false)

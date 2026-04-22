@@ -1,5 +1,5 @@
 export const collections = {
-    VIDEOS: 'videos',
+    PROJECTS: 'projects',
     ABOUT: 'about',
 }
 

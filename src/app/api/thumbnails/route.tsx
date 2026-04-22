@@ -38,7 +38,7 @@ export const GET = async (request: NextRequest) => {
     }
 
     const videosCollection = database.collection<VideoSchema>(
-        collections.VIDEOS,
+        collections.PROJECTS,
     )
 
     const totalDocuments = await videosCollection.countDocuments()

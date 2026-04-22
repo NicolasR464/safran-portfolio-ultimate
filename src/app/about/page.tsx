@@ -1,4 +1,4 @@
-import { AboutSchema } from '@/types/about'
+import { AboutSchema } from '@/types/about/schema'
 import { collections } from '@/utils/constants'
 import { getDb } from '@/utils/mongo'
 import Image from 'next/image'

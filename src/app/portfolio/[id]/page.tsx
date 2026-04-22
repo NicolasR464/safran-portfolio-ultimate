@@ -3,15 +3,12 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 
 import ButtonBack from '@/components/buttons/ButtonBack'
-import { VideoSchema } from '@/types/video/schema'
+import { ProjectSchema } from '@/types/projects/schema'
 import { collections } from '@/utils/constants'
 import { getDb } from '@/utils/mongo'
+import { embedSrcBuilder } from '@/utils'
 
-const PortfolioSingle = async ({
-    params,
-}: {
-    params: Promise<{ id: string }>
-}) => {
+const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params
 
     if (!ObjectId.isValid(id)) {
@@ -20,32 +17,32 @@ const PortfolioSingle = async ({
 
     const database = await getDb()
 
-    const videosCollection = database.collection<VideoSchema>(
-        collections.VIDEOS,
+    const projectsCollection = database.collection<ProjectSchema>(
+        collections.PROJECTS,
     )
 
-    const video = await videosCollection.findOne({
+    const project = await projectsCollection.findOne({
         _id: new ObjectId(id),
     })
 
-    if (!video) {
+    if (!project) {
         notFound()
     }
 
-    const embedSrc =
-        video.player === 'vimeo'
-            ? `https://player.vimeo.com/video/${video.vidId}`
-            : `https://www.youtube.com/embed/${video.vidId}`
+    const embedSrc = project.video
+        ? embedSrcBuilder(project.video.player, project.video.videoId)
+        : ''
 
     return (
         <div className='relative h-[calc(100dvh-var(--header-height))] overflow-hidden bg-black text-white'>
             <ButtonBack />
 
             <div className='fixed inset-0'>
-                {!!video.image && !!video.title && (
+                {/* Image Background */}
+                {!!project.images && !!project.title && (
                     <Image
-                        src={video.image.url}
-                        alt={video.title}
+                        src={project.images[0].url}
+                        alt={project.title}
                         fill
                         priority
                         className='object-cover object-center opacity-70'
@@ -57,24 +54,47 @@ const PortfolioSingle = async ({
             </div>
 
             <section className='relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col items-center justify-center gap-4 overflow-hidden p-4'>
-                <div className='flex w-full justify-center'>
-                    <div className='relative aspect-video w-full max-w-[min(100%,calc(62dvh*16/9))] overflow-hidden border border-white/40 bg-black/35 shadow-2xl backdrop-blur-[2px]'>
-                        <iframe
-                            src={embedSrc}
-                            title={video.title}
-                            allowFullScreen
-                            className='absolute inset-0 h-full w-full'
-                        />
+                {/* Video */}
+                {embedSrc && (
+                    <div className='flex w-full justify-center'>
+                        <div className='relative aspect-video w-full max-w-[min(100%,calc(62dvh*16/9))] overflow-hidden border border-white/40 bg-black/35 shadow-2xl backdrop-blur-[2px]'>
+                            <iframe
+                                src={embedSrc}
+                                title={project.title}
+                                allowFullScreen
+                                className='absolute inset-0 h-full w-full'
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
 
+                {/* Image Placeholder */}
+                {!embedSrc && !!project.images && (
+                    <div className='flex w-full justify-center'>
+                        <div className='relative aspect-video w-full max-w-[min(100%,calc(62dvh*16/9))] overflow-hidden border border-white/40 bg-black/35 shadow-2xl backdrop-blur-[2px]'>
+                            <Image
+                                src={project.images[0].url}
+                                alt={project.title || 'Project Image'}
+                                fill
+                                priority
+                                className='object-cover object-center'
+                            />
+                        </div>
+                    </div>
+                )}
+
+                {/* Project Description */}
                 <div className='flex w-full max-w-3xl flex-col items-center text-center'>
                     <h1 className='text-3xl font-black font-mono tracking-tight md:text-5xl'>
-                        {video.title}
+                        {project.title}
                     </h1>
 
+                    <p className='mt-4 text-base text-white/80'>
+                        {project.description}
+                    </p>
+
                     <p className='mt-2 text-sm uppercase tracking-[0.3em] text-white/60'>
-                        {video.category}
+                        {project.category}
                     </p>
                 </div>
             </section>
@@ -82,4 +102,4 @@ const PortfolioSingle = async ({
     )
 }
 
-export default PortfolioSingle
+export default Project

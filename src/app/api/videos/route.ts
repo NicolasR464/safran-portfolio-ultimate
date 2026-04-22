@@ -18,7 +18,7 @@ export const GET = async (request: NextRequest) => {
     }
 
     const videosCollection = database.collection<VideoSchema>(
-        collections.VIDEOS,
+        collections.PROJECTS,
     )
 
     const searchParams = request.nextUrl.searchParams
@@ -41,7 +41,7 @@ export const GET = async (request: NextRequest) => {
             })
         }
 
-        return NextResponse.json<VideoSchema['vidId']>(video.vidId)
+        return NextResponse.json<VideoSchema['videoId']>(video.videoId)
     }
 
     return NextResponse.json(null, {

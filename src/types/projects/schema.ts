@@ -1,19 +1,19 @@
 import { ObjectId } from 'mongodb'
 import { z } from 'zod'
 
-import { ImageMetadata, ScreenSize, VideoPlayer } from './index'
+import { ImageMetadata, ScreenSize, VideoMetadata } from './index'
 
-export const VideoSchema = z.object({
+export const ProjectSchema = z.object({
     _id: z.instanceof(ObjectId),
     title: z.string().min(1).optional(),
-    vidId: z.string().min(1),
-    player: VideoPlayer,
+    description: z.string().min(1).optional(),
+    video: VideoMetadata.optional(),
     screenSize: ScreenSize,
     category: z.string().min(1),
-    image: ImageMetadata.optional(),
+    images: ImageMetadata.array().optional(),
     order: z.number().int().nonnegative().optional(),
     isPublicRated: z.boolean().optional(),
     isEmbeddable: z.boolean().optional(),
 })
 
-export type VideoSchema = z.infer<typeof VideoSchema>
+export type ProjectSchema = z.infer<typeof ProjectSchema>

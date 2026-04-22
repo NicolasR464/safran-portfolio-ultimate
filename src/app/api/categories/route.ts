@@ -18,7 +18,7 @@ export const GET = async () => {
     }
 
     const videosCollection = database.collection<VideoSchema>(
-        collections.VIDEOS,
+        collections.PROJECTS,
     )
 
     const categories = await videosCollection.distinct('category', {
