@@ -19,6 +19,8 @@
     "shield": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm knip && pnpm test:unit"
   },
   "dependencies": {
+    "embla-carousel": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
     "immer": "11.1.4",
     "ky": "1.14.3",
     "lucide-react": "0.577.0",
