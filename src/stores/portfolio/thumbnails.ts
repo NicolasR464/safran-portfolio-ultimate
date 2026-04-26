@@ -5,22 +5,22 @@ import {
     ThumbnailsCategory,
     ThumbnailsResponse,
 } from '@/types/apiResponses/portfolio'
-import { VideoSchema } from '@/types/video/schema'
+import { ProjectSchema } from '@/types/project/schema'
 import { searchParamsNames } from '@/utils/constants'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
 
 type ThumbnailsStore = {
     thumbnailsByCategories: ThumbnailsCategory[]
-    categoriesFetched: VideoSchema['category'][]
+    categoriesFetched: ProjectSchema['category'][]
     batchNumber: number
     isLoading: boolean
     hasMore: boolean
     initialized: boolean
     error: boolean
     isFetchingToClickedCategory: boolean
-    fetchNextBatch: (category?: VideoSchema['category']) => Promise<void>
-    fetchNewCategory: (category: VideoSchema['category']) => Promise<void>
+    fetchNextBatch: (category?: ProjectSchema['category']) => Promise<void>
+    fetchNewCategory: (category: ProjectSchema['category']) => Promise<void>
     reset: () => void
 }
 
@@ -108,7 +108,7 @@ export const useThumbnailsStore = create<ThumbnailsStore>()(
             })
         },
 
-        fetchNewCategory: async (category: VideoSchema['category']) => {
+        fetchNewCategory: async (category: ProjectSchema['category']) => {
             set((state) => {
                 state.isFetchingToClickedCategory = true
             })

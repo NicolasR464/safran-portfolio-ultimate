@@ -38,7 +38,7 @@ const About = async () => {
                         <div className='mt-10 max-w-2xl text-base text-white/80 md:text-lg'>
                             {aboutData.text
                                 .split('\n\n')
-                                .map((paragraph, index) => (
+                                .map((paragraph: string, index: number) => (
                                     <p
                                         key={index}
                                         className='mb-4 leading-7 md:leading-8'

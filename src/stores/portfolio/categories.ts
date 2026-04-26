@@ -2,17 +2,17 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
 import { CategoriesResponse } from '@/types/apiResponses/portfolio'
-import { VideoSchema } from '@/types/video/schema'
+import { ProjectSchema } from '@/types/project/schema'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
 
 type CategoriesStore = {
-    categories: VideoSchema['category'][]
+    categories: ProjectSchema['category'][]
     isLoading: boolean
     initialized: boolean
     error: boolean
-    activeCategory: VideoSchema['category']
-    setActiveCategory: (category: VideoSchema['category']) => void
+    activeCategory: ProjectSchema['category']
+    setActiveCategory: (category: ProjectSchema['category']) => void
     fetchCategories: () => Promise<void>
 }
 
@@ -47,7 +47,7 @@ export const useCategoriesStore = create<CategoriesStore>()(
             })
         },
 
-        setActiveCategory: (category: VideoSchema['category']) => {
+        setActiveCategory: (category: ProjectSchema['category']) => {
             set((state) => {
                 state.activeCategory = category
             })

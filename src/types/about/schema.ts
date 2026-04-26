@@ -1,5 +1,5 @@
 import z from 'zod'
-import { ImageMetadata } from '@/types/video'
+import { ImageMetadata } from '@/types/project'
 import { ObjectId } from 'mongodb'
 
 export const AboutSchema = z.object({
