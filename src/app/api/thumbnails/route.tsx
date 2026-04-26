@@ -5,7 +5,7 @@ import {
     ThumbnailsCategory,
     ThumbnailsResponse,
 } from '@/types/apiResponses/portfolio'
-import { VideoSchema } from '@/types/video/schema'
+import { ProjectSchema } from '@/types/project/schema'
 import {
     collections,
     DEFAULT_BATCH_SIZE,
@@ -37,13 +37,13 @@ export const GET = async (request: NextRequest) => {
         })
     }
 
-    const videosCollection = database.collection<VideoSchema>(
+    const projectsCollection = database.collection<ProjectSchema>(
         collections.PROJECTS,
     )
 
-    const totalDocuments = await videosCollection.countDocuments()
+    const totalDocuments = await projectsCollection.countDocuments()
 
-    const results = await videosCollection
+    const results = await projectsCollection
         .aggregate<ThumbnailsCategory>(
             thumbnailsPipeline(batchNumber, DEFAULT_BATCH_SIZE),
         )

@@ -12,7 +12,7 @@ export const searchParamsNames = {
 export const DEFAULT_BATCH_SIZE = 10
 
 export const keyToCategory: Record<string, string> = {
-    mv: 'Music Video',
+    music_video: 'Music Video',
     commercial: 'Commercial',
     narrative: 'Narrative',
     reel: 'Reel',

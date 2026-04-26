@@ -8,7 +8,7 @@ import { Separator } from '@/components/Separator'
 import ThumbnailCard from '@/components/ThumbnailCard'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
-import { VideoSchema } from '@/types/video/schema'
+import { ProjectSchema } from '@/types/project/schema'
 import { keyToCategory, localLogos } from '@/utils/constants'
 
 const Thumbnails = () => {
@@ -64,8 +64,8 @@ const Thumbnails = () => {
         const updateMiddleCategory = () => {
             const viewportMiddle = window.innerHeight / 2
 
-            let currentCategory: VideoSchema['category'] | null = null
-            let closestCategory: VideoSchema['category'] | null = null
+            let currentCategory: ProjectSchema['category'] | null = null
+            let closestCategory: ProjectSchema['category'] | null = null
             let closestDistance = Infinity
 
             for (const [category, element] of Object.entries(

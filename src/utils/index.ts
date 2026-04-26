@@ -1,9 +1,9 @@
-import { VideoPlayerType } from '@/types/projects'
+import { VideoPlayerType } from '@/types/project'
 
 export const embedSrcBuilder = (
     videoType: VideoPlayerType,
     videoId: string,
-) => {
+): string => {
     switch (videoType) {
         case VideoPlayerType.enum.youtube:
             return `https://www.youtube.com/embed/${videoId}`

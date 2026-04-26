@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { ScreenSize } from '@/types/video'
-import { VideoSchema } from '@/types/video/schema'
+import { ScreenSize } from '@/types/project'
+import { ProjectSchema } from '@/types/project/schema'
 import { collections, searchParamsNames } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
 import { getDb } from '@/utils/mongo'
 
-/** This returns video properties. */
+/** This returns video properties for the Home page. */
 export const GET = async (request: NextRequest) => {
     const database = await getDb()
 
@@ -17,7 +17,7 @@ export const GET = async (request: NextRequest) => {
         })
     }
 
-    const videosCollection = database.collection<VideoSchema>(
+    const projectsCollection = database.collection<ProjectSchema>(
         collections.PROJECTS,
     )
 
@@ -29,23 +29,23 @@ export const GET = async (request: NextRequest) => {
 
     // If screen size is provided, filter by it.
     if (screenSize.success) {
-        const video = await videosCollection.findOne(
-            { screenSize: screenSize.data },
-            { projection: { vidId: 1, _id: 0 } },
+        const project = await projectsCollection.findOne<ProjectSchema>(
+            { 'video.screenSize': screenSize.data },
+            { projection: { 'video.videoId': 1, _id: 0 } },
         )
 
-        if (!video) {
+        if (!project) {
             return NextResponse.json(null, {
                 status: 404,
                 statusText: backErrors.VIDEO_NOT_FOUND,
             })
         }
 
-        return NextResponse.json<VideoSchema['videoId']>(video.videoId)
+        return NextResponse.json<ProjectSchema['video']>(project.video)
     }
 
     return NextResponse.json(null, {
-        status: 404,
-        statusText: backErrors.VIDEOS_NOT_FOUND,
+        status: 403,
+        statusText: backErrors.INVALID_SCREEN_SIZE,
     })
 }
