@@ -9,6 +9,7 @@ import { getDb } from '@/utils/mongo'
 import { embedSrcBuilder } from '@/utils'
 import { ImageCategory } from '@/types/project'
 import ImagesCarousel from '@/components/ImagesCarousel'
+import DialogTrigger from '@/components/Modal/DialogTrigger'
 
 /** Single Project page displaying a project's details. */
 const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
@@ -94,8 +95,10 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </div>
                 )}
 
+                <DialogTrigger />
+
                 {/* Carousel Images */}
-                {imagesCarousel?.length && (
+                {!!imagesCarousel?.length && (
                     <ImagesCarousel
                         imagesCarousel={imagesCarousel}
                         isVideo={!!embedSrc}
