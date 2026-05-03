@@ -7,8 +7,7 @@ import { ProjectSchema } from '@/types/project/schema'
 import { collections, keyToCategory } from '@/utils/constants'
 import { getDb } from '@/utils/mongo'
 import { embedSrcBuilder } from '@/utils'
-import { ImageCategory, ImageMetadata } from '@/types/project'
-import ImagesCarousel from '@/components/ImagesCarousel'
+import { ImageCategory } from '@/types/project'
 import ModalContainer from '@/components/Modal/ModalContainer'
 
 /** Single Project page displaying a project's details. */
@@ -45,9 +44,10 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
         (img) => img.type === ImageCategory.enum.thumbnail,
     )
 
-    const imagesCarousel: ImageMetadata[] = project.images?.filter(
-        (img) => img.type === ImageCategory.enum.carousel,
-    )
+    const imagesCarousel =
+        project.images?.filter(
+            (img) => img.type === ImageCategory.enum.carousel,
+        ) ?? []
 
     return (
         <div className='relative h-[calc(100dvh-var(--header-height))] bg-black text-white'>

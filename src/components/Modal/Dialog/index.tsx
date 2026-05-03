@@ -1,10 +1,6 @@
 'use client'
 
-import {
-    type DialogProps,
-    Dialog as RACDialog,
-    Heading,
-} from 'react-aria-components'
+import { type DialogProps, Dialog as RACDialog } from 'react-aria-components'
 import { twMerge } from 'tailwind-merge'
 
 const Dialog = (props: DialogProps) => {
@@ -18,7 +14,5 @@ const Dialog = (props: DialogProps) => {
         />
     )
 }
-
-export { Heading }
 
 export default Dialog
