@@ -95,11 +95,6 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </div>
                 )}
 
-                {/* Carousel Images */}
-                {!!imagesCarousel?.length && (
-                    <ModalContainer images={imagesCarousel} />
-                )}
-
                 {/* Image Placeholder (if no video nor carousel images) */}
                 {!embedSrc && imageThumbnail && !imagesCarousel?.length && (
                     <div className='flex w-full justify-center'>
@@ -129,6 +124,11 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                         {keyToCategory[project.category]}
                     </p>
                 </div>
+
+                {/* Carousel Images */}
+                {!!imagesCarousel?.length && (
+                    <ModalContainer images={imagesCarousel} />
+                )}
             </section>
         </div>
     )
