@@ -7,9 +7,9 @@ import { ProjectSchema } from '@/types/project/schema'
 import { collections, keyToCategory } from '@/utils/constants'
 import { getDb } from '@/utils/mongo'
 import { embedSrcBuilder } from '@/utils'
-import { ImageCategory } from '@/types/project'
+import { ImageCategory, ImageMetadata } from '@/types/project'
 import ImagesCarousel from '@/components/ImagesCarousel'
-import DialogTrigger from '@/components/Modal/DialogTrigger'
+import ModalContainer from '@/components/Modal/ModalContainer'
 
 /** Single Project page displaying a project's details. */
 const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
@@ -45,7 +45,7 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
         (img) => img.type === ImageCategory.enum.thumbnail,
     )
 
-    const imagesCarousel = project.images?.filter(
+    const imagesCarousel: ImageMetadata[] = project.images?.filter(
         (img) => img.type === ImageCategory.enum.carousel,
     )
 
@@ -95,14 +95,9 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </div>
                 )}
 
-                <DialogTrigger />
-
                 {/* Carousel Images */}
                 {!!imagesCarousel?.length && (
-                    <ImagesCarousel
-                        imagesCarousel={imagesCarousel}
-                        isVideo={!!embedSrc}
-                    />
+                    <ModalContainer images={imagesCarousel} />
                 )}
 
                 {/* Image Placeholder (if no video nor carousel images) */}

@@ -2,6 +2,7 @@
 
 import type { ImageMetadata } from '@/types/project'
 import type { EmblaCarouselType, EmblaOptionsType } from 'embla-carousel'
+
 import useEmblaCarousel from 'embla-carousel-react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import Image from 'next/image'
@@ -13,19 +14,20 @@ const TWEEN_FACTOR_BASE = 0.2
 type ImagesCarouselProps = {
     imagesCarousel: ImageMetadata[]
     options?: EmblaOptionsType
-    isVideo: boolean
+    initialImageIndex?: number
 }
 
 const ImagesCarousel = ({
     imagesCarousel,
     options,
-    isVideo,
+    initialImageIndex = 0,
 }: ImagesCarouselProps) => {
     const [emblaRef, emblaApi] = useEmblaCarousel({
-        loop: false,
+        loop: true,
         dragFree: false,
         containScroll: 'trimSnaps',
         ...options,
+        startIndex: initialImageIndex,
     })
 
     const tweenFactor = useRef(0)
@@ -95,25 +97,16 @@ const ImagesCarousel = ({
 
     if (!imagesCarousel.length) return null
 
-    const rootClassName = isVideo
-        ? 'relative w-full'
-        : 'relative mx-auto w-full max-w-[min(100%,calc(62dvh*16/9))]'
+    const rootClassName =
+        'relative mx-auto w-[95vw] sm:w-[min(66.666vw,calc(66.666dvh*16/9))]'
 
-    const slideClassName = isVideo
-        ? 'min-w-0 flex-[0_0_85%] pl-4 first:pl-0 md:flex-[0_0_42%] lg:flex-[0_0_32%]'
-        : 'min-w-0 flex-[0_0_100%]'
+    const slideClassName = 'min-w-0 flex-[0_0_100%]'
 
-    const imageWrapperClassName = isVideo
-        ? 'relative overflow-hidden rounded-md'
-        : 'relative aspect-video w-full overflow-hidden bg-black/35 shadow-2xl backdrop-blur-[2px]'
+    const imageWrapperClassName =
+        'relative aspect-video w-full overflow-hidden bg-black/35 shadow-2xl backdrop-blur-[2px]'
 
-    const parallaxLayerClassName = isVideo
-        ? 'relative h-44 w-[115%] -translate-x-[7.5%] md:h-56'
-        : 'relative h-full w-[115%] -translate-x-[7.5%]'
-
-    const sizes = isVideo
-        ? '(min-width: 1024px) 32vw, (min-width: 768px) 42vw, 85vw'
-        : 'min(100vw, calc(62dvh * 16 / 9))'
+    const sizes =
+        '(max-width: 639px) 95vw, min(66.666vw, calc(66.666dvh * 16 / 9))'
 
     return (
         <div className={rootClassName}>
@@ -129,17 +122,19 @@ const ImagesCarousel = ({
                         >
                             <div className={imageWrapperClassName}>
                                 <div
-                                    data-embla-parallax-layer
-                                    className={parallaxLayerClassName}
+                                    key={`${image.imageId}-${index}`}
+                                    className={slideClassName}
                                 >
-                                    <Image
-                                        src={image.url}
-                                        alt={`Project image ${index + 1}`}
-                                        fill
-                                        sizes={sizes}
-                                        priority={isVideo && index === 0}
-                                        className='object-cover object-center'
-                                    />
+                                    <div className={imageWrapperClassName}>
+                                        <Image
+                                            src={image.url}
+                                            alt={`Project image ${index + 1}`}
+                                            fill
+                                            sizes={sizes}
+                                            priority={index === 0}
+                                            className='object-contain object-center'
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -5,10 +5,10 @@ import {
     type ModalOverlayProps,
     Modal as RACModal,
 } from 'react-aria-components'
-import { tv } from 'tailwind-variants'
+import { tv, type VariantProps } from 'tailwind-variants'
 
 const overlayStyles = tv({
-    base: 'absolute top-0 left-0 w-full h-(--page-height) isolate z-20 bg-black/[50%] text-center backdrop-blur-lg',
+    base: 'fixed inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-lg',
     variants: {
         isEntering: {
             true: 'animate-in fade-in duration-200 ease-out',
@@ -20,8 +20,14 @@ const overlayStyles = tv({
 })
 
 const modalStyles = tv({
-    base: 'font-sans w-full max-w-[min(90vw,450px)] max-h-[calc(var(--visual-viewport-height)*.9)] rounded-2xl bg-white dark:bg-neutral-800/70 dark:backdrop-blur-2xl dark:backdrop-saturate-200 forced-colors:bg-[Canvas] text-left align-middle text-neutral-700 dark:text-neutral-300 shadow-2xl bg-clip-padding border border-black/10 dark:border-white/10',
+    base: 'font-sans text-left align-middle text-neutral-700 shadow-2xl outline-none dark:text-neutral-300',
     variants: {
+        size: {
+            default:
+                'w-full max-w-[min(90vw,450px)] max-h-[calc(var(--visual-viewport-height)*.9)] rounded-2xl bg-white bg-clip-padding border border-black/10 dark:border-white/10 dark:bg-neutral-800/70 dark:backdrop-blur-2xl dark:backdrop-saturate-200 forced-colors:bg-[Canvas]',
+            gallery:
+                'relative w-[95vw] sm:w-[min(66.666vw,calc(66.666dvh*16/9))] max-w-none max-h-none border-0 bg-transparent shadow-none',
+        },
         isEntering: {
             true: 'animate-in zoom-in-105 ease-out duration-200',
         },
@@ -29,20 +35,23 @@ const modalStyles = tv({
             true: 'animate-out zoom-out-95 ease-in duration-200',
         },
     },
+    defaultVariants: {
+        size: 'default',
+    },
 })
 
-const Modal = (props: ModalOverlayProps) => {
+type ModalProps = ModalOverlayProps & VariantProps<typeof modalStyles>
+
+const Modal = ({ size, ...props }: ModalProps) => {
     return (
         <ModalOverlay
             {...props}
             className={overlayStyles}
         >
-            <div className='sticky top-0 left-0 w-full h-(--visual-viewport-height) flex items-center justify-center box-border'>
-                <RACModal
-                    {...props}
-                    className={modalStyles}
-                />
-            </div>
+            <RACModal
+                {...props}
+                className={modalStyles({ size })}
+            />
         </ModalOverlay>
     )
 }

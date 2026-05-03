@@ -21,7 +21,7 @@ const cairo = Cairo({
 })
 
 export const metadata: Metadata = {
-    title: 'Safran Lecuivre Portfolio',
+    title: 'Safran Lecuivre',
     description: 'Cinematography portfolio of Safran Lecuivre',
 }
 
