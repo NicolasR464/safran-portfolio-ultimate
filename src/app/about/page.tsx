@@ -1,4 +1,4 @@
-import { AboutSchema } from '@/types/about'
+import { AboutSchema } from '@/types/about/schema'
 import { collections } from '@/utils/constants'
 import { getDb } from '@/utils/mongo'
 import Image from 'next/image'
@@ -38,7 +38,7 @@ const About = async () => {
                         <div className='mt-10 max-w-2xl text-base text-white/80 md:text-lg'>
                             {aboutData.text
                                 .split('\n\n')
-                                .map((paragraph, index) => (
+                                .map((paragraph: string, index: number) => (
                                     <p
                                         key={index}
                                         className='mb-4 leading-7 md:leading-8'

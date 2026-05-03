@@ -1,7 +1,6 @@
 'use client'
-import { VideoSchema } from '@/types/video/schema'
 
-const VideoPlr = ({ videoID }: { videoID: VideoSchema['vidId'] }) => {
+const VideoPlr = ({ videoID }: { videoID: string }) => {
     return (
         <video
             autoPlay

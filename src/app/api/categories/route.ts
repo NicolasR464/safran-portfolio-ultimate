@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 
 import { CategoriesResponse } from '@/types/apiResponses/portfolio'
-import { VideoSchema } from '@/types/video/schema'
+import { ProjectSchema } from '@/types/project/schema'
 import { collections } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
 import { getDb } from '@/utils/mongo'
 
-/** This returns the list portfolio categories. */
+/** This returns the list of portfolio categories. */
 export const GET = async () => {
     const database = await getDb()
 
@@ -17,11 +17,11 @@ export const GET = async () => {
         })
     }
 
-    const videosCollection = database.collection<VideoSchema>(
-        collections.VIDEOS,
+    const projectsCollection = database.collection<ProjectSchema>(
+        collections.PROJECTS,
     )
 
-    const categories = await videosCollection.distinct('category', {
+    const categories = await projectsCollection.distinct('category', {
         category: { $ne: 'home' },
     })
 

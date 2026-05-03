@@ -11,7 +11,31 @@ export const thumbnailsPipeline = (batch: number, batchSize: number) => [
             title: 1,
             category: 1,
             order: 1,
-            imageUrl: '$image.url',
+            imageUrl: {
+                $let: {
+                    vars: {
+                        thumbnail: {
+                            $arrayElemAt: [
+                                {
+                                    $filter: {
+                                        input: '$images',
+
+                                        as: 'img',
+
+                                        cond: {
+                                            $eq: ['$$img.type', 'thumbnail'],
+                                        },
+                                    },
+                                },
+
+                                0,
+                            ],
+                        },
+                    },
+
+                    in: '$$thumbnail.url',
+                },
+            },
         },
     },
 
