@@ -95,8 +95,8 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </div>
                 )}
 
-                {/* Image Placeholder (if no video nor carousel images) */}
-                {!embedSrc && imageThumbnail && !imagesCarousel?.length && (
+                {/* Image Placeholder (if no video) */}
+                {!embedSrc && imageThumbnail && (
                     <div className='flex w-full justify-center'>
                         <div className='relative aspect-video w-full max-w-[min(100%,calc(58dvh*16/9))] overflow-hidden border border-white/40 bg-black/35 shadow-2xl backdrop-blur-[2px]'>
                             <Image
@@ -110,19 +110,24 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </div>
                 )}
 
-                {/* Project Description */}
+                {/* Project Metadata */}
                 <div className='w-full max-w-3xl mx-auto'>
                     <h1 className='text-3xl font-black font-mono tracking-tight md:text-5xl text-center'>
                         {project.title}
                     </h1>
 
-                    <p className='mt-4 text-left text-white/80'>
-                        {project.description}
-                    </p>
-
                     <p className='mt-2 text-sm uppercase tracking-[0.3em] text-white/60 text-center'>
                         {keyToCategory[project.category]}
                     </p>
+
+                    {!!project.description && (
+                        <div
+                            className='prose prose-neutral max-w-none mt-4 text-left prose prose-invert max-w-none prose-h2:text-3xl prose-h2:font-semibold prose-h2:mb-4 prose-h3:text-xl prose-h3:font-medium prose-h3:mt-8 prose-h3:mb-3 prose-p:leading-8 prose-p:mb-4 prose-li:mb-2 prose-strong:text-white'
+                            dangerouslySetInnerHTML={{
+                                __html: project.description,
+                            }}
+                        />
+                    )}
                 </div>
 
                 {/* Carousel Images */}

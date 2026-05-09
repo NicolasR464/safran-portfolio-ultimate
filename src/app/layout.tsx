@@ -39,7 +39,7 @@ export default function RootLayout({
             <body
                 className={`${poiretOne.variable} ${cairo.variable} antialiased`}
             >
-                <header className='sticky top-0 z-[100] h-(--header-height) backdrop-blur-sm'>
+                <header className='fixed top-0 z-[100] h-(--header-height) backdrop-blur-sm'>
                     <div className='flex w-screen h-full justify-between items-center'>
                         <Link href={'/'}>
                             <h1 className='ml-4 font-semibold text-2xl text-white font-poiret '>
@@ -47,7 +47,9 @@ export default function RootLayout({
                             </h1>
                         </Link>
 
-                        {!!process.env.IS_STAGING && <StagingCapsule />}
+                        {process.env.IS_STAGING === 'true' && (
+                            <StagingCapsule />
+                        )}
                     </div>
 
                     <Separator />
