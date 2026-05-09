@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 @plugin "tailwindcss-animate";
 @plugin "tailwindcss-react-aria-components";
+@plugin "@tailwindcss/typography";
 
 :root {
     --background: #000000;

@@ -19,6 +19,7 @@
     "shield": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm knip && pnpm test:unit"
   },
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.19",
     "embla-carousel": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "immer": "11.1.4",
