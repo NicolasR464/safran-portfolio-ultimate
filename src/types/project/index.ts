@@ -14,7 +14,12 @@ export const VideoMetadata = z.object({
     screenSize: ScreenSize,
 })
 
-export const ImageCategory = z.enum(['carousel', 'thumbnail', 'background'])
+export const ImageCategory = z.enum([
+    'background',
+    'carousel',
+    'poster',
+    'thumbnail',
+])
 export type ImageCategory = z.infer<typeof ImageCategory>
 
 export const ImageMetadata = z.object({

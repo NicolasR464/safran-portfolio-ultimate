@@ -40,8 +40,8 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
         (img) => img.type === ImageCategory.enum.background,
     )
 
-    const imageThumbnail = project.images?.find(
-        (img) => img.type === ImageCategory.enum.thumbnail,
+    const imagePoster = project.images?.find(
+        (img) => img.type === ImageCategory.enum.poster,
     )
 
     const imagesCarousel =
@@ -65,11 +65,11 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                     />
                 )}
 
-                {/* Image Thumbnail (if no Image Background) */}
-                {!imageBackground && imageThumbnail && (
+                {/* Image Placeholder (Poster if no Image Background) */}
+                {!imageBackground && imagePoster && imagePoster.url && (
                     <Image
-                        src={imageThumbnail.url}
-                        alt={project.title || 'Project image thumbnail'}
+                        src={imagePoster.url}
+                        alt={project.title || 'Project image poster'}
                         fill
                         priority
                         className='object-cover object-center opacity-70'
@@ -95,13 +95,13 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </div>
                 )}
 
-                {/* Image Placeholder (if no video) */}
-                {!embedSrc && imageThumbnail && (
+                {/* Image Poster */}
+                {!!imagePoster && imagePoster.url && (
                     <div className='flex w-full justify-center'>
                         <div className='relative aspect-video w-full max-w-[min(100%,calc(58dvh*16/9))] overflow-hidden border border-white/40 bg-black/35 shadow-2xl backdrop-blur-[2px]'>
                             <Image
-                                src={imageThumbnail.url}
-                                alt={project.title || 'Project image thumbnail'}
+                                src={imagePoster.url}
+                                alt={project.title || 'Project poster image'}
                                 fill
                                 priority
                                 className='object-cover object-center'
