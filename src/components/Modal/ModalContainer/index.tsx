@@ -26,7 +26,7 @@ const ModalContainer = ({ images }: ModalGalleryProps) => {
                 <Button
                     key={`${image.imageId}-${index}`}
                     onPress={() => setSelectedIndex(index)}
-                    className='relative aspect-square overflow-hidden rounded-lg'
+                    className='relative aspect-video overflow-hidden rounded-lg cursor-pointer'
                 >
                     <Image
                         src={image.url}
@@ -44,7 +44,7 @@ const ModalContainer = ({ images }: ModalGalleryProps) => {
                         if (!open) setSelectedIndex(null)
                     }}
                 >
-                    {/* dummy trigger required by API */}
+                    {/* Dummy trigger required by API */}
                     <span />
 
                     <Modal
