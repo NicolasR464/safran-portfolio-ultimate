@@ -10,20 +10,21 @@ import { searchParamsNames } from '@/utils/constants'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
 
+type CategoryName = ProjectSchema['category']['name']
+
 type ThumbnailsStore = {
     thumbnailsByCategories: ThumbnailsCategory[]
-    categoriesFetched: ProjectSchema['category'][]
+    categoriesFetched: CategoryName[]
     batchNumber: number
     isLoading: boolean
     hasMore: boolean
     initialized: boolean
     error: boolean
     isFetchingToClickedCategory: boolean
-    fetchNextBatch: (category?: ProjectSchema['category']) => Promise<void>
-    fetchNewCategory: (category: ProjectSchema['category']) => Promise<void>
+    fetchNextBatch: (category?: CategoryName) => Promise<void>
+    fetchNewCategory: (category: CategoryName) => Promise<void>
     reset: () => void
 }
-
 const initialState = {
     thumbnailsByCategories: [],
     categoriesFetched: [],
@@ -51,7 +52,7 @@ export const useThumbnailsStore = create<ThumbnailsStore>()(
             })
         },
 
-        fetchNextBatch: async (category) => {
+        fetchNextBatch: async (categoryName) => {
             const { isLoading, hasMore, batchNumber } = get()
 
             if (isLoading || !hasMore) return
@@ -63,8 +64,8 @@ export const useThumbnailsStore = create<ThumbnailsStore>()(
 
             const searchParams = new URLSearchParams()
 
-            if (category) {
-                searchParams.set(searchParamsNames.CATEGORY, category)
+            if (categoryName) {
+                searchParams.set(searchParamsNames.CATEGORY, categoryName)
             }
 
             searchParams.set(
@@ -94,28 +95,40 @@ export const useThumbnailsStore = create<ThumbnailsStore>()(
                 state.batchNumber += 1
 
                 for (const newBatch of parsedResponse.data) {
+                    const newBatchCategoryName =
+                        typeof newBatch.category === 'string'
+                            ? newBatch.category
+                            : newBatch.category.name
+
                     const existingBatch = state.thumbnailsByCategories.find(
-                        (batch) => batch.category === newBatch.category,
+                        (batch) => {
+                            const batchCategoryName =
+                                typeof batch.category === 'string'
+                                    ? batch.category
+                                    : batch.category.name
+
+                            return batchCategoryName === newBatchCategoryName
+                        },
                     )
 
                     if (existingBatch) {
                         existingBatch.items.push(...newBatch.items)
                     } else {
                         state.thumbnailsByCategories.push(newBatch)
-                        state.categoriesFetched.push(newBatch.category)
+                        state.categoriesFetched.push(newBatchCategoryName)
                     }
                 }
             })
         },
 
-        fetchNewCategory: async (category: ProjectSchema['category']) => {
+        fetchNewCategory: async (categoryName) => {
             set((state) => {
                 state.isFetchingToClickedCategory = true
             })
 
-            while (!get().categoriesFetched.includes(category)) {
+            while (!get().categoriesFetched.includes(categoryName)) {
                 if (!get().hasMore) break
-                await get().fetchNextBatch(category)
+                await get().fetchNextBatch(categoryName)
             }
 
             set((state) => {

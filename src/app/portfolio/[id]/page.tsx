@@ -107,7 +107,7 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </h1>
 
                     <p className='mt-2 text-sm uppercase tracking-[0.3em] text-white/60 text-center'>
-                        {keyToCategory[project.category]}
+                        {keyToCategory[project.category.name]}
                     </p>
 
                     {!!project.description && (

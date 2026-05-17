@@ -64,8 +64,8 @@ const Thumbnails = () => {
         const updateMiddleCategory = () => {
             const viewportMiddle = window.innerHeight / 2
 
-            let currentCategory: ProjectSchema['category'] | null = null
-            let closestCategory: ProjectSchema['category'] | null = null
+            let currentCategory: ProjectSchema['category']['name'] | null = null
+            let closestCategory: ProjectSchema['category']['name'] | null = null
             let closestDistance = Infinity
 
             for (const [category, element] of Object.entries(
@@ -119,8 +119,8 @@ const Thumbnails = () => {
                 thumbnailsByCategories.map((thumbnailsCategory, index) => (
                     <div
                         className={`w-full scroll-mt-(--header-height) ${lastCategory === thumbnailsCategory.category && 'min-h-screen'}`}
-                        key={thumbnailsCategory.category}
-                        id={thumbnailsCategory.category}
+                        key={thumbnailsCategory.category.name}
+                        id={thumbnailsCategory.category.name}
                     >
                         {index !== 0 && <Separator />}
 
@@ -128,7 +128,7 @@ const Thumbnails = () => {
                             className={`select-none sticky top-(--header-height) flex justify-center content-center p-4`}
                             ref={(separatorElement) => {
                                 separatorsRefs.current[
-                                    thumbnailsCategory.category
+                                    thumbnailsCategory.category.name
                                 ] = separatorElement
                             }}
                         >
@@ -143,7 +143,11 @@ const Thumbnails = () => {
                             </span>
 
                             <h2 className='mx-2 text-white text-xl font-mono'>
-                                {keyToCategory[thumbnailsCategory.category]}
+                                {
+                                    keyToCategory[
+                                        thumbnailsCategory.category.name
+                                    ]
+                                }
                             </h2>
 
                             <span>

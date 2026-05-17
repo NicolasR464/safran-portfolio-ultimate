@@ -31,9 +31,9 @@ export const thumbnailsPipeline = (batch: number, batchSize: number) => [
 
     {
         $sort: {
-            category: 1,
+            'category.order': 1,
             order: 1,
-            _id: 1, // important for stable pagination
+            _id: 1,
         },
     },
 
@@ -47,15 +47,28 @@ export const thumbnailsPipeline = (batch: number, batchSize: number) => [
 
     {
         $group: {
-            _id: '$category',
+            _id: {
+                name: '$category.name',
+                order: '$category.order',
+            },
             items: { $push: '$$ROOT' },
+        },
+    },
+
+    {
+        $sort: {
+            '_id.order': 1,
+            '_id.name': 1,
         },
     },
 
     {
         $project: {
             _id: 0,
-            category: '$_id',
+            category: {
+                name: '$_id.name',
+                order: '$_id.order',
+            },
             items: 1,
         },
     },

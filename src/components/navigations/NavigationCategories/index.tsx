@@ -30,8 +30,8 @@ const NavigationCategories = () => {
                 <div className='flex flex-wrap justify-center gap-4'>
                     {categories.map((category) => (
                         <ButtonCategory
-                            key={category}
-                            category={category}
+                            key={category.name}
+                            category={category.name}
                         />
                     ))}
                 </div>
@@ -42,11 +42,11 @@ const NavigationCategories = () => {
                 <Select value={activeCategory}>
                     {categories.map((category) => (
                         <SelectItem
-                            category={category}
-                            key={category}
-                            id={category}
+                            category={category.name}
+                            key={category.name}
+                            id={category.name}
                         >
-                            {category}
+                            {category.name}
                         </SelectItem>
                     ))}
                 </Select>

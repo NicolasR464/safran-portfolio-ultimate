@@ -24,3 +24,9 @@ export const ImageMetadata = z.object({
     types: z.array(ImageCategory.default(ImageCategory.enum.thumbnail)),
 })
 export type ImageMetadata = z.infer<typeof ImageMetadata>
+
+export const ProjectCategory = z.object({
+    name: z.string().min(1),
+    order: z.number().int().nonnegative(),
+})
+export type ProjectCategory = z.infer<typeof ProjectCategory>

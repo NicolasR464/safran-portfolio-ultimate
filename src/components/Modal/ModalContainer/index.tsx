@@ -9,7 +9,7 @@ import {
 import Image from 'next/image'
 
 import ImagesCarousel from '@/components/ImagesCarousel'
-import Dialog from '@/components/Modal/Dialog'
+
 import Modal from '@/components/Modal'
 import { ImageMetadata } from '@/types/project'
 
@@ -51,12 +51,10 @@ const ModalContainer = ({ images }: ModalGalleryProps) => {
                         isDismissable
                         size='gallery'
                     >
-                        <Dialog className='flex h-full w-full items-center justify-center p-0 outline-none'>
-                            <ImagesCarousel
-                                imagesCarousel={images}
-                                initialImageIndex={selectedIndex}
-                            />
-                        </Dialog>
+                        <ImagesCarousel
+                            imagesCarousel={images}
+                            initialImageIndex={selectedIndex}
+                        />
                     </Modal>
                 </DialogTrigger>
             )}
