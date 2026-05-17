@@ -8,8 +8,6 @@ import { VideoHomeSchema } from '@/types/video/schema'
 
 /** This returns video properties, filtered by user screen size. A video here is hosted on a private cloud, contrary to Projects' videos hosted by Youtube or Vimeo. */
 export const GET = async (request: NextRequest) => {
-    console.log('🚀 GET API HOME VIDEO')
-
     const database = await getDb()
 
     if (!database) {
@@ -31,13 +29,9 @@ export const GET = async (request: NextRequest) => {
 
     // If screen size is provided, filter by it.
     if (screenSize.success) {
-        console.log('🚀 GET API HOME VIDEO BY SCREEN SIZE', screenSize.data)
-
         const video = await videosCollection.findOne<VideoHomeSchema>({
             screenSize: screenSize.data,
         })
-
-        console.log('VIDEO', video)
 
         if (!video) {
             return NextResponse.json(null, {
