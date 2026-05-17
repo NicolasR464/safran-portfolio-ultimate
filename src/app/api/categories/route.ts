@@ -21,9 +21,7 @@ export const GET = async () => {
         collections.PROJECTS,
     )
 
-    const categories = await projectsCollection.distinct('category', {
-        category: { $ne: 'home' },
-    })
+    const categories = await projectsCollection.distinct('category')
 
     if (!categories) {
         return NextResponse.json(null, {

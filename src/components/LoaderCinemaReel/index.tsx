@@ -11,6 +11,7 @@ export default function LoaderCinemaReel({ size = 50 }): React.ReactElement {
                 width={size}
                 height={size}
                 className='animate-spin [animation-duration:3s]'
+                loading='eager'
             />
         </div>
     )

@@ -36,17 +36,17 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
         project.video &&
         embedSrcBuilder(project.video.player, project.video.videoId)
 
-    const imageBackground = project.images?.find(
-        (img) => img.type === ImageCategory.enum.background,
+    const imageBackground = project.images?.find((img) =>
+        img.types.includes(ImageCategory.enum.background),
     )
 
-    const imagePoster = project.images?.find(
-        (img) => img.type === ImageCategory.enum.poster,
+    const imagePoster = project.images?.find((img) =>
+        img.types.includes(ImageCategory.enum.poster),
     )
 
     const imagesCarousel =
-        project.images?.filter(
-            (img) => img.type === ImageCategory.enum.carousel,
+        project.images?.filter((img) =>
+            img.types.includes(ImageCategory.enum.carousel),
         ) ?? []
 
     return (
@@ -59,17 +59,6 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                     <Image
                         src={imageBackground.url}
                         alt={project.title || 'Project image background'}
-                        fill
-                        priority
-                        className='object-cover object-center opacity-70'
-                    />
-                )}
-
-                {/* Image Placeholder (Poster if no Image Background) */}
-                {!imageBackground && imagePoster && imagePoster.url && (
-                    <Image
-                        src={imagePoster.url}
-                        alt={project.title || 'Project image poster'}
                         fill
                         priority
                         className='object-cover object-center opacity-70'
