@@ -25,6 +25,6 @@ export type ImageCategory = z.infer<typeof ImageCategory>
 export const ImageMetadata = z.object({
     url: z.url(),
     imageId: z.string().min(1),
-    type: ImageCategory.default(ImageCategory.enum.thumbnail),
+    types: z.array(ImageCategory.default(ImageCategory.enum.thumbnail)),
 })
 export type ImageMetadata = z.infer<typeof ImageMetadata>
