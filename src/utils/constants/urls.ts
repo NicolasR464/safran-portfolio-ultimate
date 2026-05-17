@@ -1,4 +1,7 @@
 export const urls = {
+    admin: {
+        MAIN: '/admin',
+    },
     visitor: {
         PORTFOLIO: '/portfolio',
         ABOUT: '/about',
