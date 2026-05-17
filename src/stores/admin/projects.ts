@@ -1,70 +1,48 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
-import { ProjectSchema } from '@/types/project/schema'
-import { searchParamsNames } from '@/utils/constants'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
-
-type ProjectsResponse = {
-    data: ProjectSchema[]
-    hasMore: boolean
-}
+import { ProjectsListResponse } from '@/types/apiResponses/admin/projects'
 
 type ProjectsStore = {
-    projects: ProjectSchema[]
-    batchNumber: number
+    projectsByCategories: ProjectsListResponse
     isLoading: boolean
-    hasMore: boolean
     initialized: boolean
     error: boolean
-    fetchNextBatch: () => Promise<void>
+    fetchProjects: () => Promise<void>
     reset: () => void
 }
 
 const initialState = {
-    projects: [],
-    batchNumber: 1,
+    projectsByCategories: [],
     isLoading: false,
-    hasMore: true,
     initialized: false,
     error: false,
 }
 
 export const useProjectsStore = create<ProjectsStore>()(
-    immer((set, get) => ({
+    immer((set) => ({
         ...initialState,
 
         reset: () => {
             set((state) => {
-                state.projects = []
-                state.batchNumber = 1
+                state.projectsByCategories = []
                 state.isLoading = false
-                state.hasMore = true
                 state.initialized = false
                 state.error = false
             })
         },
 
-        fetchNextBatch: async () => {
-            const { isLoading, hasMore, batchNumber } = get()
-
-            if (isLoading || !hasMore) return
-
+        fetchProjects: async () => {
+            console.log('🚀 fetchProjects')
             set((state) => {
                 state.isLoading = true
                 state.error = false
             })
 
-            const searchParams = new URLSearchParams()
-
-            searchParams.set(
-                searchParamsNames.BATCH_NUMBER,
-                batchNumber.toString(),
-            )
-
-            const apiResponse = await apiClientSide<ProjectsResponse>(
-                `${localApiEndpoints.ADMIN.PROJECTS}?${searchParams.toString()}`,
+            const apiResponse = await apiClientSide<ProjectsListResponse>(
+                localApiEndpoints.ADMIN.PROJECTS,
             )
 
             if (!apiResponse.ok) {
@@ -73,15 +51,18 @@ export const useProjectsStore = create<ProjectsStore>()(
                     state.error = true
                     state.initialized = true
                 })
+
                 return
             }
 
             const parsedResponse = await apiResponse.json()
 
+            console.log('🚀 in store')
+
+            console.log({ parsedResponse })
+
             set((state) => {
-                state.projects.push(...parsedResponse.data)
-                state.batchNumber += 1
-                state.hasMore = parsedResponse.hasMore
+                state.projectsByCategories = parsedResponse
                 state.isLoading = false
                 state.initialized = true
             })

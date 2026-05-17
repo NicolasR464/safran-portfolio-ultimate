@@ -1,5 +1,5 @@
 import { ArrowUp, ChevronRight } from 'lucide-react'
-import React from 'react'
+import React, { ReactNode } from 'react'
 import {
     Cell as AriaCell,
     Column as AriaColumn,
@@ -18,9 +18,9 @@ import {
     type TableProps as AriaTableProps,
     useTableOptions,
     type TableBodyProps,
+    Group,
+    composeRenderProps,
 } from 'react-aria-components'
-import { Group } from 'react-aria-components'
-import { composeRenderProps } from 'react-aria-components'
 import { twMerge } from 'tailwind-merge'
 import { tv } from 'tailwind-variants'
 import { Checkbox } from '@/components/Checkbox'
@@ -149,11 +149,13 @@ const rowStyles = tv({
 
 export const Row = <T extends object>({
     id,
-    columns,
     children,
     ...otherProps
 }: RowProps<T>) => {
-    const { selectionBehavior, allowsDragging } = useTableOptions()
+    const tableOptions = useTableOptions()
+
+    const selectionBehavior = tableOptions?.selectionBehavior
+    const allowsDragging = tableOptions?.allowsDragging
 
     return (
         <AriaRow
@@ -166,12 +168,14 @@ export const Row = <T extends object>({
                     <Button slot='drag'>≡</Button>
                 </Cell>
             )}
+
             {selectionBehavior === 'toggle' && (
                 <Cell>
                     <Checkbox slot='selection' />
                 </Cell>
             )}
-            <Collection items={columns}>{children}</Collection>
+
+            {children as React.ReactNode}
         </AriaRow>
     )
 }

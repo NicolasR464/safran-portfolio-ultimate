@@ -1,26 +1,12 @@
+import { ProjectsListResponse } from '@/types/apiResponses/admin/projects'
 import { ProjectSchema } from '@/types/project/schema'
-import {
-    collections,
-    DEFAULT_BATCH_SIZE,
-    searchParamsNames,
-} from '@/utils/constants'
+import { collections } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
 import { getDb } from '@/utils/mongo'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-/** This returns the paginated project list. */
-export const GET = async (request: NextRequest) => {
-    const searchParams = request.nextUrl.searchParams
-
-    const batchNumber = Number(searchParams.get(searchParamsNames.BATCH_NUMBER))
-
-    if (!Number.isInteger(batchNumber) || batchNumber < 1) {
-        return NextResponse.json(null, {
-            status: 400,
-            statusText: backErrors.INVALID_SEARCH_PARAMS,
-        })
-    }
-
+/** This returns the project list grouped by category. */
+export const GET = async () => {
     const database = await getDb()
 
     if (!database) {
@@ -34,23 +20,44 @@ export const GET = async (request: NextRequest) => {
         collections.PROJECTS,
     )
 
-    const projects = await projectsCollection
-        .find(
-            {},
+    const projectsByCategories = await projectsCollection
+        .aggregate<ProjectsListResponse[number]>([
             {
-                projection: {
-                    _id: 1,
-                    title: 1,
-                    category: 1,
+                $sort: {
+                    'category.order': 1,
                     order: 1,
-                    images: 1,
+                    _id: 1,
                 },
             },
-        )
-        .sort({ category: 1, order: 1, _id: 1 })
-        .skip((batchNumber - 1) * DEFAULT_BATCH_SIZE)
-        .limit(DEFAULT_BATCH_SIZE)
+            {
+                $group: {
+                    _id: {
+                        name: '$category.name',
+                        order: '$category.order',
+                    },
+                    projects: {
+                        $push: '$$ROOT',
+                    },
+                },
+            },
+            {
+                $sort: {
+                    '_id.order': 1,
+                    '_id.name': 1,
+                },
+            },
+            {
+                $project: {
+                    _id: 0,
+                    category: {
+                        name: '$_id.name',
+                        order: '$_id.order',
+                    },
+                    projects: 1,
+                },
+            },
+        ])
         .toArray()
 
-    return NextResponse.json(projects)
+    return NextResponse.json<ProjectsListResponse>(projectsByCategories)
 }
