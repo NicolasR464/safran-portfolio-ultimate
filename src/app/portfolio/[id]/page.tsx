@@ -85,15 +85,16 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                 )}
 
                 {/* Image Poster */}
-                {!!imagePoster && imagePoster.url && (
+                {!!imagePoster?.url && (
                     <div className='flex w-full justify-center'>
-                        <div className='relative aspect-video w-full max-w-[min(100%,calc(58dvh*16/9))] overflow-hidden border border-white/40 bg-black/35 shadow-2xl backdrop-blur-[2px]'>
+                        <div className='relative flex max-h-[70dvh] w-full max-w-5xl items-center justify-center overflow-hidden bg-black/35 shadow-2xl backdrop-blur-[2px]'>
                             <Image
                                 src={imagePoster.url}
                                 alt={project.title || 'Project poster image'}
-                                fill
+                                width={1200}
+                                height={1200}
                                 priority
-                                className='object-cover object-center'
+                                className='h-auto max-h-[70dvh] w-auto max-w-full object-contain'
                             />
                         </div>
                     </div>
