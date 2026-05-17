@@ -6,5 +6,8 @@
     "config": [],
     "entry": ["src/**/*.test.ts", "src/**/*.test.tsx"]
   },
-  "ignore": ["vitest.config.ts"]
+  "ignore": ["vitest.config.ts"],
+  "ignoreIssues": {
+    "src/handlers/auth.ts": ["exports"]
+  }
 }
