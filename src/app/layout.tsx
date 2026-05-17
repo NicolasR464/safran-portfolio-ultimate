@@ -6,6 +6,7 @@ import Link from 'next/link'
 
 import { Separator } from '@/components/Separator'
 import StagingCapsule from '@/components/StagingCapsule'
+import ButtonSignIn from '@/components/buttons/auth/ButtonSignIn'
 
 // Main Font
 const poiretOne = Poiret_One({
@@ -46,6 +47,10 @@ export default function RootLayout({
                                 Safran Lecuivre
                             </h1>
                         </Link>
+
+                        <div className='mr-4'>
+                            <ButtonSignIn />
+                        </div>
 
                         {process.env.IS_STAGING === 'true' && (
                             <StagingCapsule />
