@@ -1,4 +1,5 @@
 import { signIn } from '@/handlers/auth'
+import ButtonGeneric from '@/components/buttons/ButtonGeneric'
 
 const ButtonSignIn = () => {
     return (
@@ -8,7 +9,7 @@ const ButtonSignIn = () => {
                 await signIn('google')
             }}
         >
-            <button type='submit'>Signin with Gmail</button>
+            <ButtonGeneric type='submit'>Signin with Gmail</ButtonGeneric>
         </form>
     )
 }
