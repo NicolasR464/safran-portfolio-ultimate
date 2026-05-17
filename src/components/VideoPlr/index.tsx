@@ -1,13 +1,15 @@
 'use client'
 
-const VideoPlr = ({ videoID }: { videoID: string }) => {
+import { VideoHomeSchema } from '@/types/video/schema'
+
+const VideoPlr = ({ videoURL }: { videoURL: VideoHomeSchema['videoUrl'] }) => {
     return (
         <video
             autoPlay
             playsInline
             loop
             muted
-            src={videoID}
+            src={videoURL}
             className='w-full'
         />
     )

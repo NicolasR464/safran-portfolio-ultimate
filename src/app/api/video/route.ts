@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { ScreenSize } from '@/types/project'
-import { ProjectSchema } from '@/types/project/schema'
+import { ScreenSize } from '@/types/video'
 import { collections, searchParamsNames } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
 import { getDb } from '@/utils/mongo'
+import { VideoHomeSchema } from '@/types/video/schema'
 
-/** This returns video properties for the Home page. */
+/** This returns video properties, filtered by user screen size. A video here is hosted on a private cloud, contrary to Projects' videos hosted by Youtube or Vimeo. */
 export const GET = async (request: NextRequest) => {
+    console.log('🚀 GET API HOME VIDEO')
+
     const database = await getDb()
 
     if (!database) {
@@ -17,8 +19,8 @@ export const GET = async (request: NextRequest) => {
         })
     }
 
-    const projectsCollection = database.collection<ProjectSchema>(
-        collections.PROJECTS,
+    const videosCollection = database.collection<VideoHomeSchema>(
+        collections.VIDEOS,
     )
 
     const searchParams = request.nextUrl.searchParams
@@ -29,19 +31,22 @@ export const GET = async (request: NextRequest) => {
 
     // If screen size is provided, filter by it.
     if (screenSize.success) {
-        const project = await projectsCollection.findOne<ProjectSchema>(
-            { 'video.screenSize': screenSize.data },
-            { projection: { 'video.videoId': 1, _id: 0 } },
-        )
+        console.log('🚀 GET API HOME VIDEO BY SCREEN SIZE', screenSize.data)
 
-        if (!project) {
+        const video = await videosCollection.findOne<VideoHomeSchema>({
+            screenSize: screenSize.data,
+        })
+
+        console.log('VIDEO', video)
+
+        if (!video) {
             return NextResponse.json(null, {
                 status: 404,
                 statusText: backErrors.VIDEO_NOT_FOUND,
             })
         }
 
-        return NextResponse.json<ProjectSchema['video']>(project.video)
+        return NextResponse.json<VideoHomeSchema>(video)
     }
 
     return NextResponse.json(null, {

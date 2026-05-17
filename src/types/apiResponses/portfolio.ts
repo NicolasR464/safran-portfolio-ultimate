@@ -6,7 +6,7 @@ const Thumbnail = z.object({
     _id: ProjectSchema.shape._id,
     title: ProjectSchema.shape.title,
     category: ProjectSchema.shape.category,
-    imageUrl: ProjectSchema.shape.images.unwrap().element.shape.url,
+    imageUrl: ProjectSchema.shape.images.unwrap().shape.url,
 })
 export type Thumbnail = z.infer<typeof Thumbnail>
 
