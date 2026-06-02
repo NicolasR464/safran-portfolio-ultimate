@@ -1,4 +1,4 @@
-import { ArrowUp, ChevronRight } from 'lucide-react'
+import { ArrowUp, ChevronRight, Menu } from 'lucide-react'
 import {
     Cell as AriaCell,
     Column as AriaColumn,
@@ -34,13 +34,13 @@ export const Table = (props: TableProps) => {
         <ResizableTableContainer
             onScroll={props.onScroll}
             className={twMerge(
-                'w-full max-h-[320px] overflow-auto scroll-pt-[2.281rem] relative bg-white dark:bg-neutral-900 box-border border border-neutral-300 dark:border-neutral-700 rounded-lg font-sans',
+                'w-full max-w-7xl h-[400px] mx-auto overflow-x-auto overflow-y-auto scroll-pt-[2.281rem] relative bg-white dark:bg-neutral-900 box-border border border-neutral-300 dark:border-neutral-700 rounded-lg font-sans',
                 props.className,
             )}
         >
             <AriaTable
                 {...props}
-                className='border-separate border-spacing-0 box-border has-[>[data-empty]]:h-full'
+                className='min-w-[720px] border-separate border-spacing-0 box-border has-[>[data-empty]]:h-full'
             />
         </ResizableTableContainer>
     )
@@ -111,7 +111,7 @@ export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
             {...props}
             className={composeTailwindRenderProps(
                 props.className,
-                'z-10 bg-neutral-100/60 dark:bg-neutral-700/60 backdrop-blur-md supports-[-moz-appearance:none]:bg-neutral-100 dark:supports-[-moz-appearance:none]:bg-neutral-700 forced-colors:bg-[Canvas] rounded-t-lg border-b border-b-neutral-200 dark:border-b-neutral-700',
+                'sticky top-0 z-20 bg-neutral-100/95 dark:bg-neutral-700/95 backdrop-blur-md supports-[-moz-appearance:none]:bg-neutral-100 dark:supports-[-moz-appearance:none]:bg-neutral-700 forced-colors:bg-[Canvas] rounded-t-lg border-b border-b-neutral-200 dark:border-b-neutral-700',
             )}
         >
             {/* Add extra columns for drag and drop and selection. */}
@@ -133,8 +133,6 @@ export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
 }
 
 export const TableBody = <T extends object>(props: TableBodyProps<T>) => {
-    console.log('props :', props)
-
     return (
         <AriaTableBody
             {...props}
@@ -158,9 +156,6 @@ export const Row = <T extends object>({
     const selectionBehavior = tableOptions?.selectionBehavior
     const allowsDragging = tableOptions?.allowsDragging
 
-    console.log({ id })
-    console.log({ children })
-
     return (
         <AriaRow
             id={id}
@@ -169,7 +164,9 @@ export const Row = <T extends object>({
         >
             {allowsDragging && (
                 <Cell>
-                    <Button slot='drag'>≡</Button>
+                    <Button slot='drag'>
+                        <Menu />
+                    </Button>
                 </Cell>
             )}
 

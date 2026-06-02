@@ -1,15 +1,88 @@
 'use client'
 
 import { useEffect } from 'react'
+import { Collection, useDragAndDrop } from 'react-aria-components'
+import type { Key } from 'react-aria-components'
 
-import ProjectsTreeTable from './ProjectsTreeTable'
+import {
+    Table,
+    TableHeader,
+    TableBody,
+    Column,
+    Row,
+    Cell,
+} from '@/components/Table'
 import { useProjectsStore } from '@/stores/admin/projects'
+import { ProjectTableRowType } from '@/utils/enums'
+
+type ProjectTreeItem = CategoryNode | ProjectNode
+
+type CategoryNode = {
+    id: string
+    kind: typeof ProjectTableRowType.enum.category
+    name: string
+    order: number
+    children: ProjectNode[]
+}
+
+type ProjectNode = {
+    id: string
+    kind: typeof ProjectTableRowType.enum.project
+    title: string
+    order: number
+    children: []
+}
+
+const findItem = (
+    items: ProjectTreeItem[],
+    key: Key,
+): ProjectTreeItem | undefined => {
+    for (const item of items) {
+        if (item.id === key) return item
+
+        if (item.kind === ProjectTableRowType.enum.category) {
+            const child = item.children.find((project) => project.id === key)
+
+            if (child) return child
+        }
+    }
+}
+
+const reorderCategories = (
+    categories: ProjectTreeItem[],
+    movedId: Key,
+    targetId: Key,
+    dropPosition: 'before' | 'after',
+) => {
+    const current = [...categories]
+
+    const movedIndex = current.findIndex((item) => item.id === movedId)
+
+    if (movedIndex === -1) return current
+
+    const [movedItem] = current.splice(movedIndex, 1)
+
+    const targetIndex = current.findIndex((item) => item.id === targetId)
+
+    if (targetIndex === -1) return current
+
+    current.splice(
+        dropPosition === 'before' ? targetIndex : targetIndex + 1,
+        0,
+        movedItem,
+    )
+
+    return current
+}
 
 const ProjectsTable = () => {
-    const { projectsByCategories, initialized, isLoading, fetchProjects } =
-        useProjectsStore()
-
-    console.log({ projectsByCategories })
+    const projectsByCategories = useProjectsStore(
+        (state) => state.projectsByCategories,
+    )
+    const initialized = useProjectsStore((state) => state.initialized)
+    const isLoading = useProjectsStore((state) => state.isLoading)
+    const fetchProjects = useProjectsStore((state) => state.fetchProjects)
+    const updateProjects = useProjectsStore((state) => state.updateProjects)
 
     useEffect(() => {
         if (!initialized) {
@@ -17,19 +90,208 @@ const ProjectsTable = () => {
         }
     }, [initialized, fetchProjects])
 
+    const initialItems: ProjectTreeItem[] = projectsByCategories.map(
+        ({ category, projects }) => ({
+            id: category._id.toString(),
+            kind: ProjectTableRowType.enum.category,
+            name: category.name,
+            order: category.order,
+            children: projects.map((project) => ({
+                id: project._id.toString(),
+                kind: ProjectTableRowType.enum.project,
+                title: project.title ?? 'Untitled',
+                order: project.order ?? 0,
+                children: [],
+            })),
+        }),
+    )
+
+    const { dragAndDropHooks } = useDragAndDrop({
+        getItems: (_keys, items) =>
+            [...items].map((item) => {
+                const value =
+                    'value' in item ? item.value : (item as ProjectTreeItem)
+
+                const projectItem = value as ProjectTreeItem
+
+                return {
+                    'text/plain':
+                        projectItem.kind === ProjectTableRowType.enum.category
+                            ? projectItem.name
+                            : projectItem.title,
+                }
+            }),
+
+        onMove: async (event) => {
+            const movedKeys = Array.from(event.keys)
+            const movedKey = movedKeys[0]
+
+            if (!movedKey) return
+
+            const movedItem = findItem(initialItems, movedKey)
+            const targetItem = findItem(initialItems, event.target.key)
+
+            if (!movedItem || !targetItem) return
+
+            const isMovingCategory =
+                movedItem.kind === ProjectTableRowType.enum.category
+
+            const isMovingProject =
+                movedItem.kind === ProjectTableRowType.enum.project
+
+            const targetIsCategory =
+                targetItem.kind === ProjectTableRowType.enum.category
+
+            const targetIsProject =
+                targetItem.kind === ProjectTableRowType.enum.project
+
+            if (isMovingCategory) {
+                if (!targetIsCategory) return
+
+                const categoryDropPosition =
+                    event.target.dropPosition === 'before' ? 'before' : 'after'
+
+                const reorderedCategories = reorderCategories(
+                    initialItems,
+                    movedKey,
+                    event.target.key,
+                    categoryDropPosition,
+                )
+
+                console.log('CALLING updateProjects CATEGORY')
+
+                await updateProjects({
+                    type: ProjectTableRowType.enum.category,
+                    categories: reorderedCategories.map((category, index) => ({
+                        id: category.id,
+                        order: index,
+                    })),
+                })
+
+                return
+            }
+
+            if (
+                isMovingProject &&
+                targetIsCategory &&
+                event.target.dropPosition === 'on'
+            ) {
+                await updateProjects({
+                    type: ProjectTableRowType.enum.project,
+                    categoryId: targetItem.id,
+                    projects: [...targetItem.children, movedItem].map(
+                        (project, index) => ({
+                            id: project.id,
+                            order: index,
+                        }),
+                    ),
+                })
+
+                return
+            }
+
+            if (
+                isMovingProject &&
+                targetIsProject &&
+                (event.target.dropPosition === 'before' ||
+                    event.target.dropPosition === 'after')
+            ) {
+                const parentCategory = initialItems.find(
+                    (item): item is CategoryNode =>
+                        item.kind === ProjectTableRowType.enum.category &&
+                        item.children.some(
+                            (project) => project.id === targetItem.id,
+                        ),
+                )
+
+                if (!parentCategory) return
+
+                const projects = [...parentCategory.children]
+
+                const movedIndex = projects.findIndex(
+                    (project) => project.id === movedItem.id,
+                )
+                const targetIndex = projects.findIndex(
+                    (project) => project.id === targetItem.id,
+                )
+
+                if (movedIndex === -1 || targetIndex === -1) return
+
+                const [movedProject] = projects.splice(movedIndex, 1)
+
+                const nextTargetIndex = projects.findIndex(
+                    (project) => project.id === targetItem.id,
+                )
+
+                projects.splice(
+                    event.target.dropPosition === 'before'
+                        ? nextTargetIndex
+                        : nextTargetIndex + 1,
+                    0,
+                    movedProject,
+                )
+
+                await updateProjects({
+                    type: ProjectTableRowType.enum.project,
+                    categoryId: parentCategory.id,
+                    projects: projects.map((project, index) => ({
+                        id: project.id,
+                        order: index,
+                    })),
+                })
+            }
+        },
+    })
+
+    const renderItem = (item: ProjectTreeItem) => {
+        const isCategory = item.kind === ProjectTableRowType.enum.category
+
+        return (
+            <Row
+                id={item.id}
+                className={
+                    isCategory
+                        ? 'font-semibold bg-neutral-100 dark:bg-neutral-800'
+                        : undefined
+                }
+            >
+                <Cell>{isCategory ? item.name : item.title}</Cell>
+                <Cell>{isCategory ? 'Category' : 'Project'}</Cell>
+                <Cell>{item.order}</Cell>
+
+                {isCategory && (
+                    <Collection items={item.children}>{renderItem}</Collection>
+                )}
+            </Row>
+        )
+    }
+
     if (isLoading && !initialized) {
         return <p>Loading projects...</p>
     }
 
-    if (!initialized) {
-        return null
-    }
-
     return (
-        <ProjectsTreeTable
-            key={projectsByCategories.length}
-            projectsByCategories={projectsByCategories}
-        />
+        <div className='px-4 mt-8'>
+            <Table
+                aria-label='Projects'
+                treeColumn='name'
+                defaultExpandedKeys={initialItems.map((item) => item.id)}
+                dragAndDropHooks={dragAndDropHooks}
+            >
+                <TableHeader className='sticky top-0 z-20 bg-neutral-100/95 dark:bg-neutral-700/95 backdrop-blur-md'>
+                    <Column
+                        id='name'
+                        isRowHeader
+                    >
+                        Name
+                    </Column>
+                    <Column id='type'>Type</Column>
+                    <Column id='order'>Order</Column>
+                </TableHeader>
+
+                <TableBody items={initialItems}>{renderItem}</TableBody>
+            </Table>
+        </div>
     )
 }
 
