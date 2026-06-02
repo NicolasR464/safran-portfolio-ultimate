@@ -1,36 +1,18 @@
-import { ObjectId } from 'mongodb'
 import Image from 'next/image'
-import { notFound } from 'next/navigation'
 
 import ButtonBack from '@/components/buttons/ButtonBack'
-import { ProjectSchema } from '@/types/project/schema'
-import { collections, keyToCategory } from '@/utils/constants'
-import { getDb } from '@/utils/mongo'
+
 import { embedSrcBuilder } from '@/utils'
 import { ImageCategory } from '@/types/project'
 import ModalContainer from '@/components/Modal/ModalContainer'
+
+import { getProjectWithCategory } from '@/utils/mongo/mongoQueries/project'
 
 /** Single Project page displaying a project's details. */
 const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params
 
-    if (!ObjectId.isValid(id)) {
-        notFound()
-    }
-
-    const database = await getDb()
-
-    const projectsCollection = database.collection<ProjectSchema>(
-        collections.PROJECTS,
-    )
-
-    const project = await projectsCollection.findOne({
-        _id: new ObjectId(id),
-    })
-
-    if (!project) {
-        notFound()
-    }
+    const project = await getProjectWithCategory(id)
 
     const embedSrc =
         project.video &&
@@ -107,7 +89,7 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </h1>
 
                     <p className='mt-2 text-sm uppercase tracking-[0.3em] text-white/60 text-center'>
-                        {keyToCategory[project.category.name]}
+                        {project.category.name}
                     </p>
 
                     {!!project.description && (

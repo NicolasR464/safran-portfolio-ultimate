@@ -13,7 +13,7 @@ import {
 } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
 import { getDb } from '@/utils/mongo'
-import { thumbnailsPipeline } from '@/utils/mongoPipelines/portfolio/thumbnails'
+import { thumbnailsPipeline } from '@/utils/mongo/mongoPipelines/portfolio/thumbnails'
 
 /** This returns the thumbnails info for the portfolio main page. */
 export const GET = async (request: NextRequest) => {

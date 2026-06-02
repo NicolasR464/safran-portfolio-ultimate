@@ -2,19 +2,18 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
 import { CategoriesResponse } from '@/types/apiResponses/portfolio'
-import { ProjectSchema } from '@/types/project/schema'
+
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
-
-type ProjectCategory = ProjectSchema['category']
+import { ProjectCategorySchema } from '@/types/projectCategory/schema'
 
 type CategoriesStore = {
-    categories: ProjectCategory[]
+    categories: ProjectCategorySchema[]
     isLoading: boolean
     initialized: boolean
     error: boolean
-    activeCategory: ProjectCategory['name'] | ''
-    setActiveCategory: (category: ProjectCategory['name']) => void
+    activeCategory: ProjectCategorySchema['name'] | ''
+    setActiveCategory: (category: ProjectCategorySchema['name']) => void
     fetchCategories: () => Promise<void>
 }
 

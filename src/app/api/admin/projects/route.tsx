@@ -1,12 +1,18 @@
-import { ProjectsListResponse } from '@/types/apiResponses/admin/projects'
 import { ProjectSchema } from '@/types/project/schema'
 import { collections } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
 import { getDb } from '@/utils/mongo'
+import { ObjectId } from 'mongodb'
 import { NextResponse } from 'next/server'
 
-/** This returns the project list grouped by category. */
-export const GET = async () => {
+type ReorderProjectsPayload = {
+    projects: {
+        _id: string
+        order: number
+    }[]
+}
+
+export const PATCH = async (req: Request) => {
     const database = await getDb()
 
     if (!database) {
@@ -20,44 +26,22 @@ export const GET = async () => {
         collections.PROJECTS,
     )
 
-    const projectsByCategories = await projectsCollection
-        .aggregate<ProjectsListResponse[number]>([
-            {
-                $sort: {
-                    'category.order': 1,
-                    order: 1,
-                    _id: 1,
-                },
-            },
-            {
-                $group: {
-                    _id: {
-                        name: '$category.name',
-                        order: '$category.order',
-                    },
-                    projects: {
-                        $push: '$$ROOT',
-                    },
-                },
-            },
-            {
-                $sort: {
-                    '_id.order': 1,
-                    '_id.name': 1,
-                },
-            },
-            {
-                $project: {
-                    _id: 0,
-                    category: {
-                        name: '$_id.name',
-                        order: '$_id.order',
-                    },
-                    projects: 1,
-                },
-            },
-        ])
-        .toArray()
+    const { projects } = (await req.json()) as ReorderProjectsPayload
 
-    return NextResponse.json<ProjectsListResponse>(projectsByCategories)
+    const result = await projectsCollection.bulkWrite(
+        projects.map((project) => ({
+            updateOne: {
+                filter: {
+                    _id: new ObjectId(project._id),
+                },
+                update: {
+                    $set: {
+                        order: project.order,
+                    },
+                },
+            },
+        })),
+    )
+
+    return NextResponse.json(result)
 }

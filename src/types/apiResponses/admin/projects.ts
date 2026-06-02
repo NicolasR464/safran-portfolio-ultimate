@@ -1,10 +1,10 @@
 import { z } from 'zod'
 
 import { ProjectSchema } from '@/types/project/schema'
-import { ProjectCategory } from '@/types/project'
+import { ProjectCategorySchema } from '@/types/projectCategory/schema'
 
 const ProjectsCategoryResponse = z.object({
-    category: ProjectCategory,
+    category: ProjectCategorySchema,
     projects: ProjectSchema.array(),
 })
 

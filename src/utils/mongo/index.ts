@@ -11,17 +11,13 @@ declare global {
     var _mongoClientPromise: Promise<MongoClient> | undefined
 }
 
-const client = new MongoClient(uri)
-
 const clientPromise =
     global._mongoClientPromise ??
-    (global._mongoClientPromise = client.connect())
+    (global._mongoClientPromise = new MongoClient(uri).connect())
 
-const getMongoClient = async (): Promise<MongoClient> => {
-    return clientPromise
-}
+const getMongoClient = async (): Promise<MongoClient> => clientPromise
 
 export const getDb = async (name?: string) => {
-    const c = await getMongoClient()
-    return c.db(name ?? DEFAULT_DB)
+    const client = await getMongoClient()
+    return client.db(name ?? DEFAULT_DB)
 }

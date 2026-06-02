@@ -6,8 +6,6 @@ import {
 } from 'react-aria-components'
 import { tv } from 'tailwind-variants'
 
-import { keyToCategory } from '@/utils/constants'
-
 const dropdownItemStyles = tv({
     base: `
         group flex items-center gap-4
@@ -51,7 +49,7 @@ export const DropdownItem = (props: ListBoxItemProps) => {
             {composeRenderProps(props.children, (_children, { isSelected }) => (
                 <>
                     <span className='flex flex-1 items-center gap-2 truncate font-normal'>
-                        {keyToCategory[textValue as keyof typeof keyToCategory]}
+                        {textValue}
                     </span>
                     <span className='flex w-5 items-center justify-end'>
                         {isSelected && <Check className='h-4 w-4' />}

@@ -5,12 +5,13 @@ import {
     ThumbnailsCategory,
     ThumbnailsResponse,
 } from '@/types/apiResponses/portfolio'
-import { ProjectSchema } from '@/types/project/schema'
+
 import { searchParamsNames } from '@/utils/constants'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
+import { ProjectCategorySchema } from '@/types/projectCategory/schema'
 
-type CategoryName = ProjectSchema['category']['name']
+type CategoryName = ProjectCategorySchema['name']
 
 type ThumbnailsStore = {
     thumbnailsByCategories: ThumbnailsCategory[]
