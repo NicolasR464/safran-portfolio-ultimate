@@ -36,6 +36,7 @@ export const useProjectsStore = create<ProjectsStore>()(
 
         fetchProjects: async () => {
             console.log('🚀 fetchProjects')
+
             set((state) => {
                 state.isLoading = true
                 state.error = false

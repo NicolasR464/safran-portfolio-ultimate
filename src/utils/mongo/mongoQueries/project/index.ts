@@ -1,5 +1,3 @@
-'use server'
-
 import { ObjectId } from 'mongodb'
 import { notFound } from 'next/navigation'
 
@@ -7,11 +5,20 @@ import { ProjectSchema } from '@/types/project/schema'
 import { collections } from '@/utils/constants'
 import { ProjectCategorySchema } from '@/types/projectCategory/schema'
 import { getDb } from '@/utils/mongo'
+import {
+    ProjectsCategoryResponse,
+    ProjectsListResponse,
+} from '@/types/apiResponses/admin/projects'
 
 export type ProjectWithCategory = ProjectSchema & {
     category: ProjectCategorySchema
 }
 
+/**
+ * Get a project with its category
+ * @param id - The project id
+ * @returns The project with its category
+ */
 export const getProjectWithCategory = async (
     id: string,
 ): Promise<ProjectWithCategory> => {

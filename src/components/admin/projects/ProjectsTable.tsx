@@ -9,6 +9,8 @@ const ProjectsTable = () => {
     const { projectsByCategories, initialized, isLoading, fetchProjects } =
         useProjectsStore()
 
+    console.log({ projectsByCategories })
+
     useEffect(() => {
         if (!initialized) {
             void fetchProjects()
