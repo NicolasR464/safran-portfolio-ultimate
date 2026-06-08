@@ -4,7 +4,7 @@ import ButtonBack from '@/components/buttons/ButtonBack'
 
 import { embedSrcBuilder } from '@/utils'
 import { ImageCategory } from '@/types/project'
-import ModalContainer from '@/components/Modal/ModalContainer'
+import ModalContainerImages from '@/components/Modal/ModalContainerImages'
 
 import { getProjectWithCategory } from '@/utils/mongo/mongoQueries/project'
 
@@ -104,7 +104,7 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
 
                 {/* Carousel Images */}
                 {!!imagesCarousel?.length && (
-                    <ModalContainer images={imagesCarousel} />
+                    <ModalContainerImages images={imagesCarousel} />
                 )}
             </section>
         </div>

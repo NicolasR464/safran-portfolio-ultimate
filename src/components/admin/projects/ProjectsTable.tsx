@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Collection, useDragAndDrop } from 'react-aria-components'
 import type { Key } from 'react-aria-components'
 
@@ -14,6 +14,10 @@ import {
 } from '@/components/Table'
 import { useProjectsStore } from '@/stores/admin/projects'
 import { ProjectTableRowType } from '@/utils/enums'
+import ButtonGeneric from '@/components/buttons/ButtonGeneric'
+import { Pencil } from 'lucide-react'
+import ModalTrigger from '@/components/Modal/ModalTrigger'
+import Modal from '@/components/Modal'
 
 type ProjectTreeItem = CategoryNode | ProjectNode
 
@@ -76,6 +80,8 @@ const reorderCategories = (
 }
 
 const ProjectsTable = () => {
+    const [isModalOpen, setIsModalOpen] = useState(false)
+
     const projectsByCategories = useProjectsStore(
         (state) => state.projectsByCategories,
     )
@@ -258,6 +264,11 @@ const ProjectsTable = () => {
                 <Cell>{isCategory ? item.name : item.title}</Cell>
                 <Cell>{isCategory ? 'Category' : 'Project'}</Cell>
                 <Cell>{item.order}</Cell>
+                <Cell>
+                    <ButtonGeneric onPress={() => setIsModalOpen(true)}>
+                        <Pencil />
+                    </ButtonGeneric>
+                </Cell>
 
                 {isCategory && (
                     <Collection items={item.children}>{renderItem}</Collection>
@@ -287,10 +298,21 @@ const ProjectsTable = () => {
                     </Column>
                     <Column id='type'>Type</Column>
                     <Column id='order'>Order</Column>
+                    <Column id='userAction'>User Action</Column>
                 </TableHeader>
 
                 <TableBody items={initialItems}>{renderItem}</TableBody>
             </Table>
+
+            {/** Modal */}
+            <ModalTrigger
+                isOpen={isModalOpen}
+                onOpenChange={(open) => {
+                    setIsModalOpen(open)
+                }}
+            >
+                <Modal>hey modal</Modal>
+            </ModalTrigger>
         </div>
     )
 }

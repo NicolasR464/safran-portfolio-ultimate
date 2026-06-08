@@ -42,9 +42,10 @@ const modalStyles = tv({
 
 type ModalProps = ModalOverlayProps & VariantProps<typeof modalStyles>
 
-const Modal = ({ size, ...props }: ModalProps) => {
+const Modal = ({ size, isDismissable = true, ...props }: ModalProps) => {
     return (
         <ModalOverlay
+            isDismissable={isDismissable}
             {...props}
             className={overlayStyles}
         >
