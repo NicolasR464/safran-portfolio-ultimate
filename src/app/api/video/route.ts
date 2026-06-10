@@ -10,6 +10,8 @@ import { VideoHomeSchema } from '@/types/video/schema'
 export const GET = async (request: NextRequest) => {
     const database = await getDb()
 
+    console.log({ database })
+
     if (!database) {
         return NextResponse.json(null, {
             status: 500,
@@ -20,6 +22,8 @@ export const GET = async (request: NextRequest) => {
     const videosCollection = database.collection<VideoHomeSchema>(
         collections.VIDEOS,
     )
+
+    console.log({ videosCollection })
 
     const searchParams = request.nextUrl.searchParams
 
@@ -32,6 +36,8 @@ export const GET = async (request: NextRequest) => {
         const video = await videosCollection.findOne<VideoHomeSchema>({
             screenSize: screenSize.data,
         })
+
+        console.log({ video })
 
         if (!video) {
             return NextResponse.json(null, {

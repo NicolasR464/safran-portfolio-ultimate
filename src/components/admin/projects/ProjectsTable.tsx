@@ -18,24 +18,9 @@ import ButtonGeneric from '@/components/buttons/ButtonGeneric'
 import { Pencil } from 'lucide-react'
 import ModalTrigger from '@/components/Modal/ModalTrigger'
 import Modal from '@/components/Modal'
-
-type ProjectTreeItem = CategoryNode | ProjectNode
-
-type CategoryNode = {
-    id: string
-    kind: typeof ProjectTableRowType.enum.category
-    name: string
-    order: number
-    children: ProjectNode[]
-}
-
-type ProjectNode = {
-    id: string
-    kind: typeof ProjectTableRowType.enum.project
-    title: string
-    order: number
-    children: []
-}
+import FormCategory from '@/components/admin/projects/FormCategory'
+import FormProject from '@/components/admin/projects/FormProject'
+import { ProjectTreeItem } from '@/types/admin/projectsTable'
 
 const findItem = (
     items: ProjectTreeItem[],
@@ -81,6 +66,7 @@ const reorderCategories = (
 
 const ProjectsTable = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [modalMetadata, setModalMetadata] = useState<ProjectTreeItem>()
 
     const projectsByCategories = useProjectsStore(
         (state) => state.projectsByCategories,
@@ -265,7 +251,12 @@ const ProjectsTable = () => {
                 <Cell>{isCategory ? 'Category' : 'Project'}</Cell>
                 <Cell>{item.order}</Cell>
                 <Cell>
-                    <ButtonGeneric onPress={() => setIsModalOpen(true)}>
+                    <ButtonGeneric
+                        onPress={() => {
+                            setIsModalOpen(true)
+                            setModalMetadata(item)
+                        }}
+                    >
                         <Pencil />
                     </ButtonGeneric>
                 </Cell>
@@ -282,7 +273,7 @@ const ProjectsTable = () => {
     }
 
     return (
-        <div className='px-4 mt-8'>
+        <div className='px-4 pt-20 mt-8'>
             <Table
                 aria-label='Projects'
                 treeColumn='name'
@@ -311,7 +302,12 @@ const ProjectsTable = () => {
                     setIsModalOpen(open)
                 }}
             >
-                <Modal>hey modal</Modal>
+                <Modal>
+                    {modalMetadata?.kind ===
+                        ProjectTableRowType.enum.category && (
+                        <FormCategory categoryMetadata={modalMetadata} />
+                    )}
+                </Modal>
             </ModalTrigger>
         </div>
     )

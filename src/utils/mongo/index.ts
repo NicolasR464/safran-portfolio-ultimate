@@ -5,7 +5,7 @@ if (!uri) {
     throw new Error('Missing MONGODB_URI')
 }
 
-const DEFAULT_DB = process.env.MONGO_DB
+const DEFAULT_DB = process.env.DB_NAME
 
 declare global {
     var _mongoClientPromise: Promise<MongoClient> | undefined
