@@ -5,10 +5,12 @@ import {
     LabelProps,
     Text,
     TextProps,
+    composeRenderProps,
 } from 'react-aria-components'
 import { twMerge } from 'tailwind-merge'
+import { Group, type GroupProps } from 'react-aria-components/Group'
 
-import { composeTailwindRenderProps } from '@/utils/ui'
+import { composeTailwindRenderProps, focusRing } from '@/utils/ui'
 import { tv } from 'tailwind-variants'
 
 export const Label = (props: LabelProps) => {
@@ -60,3 +62,22 @@ export const fieldBorderStyles = tv({
         },
     },
 })
+
+export const fieldGroupStyles = tv({
+    extend: focusRing,
+    base: 'group flex items-center h-9 box-border bg-white dark:bg-neutral-900 forced-colors:bg-[Field] border rounded-lg overflow-hidden transition',
+    variants: fieldBorderStyles.variants,
+})
+
+export const FieldGroup = (props: GroupProps) => {
+    return (
+        <Group
+            {...props}
+            className={composeRenderProps(
+                props.className,
+                (className, renderProps) =>
+                    fieldGroupStyles({ ...renderProps, className }),
+            )}
+        />
+    )
+}

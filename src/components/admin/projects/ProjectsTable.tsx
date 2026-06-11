@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Collection, useDragAndDrop } from 'react-aria-components'
 import type { Key } from 'react-aria-components'
+import { MyToastRegion } from '@/components/Toast'
 
 import {
     Table,
@@ -156,7 +157,7 @@ const ProjectsTable = () => {
                     type: ProjectTableRowType.enum.category,
                     categories: reorderedCategories.map((category, index) => ({
                         id: category.id,
-                        order: index,
+                        order: index + 1,
                     })),
                 })
 
@@ -174,7 +175,7 @@ const ProjectsTable = () => {
                     projects: [...targetItem.children, movedItem].map(
                         (project, index) => ({
                             id: project.id,
-                            order: index,
+                            order: index + 1,
                         }),
                     ),
                 })
@@ -239,14 +240,7 @@ const ProjectsTable = () => {
         const isCategory = item.kind === ProjectTableRowType.enum.category
 
         return (
-            <Row
-                id={item.id}
-                className={
-                    isCategory
-                        ? 'font-semibold bg-neutral-100 dark:bg-neutral-800'
-                        : undefined
-                }
-            >
+            <Row id={item.id}>
                 <Cell>{isCategory ? item.name : item.title}</Cell>
                 <Cell>{isCategory ? 'Category' : 'Project'}</Cell>
                 <Cell>{item.order}</Cell>
@@ -274,6 +268,8 @@ const ProjectsTable = () => {
 
     return (
         <div className='px-4 pt-20 mt-8'>
+            <MyToastRegion />
+
             <Table
                 aria-label='Projects'
                 treeColumn='name'
@@ -305,7 +301,11 @@ const ProjectsTable = () => {
                 <Modal>
                     {modalMetadata?.kind ===
                         ProjectTableRowType.enum.category && (
-                        <FormCategory categoryMetadata={modalMetadata} />
+                        <FormCategory
+                            setIsModalOpen={setIsModalOpen}
+                            categories={projectsByCategories}
+                            categorySelected={modalMetadata}
+                        />
                     )}
                 </Modal>
             </ModalTrigger>

@@ -3,8 +3,12 @@ import { immer } from 'zustand/middleware/immer'
 
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
-import { ProjectsListResponse } from '@/types/apiResponses/admin/projects'
+import {
+    ActionResult,
+    ProjectsListResponse,
+} from '@/types/apiResponses/admin/projects'
 import { ProjectTableRowType } from '@/utils/enums'
+import { backErrors, backSuccess } from '@/utils/constants/messages'
 
 type UpdateProjectsPayload =
     | {
@@ -20,6 +24,7 @@ type UpdateProjectsPayload =
           projects: {
               id: string
               order: number
+              name?: string
           }[]
       }
 
@@ -27,9 +32,9 @@ type ProjectsStore = {
     projectsByCategories: ProjectsListResponse
     isLoading: boolean
     initialized: boolean
-    error: boolean
+
     fetchProjects: () => Promise<void>
-    updateProjects: (payload: UpdateProjectsPayload) => Promise<void>
+    updateProjects: (payload: UpdateProjectsPayload) => Promise<ActionResult>
     reset: () => void
 }
 
@@ -37,7 +42,6 @@ const initialState = {
     projectsByCategories: [],
     isLoading: false,
     initialized: false,
-    error: false,
 }
 
 export const useProjectsStore = create<ProjectsStore>()(
@@ -49,14 +53,12 @@ export const useProjectsStore = create<ProjectsStore>()(
                 state.projectsByCategories = []
                 state.isLoading = false
                 state.initialized = false
-                state.error = false
             })
         },
 
         fetchProjects: async () => {
             set((state) => {
                 state.isLoading = true
-                state.error = false
             })
 
             const apiResponse = await apiClientSide<ProjectsListResponse>(
@@ -66,7 +68,6 @@ export const useProjectsStore = create<ProjectsStore>()(
             if (!apiResponse.ok) {
                 set((state) => {
                     state.isLoading = false
-                    state.error = true
                     state.initialized = true
                 })
 
@@ -83,11 +84,19 @@ export const useProjectsStore = create<ProjectsStore>()(
         },
 
         updateProjects: async (payload) => {
-            console.log('🔥 updateProjects payload', payload)
+            const fail = (message: string): ActionResult => {
+                set((state) => {
+                    state.isLoading = false
+                })
+
+                return {
+                    success: false,
+                    message,
+                }
+            }
 
             set((state) => {
                 state.isLoading = true
-                state.error = false
             })
 
             const apiResponse = await apiClientSide.patch(
@@ -100,10 +109,9 @@ export const useProjectsStore = create<ProjectsStore>()(
             if (!apiResponse.ok) {
                 set((state) => {
                     state.isLoading = false
-                    state.error = true
                 })
 
-                return
+                return fail(backErrors.UPDATE_FAILED)
             }
 
             const projectsResponse = await apiClientSide<ProjectsListResponse>(
@@ -113,10 +121,9 @@ export const useProjectsStore = create<ProjectsStore>()(
             if (!projectsResponse.ok) {
                 set((state) => {
                     state.isLoading = false
-                    state.error = true
                 })
 
-                return
+                return fail(backErrors.UPDATE_FAILED)
             }
 
             const parsedResponse = await projectsResponse.json()
@@ -126,6 +133,11 @@ export const useProjectsStore = create<ProjectsStore>()(
                 state.isLoading = false
                 state.initialized = true
             })
+
+            return {
+                success: true,
+                message: backSuccess.UPDATE_SUCCEEDED,
+            }
         },
     })),
 )

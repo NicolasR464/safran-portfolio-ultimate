@@ -13,3 +13,7 @@ export const ProjectsListResponse = ProjectsCategoryResponse.array()
 export type ProjectsCategoryResponse = z.infer<typeof ProjectsCategoryResponse>
 
 export type ProjectsListResponse = z.infer<typeof ProjectsListResponse>
+
+export type ActionResult =
+    | { success: true }
+    | { success: false; message: string }

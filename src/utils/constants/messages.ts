@@ -13,5 +13,10 @@ export const backErrors = {
     PROJECT_NAME_ALREADY_TAKEN: 'Project name already taken',
     PROJECT_NOT_FOUND: 'Project not found',
     PROJECTS_NOT_FOUND: 'Projects not found',
+    UPDATE_FAILED: 'Update failed',
     VIDEO_NOT_FOUND: 'Video not found',
+}
+
+export const backSuccess = {
+    UPDATE_SUCCEEDED: 'Update succeeded',
 }

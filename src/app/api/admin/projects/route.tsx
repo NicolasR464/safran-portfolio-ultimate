@@ -14,6 +14,7 @@ type ReorderCategoriesPayload = {
     categories: {
         id: string
         order: number
+        name?: string
     }[]
 }
 
@@ -29,15 +30,6 @@ type ReorderProjectsPayload = {
 type ReorderPayload = ReorderCategoriesPayload | ReorderProjectsPayload
 
 export const PATCH = async (req: Request) => {
-    console.log(
-        '🔥 PATCH categories at ' +
-            new Date().toLocaleString('fr-FR', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-            }),
-    )
-
     const database = await getDb()
 
     if (!database) {
@@ -49,11 +41,7 @@ export const PATCH = async (req: Request) => {
 
     const body = (await req.json()) as ReorderPayload
 
-    console.log({ body })
-
     if (body.type === ProjectTableRowType.enum.category) {
-        console.log({ body: body.categories })
-
         const categoriesCollection = database.collection<ProjectCategorySchema>(
             collections.PROJECT_CATEGORIES,
         )
@@ -67,13 +55,14 @@ export const PATCH = async (req: Request) => {
                     update: {
                         $set: {
                             order: category.order,
+                            ...(category.name !== undefined && {
+                                name: category.name,
+                            }),
                         },
                     },
                 },
             })),
         )
-
-        console.log({ result })
 
         return NextResponse.json(result)
     }
