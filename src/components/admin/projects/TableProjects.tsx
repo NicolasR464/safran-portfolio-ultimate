@@ -6,12 +6,12 @@ import type { Key } from 'react-aria-components'
 import { MyToastRegion } from '@/components/Toast'
 
 import {
-    Table,
-    TableHeader,
-    TableBody,
+    Cell,
     Column,
     Row,
-    Cell,
+    Table,
+    TableBody,
+    TableHeader,
 } from '@/components/Table'
 import { useProjectsStore } from '@/stores/admin/projects'
 import { ProjectTableRowType } from '@/utils/enums'
@@ -21,7 +21,7 @@ import ModalTrigger from '@/components/Modal/ModalTrigger'
 import Modal from '@/components/Modal'
 import FormCategory from '@/components/admin/projects/FormCategory'
 import FormProject from '@/components/admin/projects/FormProject'
-import { ProjectTreeItem } from '@/types/admin/projectsTable'
+import { CategoryNode, ProjectTreeItem } from '@/types/admin/projectsTable'
 
 const findItem = (
     items: ProjectTreeItem[],
@@ -65,7 +65,7 @@ const reorderCategories = (
     return current
 }
 
-const ProjectsTable = () => {
+const TableProjects = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMetadata, setModalMetadata] = useState<ProjectTreeItem>()
 
@@ -138,6 +138,7 @@ const ProjectsTable = () => {
             const targetIsProject =
                 targetItem.kind === ProjectTableRowType.enum.project
 
+            /* Category update */
             if (isMovingCategory) {
                 if (!targetIsCategory) return
 
@@ -151,12 +152,10 @@ const ProjectsTable = () => {
                     categoryDropPosition,
                 )
 
-                console.log('CALLING updateProjects CATEGORY')
-
                 await updateProjects({
                     type: ProjectTableRowType.enum.category,
                     categories: reorderedCategories.map((category, index) => ({
-                        id: category.id,
+                        _id: category.id,
                         order: index + 1,
                     })),
                 })
@@ -164,6 +163,7 @@ const ProjectsTable = () => {
                 return
             }
 
+            /* Project update */
             if (
                 isMovingProject &&
                 targetIsCategory &&
@@ -174,7 +174,8 @@ const ProjectsTable = () => {
                     categoryId: targetItem.id,
                     projects: [...targetItem.children, movedItem].map(
                         (project, index) => ({
-                            id: project.id,
+                            _id: project.id,
+                            categoryId: targetItem.id,
                             order: index + 1,
                         }),
                     ),
@@ -183,6 +184,7 @@ const ProjectsTable = () => {
                 return
             }
 
+            /* Project update */
             if (
                 isMovingProject &&
                 targetIsProject &&
@@ -228,8 +230,9 @@ const ProjectsTable = () => {
                     type: ProjectTableRowType.enum.project,
                     categoryId: parentCategory.id,
                     projects: projects.map((project, index) => ({
-                        id: project.id,
-                        order: index,
+                        categoryId: parentCategory.id,
+                        _id: project.id,
+                        order: index + 1,
                     })),
                 })
             }
@@ -299,12 +302,21 @@ const ProjectsTable = () => {
                 }}
             >
                 <Modal>
+                    {/** Category form */}
                     {modalMetadata?.kind ===
                         ProjectTableRowType.enum.category && (
                         <FormCategory
-                            setIsModalOpen={setIsModalOpen}
-                            categories={projectsByCategories}
                             categorySelected={modalMetadata}
+                            setIsModalOpen={setIsModalOpen}
+                        />
+                    )}
+
+                    {/** Project form */}
+                    {modalMetadata?.kind ===
+                        ProjectTableRowType.enum.project && (
+                        <FormProject
+                            projectSelected={modalMetadata}
+                            setIsModalOpen={setIsModalOpen}
                         />
                     )}
                 </Modal>
@@ -313,4 +325,4 @@ const ProjectsTable = () => {
     )
 }
 
-export default ProjectsTable
+export default TableProjects

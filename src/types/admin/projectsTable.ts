@@ -15,5 +15,4 @@ export type ProjectNode = {
     kind: typeof ProjectTableRowType.enum.project
     title: string
     order: number
-    children: []
 }

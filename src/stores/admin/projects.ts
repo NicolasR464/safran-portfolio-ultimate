@@ -6,27 +6,28 @@ import { apiClientSide } from '@/utils/ky'
 import {
     ActionResult,
     ProjectsListResponse,
+    UpdateProjectsPayload,
 } from '@/types/apiResponses/admin/projects'
-import { ProjectTableRowType } from '@/utils/enums'
+
 import { backErrors, backSuccess } from '@/utils/constants/messages'
 
-type UpdateProjectsPayload =
-    | {
-          type: typeof ProjectTableRowType.enum.category
-          categories: {
-              id: string
-              order: number
-          }[]
-      }
-    | {
-          type: typeof ProjectTableRowType.enum.project
-          categoryId?: string
-          projects: {
-              id: string
-              order: number
-              name?: string
-          }[]
-      }
+// type UpdateProjectsPayload =
+//     | {
+//           type: typeof ProjectTableRowType.enum.category
+//           categories: {
+//               id: string
+//               order: number
+//           }[]
+//       }
+//     | {
+//           type: typeof ProjectTableRowType.enum.project
+//           categoryId?: string
+//           projects: {
+//               id: string
+//               order: number
+//               name?: string
+//           }[]
+//       }
 
 type ProjectsStore = {
     projectsByCategories: ProjectsListResponse
