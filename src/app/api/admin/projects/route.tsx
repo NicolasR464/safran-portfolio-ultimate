@@ -7,29 +7,14 @@ import { getDb } from '@/utils/mongo'
 import { ProjectSchema } from '@/types/project/schema'
 import { ProjectCategorySchema } from '@/types/projectCategory/schema'
 import { ProjectTableRowType } from '@/utils/enums'
-import { ProjectsCategoryResponse } from '@/types/apiResponses/admin/projects'
-
-type ReorderCategoriesPayload = {
-    type: typeof ProjectTableRowType.enum.category
-    categories: {
-        id: string
-        order: number
-        name?: string
-    }[]
-}
-
-type ReorderProjectsPayload = {
-    type: typeof ProjectTableRowType.enum.project
-    categoryId: string
-    projects: {
-        id: string
-        order: number
-    }[]
-}
-
-type ReorderPayload = ReorderCategoriesPayload | ReorderProjectsPayload
+import {
+    ProjectsCategoryResponse,
+    UpdateProjectsPayload,
+} from '@/types/apiResponses/admin/projects'
 
 export const PATCH = async (req: Request) => {
+    /* @TODO : Add auth */
+
     const database = await getDb()
 
     if (!database) {
@@ -39,18 +24,28 @@ export const PATCH = async (req: Request) => {
         })
     }
 
-    const body = (await req.json()) as ReorderPayload
+    const body = await req.json()
 
-    if (body.type === ProjectTableRowType.enum.category) {
+    const bodyParsed = UpdateProjectsPayload.safeParse(body)
+
+    if (!bodyParsed.success) {
+        return NextResponse.json(null, {
+            status: 400,
+            statusText: backErrors.INVALID_REQUEST_BODY,
+        })
+    }
+
+    /* Category update */
+    if (bodyParsed.data.type === ProjectTableRowType.enum.category) {
         const categoriesCollection = database.collection<ProjectCategorySchema>(
             collections.PROJECT_CATEGORIES,
         )
 
         const result = await categoriesCollection.bulkWrite(
-            body.categories.map((category) => ({
+            bodyParsed.data.categories.map((category) => ({
                 updateOne: {
                     filter: {
-                        _id: new ObjectId(category.id),
+                        _id: new ObjectId(category._id),
                     },
                     update: {
                         $set: {
@@ -67,28 +62,119 @@ export const PATCH = async (req: Request) => {
         return NextResponse.json(result)
     }
 
+    /* Project update */
     if (body.type === ProjectTableRowType.enum.project) {
         const projectsCollection = database.collection<ProjectSchema>(
             collections.PROJECTS,
         )
 
-        const result = await projectsCollection.bulkWrite(
-            body.projects.map((project) => ({
-                updateOne: {
-                    filter: {
-                        _id: new ObjectId(project.id),
-                        categoryId: new ObjectId(body.categoryId),
-                    },
-                    update: {
-                        $set: {
-                            order: project.order,
+        // Moving inside the same category
+        if (
+            bodyParsed.data.categoryInitialId ===
+            bodyParsed.data.project.categoryId
+        ) {
+            if (
+                bodyParsed.data.orderInitial === bodyParsed.data.project.order
+            ) {
+                return
+            }
+
+            // Moving up
+            if (bodyParsed.data.project.order < bodyParsed.data.orderInitial) {
+                await projectsCollection.updateMany(
+                    {
+                        categoryId: new ObjectId(
+                            bodyParsed.data.project.categoryId,
+                        ),
+                        order: {
+                            $gt: bodyParsed.data.project.order,
+                            $lte: bodyParsed.data.orderInitial,
                         },
                     },
+                    {
+                        $inc: {
+                            order: 1,
+                        },
+                    },
+                )
+            }
+
+            // Moving down
+            if (bodyParsed.data.project.order > bodyParsed.data.orderInitial) {
+                await projectsCollection.updateMany(
+                    {
+                        categoryId: new ObjectId(
+                            bodyParsed.data.project.categoryId,
+                        ),
+                        order: {
+                            $gte: bodyParsed.data.orderInitial,
+                            $lt: bodyParsed.data.project.order,
+                        },
+                    },
+                    {
+                        $inc: {
+                            order: -1,
+                        },
+                    },
+                )
+            }
+        }
+
+        // Moving into an other category
+        if (
+            bodyParsed.data.categoryInitialId !==
+            bodyParsed.data.project.categoryId
+        ) {
+            // Updating the old category
+            await projectsCollection.updateMany(
+                {
+                    categoryId: new ObjectId(bodyParsed.data.categoryInitialId),
+                    order: {
+                        $gte: bodyParsed.data.orderInitial,
+                    },
                 },
-            })),
+                {
+                    $inc: {
+                        order: -1,
+                    },
+                },
+            )
+
+            // Updating the targeted category
+            await projectsCollection.updateMany(
+                {
+                    categoryId: new ObjectId(
+                        bodyParsed.data.project.categoryId,
+                    ),
+                    order: {
+                        $gte: bodyParsed.data.project.order,
+                    },
+                },
+                {
+                    $inc: {
+                        order: 1,
+                    },
+                },
+            )
+        }
+
+        // Update the project
+        const { _id, categoryId, ...project } = bodyParsed.data.project
+
+        const projectUpdated = await projectsCollection.updateOne(
+            { _id: new ObjectId(_id) },
+            {
+                $set: {
+                    categoryId: new ObjectId(categoryId),
+                    ...project,
+                },
+            },
         )
 
-        return NextResponse.json(result)
+        return NextResponse.json(projectUpdated, {
+            status: 200,
+            statusText: 'Updated',
+        })
     }
 
     return NextResponse.json(null, {

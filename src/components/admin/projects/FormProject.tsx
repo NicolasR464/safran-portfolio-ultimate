@@ -4,12 +4,13 @@ import { NumberField } from '@/components/NumberFields'
 import TextField from '@/components/TextField'
 import { useProjectsStore } from '@/stores/admin/projects'
 import { ProjectNode } from '@/types/admin/projectsTable'
-import { ProjectsListResponse } from '@/types/apiResponses/admin/projects'
+import { ProjectsCategoryResponse } from '@/types/apiResponses/admin/projects'
 import { ProjectTableRowType } from '@/utils/enums'
-import { queue } from '@/components/Toast'
+import { queue as toastQueue } from '@/components/Toast'
 import { reorderRowsByOrder } from '@/utils/form'
 import { useState } from 'react'
 import { Select, SelectItem } from '@/components/Select'
+import { ProjectSchema } from '@/types/project/schema'
 
 type FormProjectProps = {
     setIsModalOpen: (isOpen: boolean) => void
@@ -25,6 +26,7 @@ const FormProject = ({ projectSelected, setIsModalOpen }: FormProjectProps) => {
     )
 
     console.log({ projectsByCategories })
+    console.log({ projectSelected })
 
     const currentCategory = projectsByCategories.find((projectsByCategory) =>
         projectsByCategory.projects.some(
@@ -36,7 +38,18 @@ const FormProject = ({ projectSelected, setIsModalOpen }: FormProjectProps) => {
 
     const currentProjects = currentCategory?.projects ?? []
 
-    const [projectsCategory, setProjectsCategory] = useState()
+    const [newProjectsCategory, setNewProjectsCategory] =
+        useState<ProjectSchema[]>()
+
+    const handleChangeCategory = (categoryId: string) => {
+        const newCategory = projectsByCategories.find(
+            (category) => category.category._id.toString() === categoryId,
+        )?.projects
+
+        console.log({ newCategory })
+
+        setNewProjectsCategory(newCategory)
+    }
 
     return (
         <Form
@@ -46,38 +59,29 @@ const FormProject = ({ projectSelected, setIsModalOpen }: FormProjectProps) => {
                 const projectOrder = Number(formData.get('projectOrder'))
                 const categoryId = String(formData.get('categoryId'))
 
-                const projects =
-                    projectsByCategories
-                        .find(
-                            (category) =>
-                                category.category._id.toString() === categoryId,
-                        )
-                        ?.projects.map((project) => ({
-                            id: project._id.toString(),
-                            kind: ProjectTableRowType.enum.project,
-                            title: project.title,
-                            order: project.order,
-                        })) || []
-
                 const reorderedProjects = reorderRowsByOrder(
-                    projects,
+                    newProjectsCategory,
                     projectSelected.id,
                     projectOrder,
                 )
 
+                console.log({ reorderedProjects })
+
                 const updateResult = await updateProjects({
                     type: ProjectTableRowType.enum.project,
-                    projects: reorderedProjects.map((category, index) => ({
-                        _id: category.id,
-                        categoryId: category.id,
+                    projects: reorderedProjects.map((project, index) => ({
+                        _id: projectSelected.id,
+                        categoryId: newCategory.id,
                         order: index + 1,
-                        ...(projectTitle && {
+                        ...(project.id === projectSelected.id && {
                             title: projectTitle,
                         }),
                     })),
                 })
 
-                queue.add(
+                console.log({ updateResult })
+
+                toastQueue.add(
                     {
                         title: updateResult.message,
                     },
@@ -107,6 +111,7 @@ const FormProject = ({ projectSelected, setIsModalOpen }: FormProjectProps) => {
                     placeholder='Update project order'
                     defaultValue={projectSelected.order}
                     maxValue={currentProjects.length}
+                    minValue={1}
                 />
 
                 {currentCategory && (
@@ -114,6 +119,11 @@ const FormProject = ({ projectSelected, setIsModalOpen }: FormProjectProps) => {
                         label='Category'
                         name='categoryId'
                         defaultSelectedKey={currentCategory.category._id.toString()}
+                        onChange={(value) => {
+                            console.log({ value })
+
+                            handleChangeCategory(value)
+                        }}
                     >
                         {projectsByCategories.map((group) => (
                             <SelectItem

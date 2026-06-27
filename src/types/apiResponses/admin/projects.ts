@@ -26,13 +26,15 @@ export const UpdateProjectsPayload = z.union([
     }),
     z.object({
         type: z.literal(ProjectTableRowType.enum.project),
-        categoryId: z.string().min(1).optional(),
-        projects: ProjectSchema.extend({
+        categoryInitialId: z.string().min(1),
+        orderInitial: z.number(),
+        /** Updated project's data */
+        project: ProjectSchema.extend({
             _id: z.string().min(1),
             categoryId: z.string().min(1),
             title: ProjectSchema.shape.title.optional(),
             images: ImageMetadata.array().optional(),
-        }).array(),
+        }),
     }),
 ])
 export type UpdateProjectsPayload = z.infer<typeof UpdateProjectsPayload>

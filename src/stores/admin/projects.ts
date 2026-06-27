@@ -85,6 +85,9 @@ export const useProjectsStore = create<ProjectsStore>()(
         },
 
         updateProjects: async (payload) => {
+            console.log('🔥  updateProjects')
+            console.log({ payload })
+
             const fail = (message: string): ActionResult => {
                 set((state) => {
                     state.isLoading = false

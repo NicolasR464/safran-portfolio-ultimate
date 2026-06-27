@@ -38,12 +38,14 @@ const findItem = (
     }
 }
 
-const reorderCategories = (
+const reorderCategoriesOnDrag = (
     categories: ProjectTreeItem[],
     movedId: Key,
     targetId: Key,
     dropPosition: 'before' | 'after',
 ) => {
+    console.log('🔥 reorderCategoriesOnDrag')
+
     const current = [...categories]
 
     const movedIndex = current.findIndex((item) => item.id === movedId)
@@ -63,6 +65,30 @@ const reorderCategories = (
     )
 
     return current
+}
+
+const reorderProjectsOnDrag = (
+    projects: CategoryNode[],
+    movedId: string,
+    targetId: string,
+) => {
+    console.log('🔥 reorderProjectsOnDrag')
+
+    console.log({ projects })
+    console.log({ movedId })
+    console.log({ targetId })
+
+    const movedCategory = projects.find((category) =>
+        category.children.some((project) => project.id === movedId),
+    )
+
+    const targetCategory = projects.find((category) =>
+        category.children.some((project) => project.id === targetId),
+    )
+
+    const isSameCategory = movedCategory?.id === targetCategory?.id
+
+    console.log({ isSameCategory })
 }
 
 const TableProjects = () => {
@@ -92,9 +118,7 @@ const TableProjects = () => {
             children: projects.map((project) => ({
                 id: project._id.toString(),
                 kind: ProjectTableRowType.enum.project,
-                title: project.title ?? 'Untitled',
-                order: project.order ?? 0,
-                children: [],
+                ...project,
             })),
         }),
     )
@@ -138,6 +162,8 @@ const TableProjects = () => {
             const targetIsProject =
                 targetItem.kind === ProjectTableRowType.enum.project
 
+            console.log('🔥 event drop : ', event.target.dropPosition)
+
             /* Category update */
             if (isMovingCategory) {
                 if (!targetIsCategory) return
@@ -145,7 +171,7 @@ const TableProjects = () => {
                 const categoryDropPosition =
                     event.target.dropPosition === 'before' ? 'before' : 'after'
 
-                const reorderedCategories = reorderCategories(
+                const reorderedCategories = reorderCategoriesOnDrag(
                     initialItems,
                     movedKey,
                     event.target.key,
@@ -166,31 +192,38 @@ const TableProjects = () => {
             /* Project update */
             if (
                 isMovingProject &&
-                targetIsCategory &&
+                !targetIsCategory &&
                 event.target.dropPosition === 'on'
             ) {
+                console.log('PROJECT UPDATE')
+
+                console.log({ event })
+
+                console.log({ targetItem })
+                console.log({ movedItem })
+
                 await updateProjects({
                     type: ProjectTableRowType.enum.project,
-                    categoryId: targetItem.id,
-                    projects: [...targetItem.children, movedItem].map(
-                        (project, index) => ({
-                            _id: project.id,
-                            categoryId: targetItem.id,
-                            order: index + 1,
-                        }),
-                    ),
+                    categoryInitialId: movedItem.categoryId,
+                    orderInitial: movedItem.order,
+                    project: {
+                        _id: movedItem.id,
+                        categoryId: targetItem.categoryId,
+                        order: targetItem.order,
+                    },
                 })
 
                 return
             }
 
-            /* Project update */
+            /* Project update its category */
             if (
                 isMovingProject &&
                 targetIsProject &&
                 (event.target.dropPosition === 'before' ||
                     event.target.dropPosition === 'after')
             ) {
+                console.log('Project update its category')
                 const parentCategory = initialItems.find(
                     (item): item is CategoryNode =>
                         item.kind === ProjectTableRowType.enum.category &&
