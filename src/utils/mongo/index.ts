@@ -15,7 +15,7 @@ const clientPromise =
     global._mongoClientPromise ??
     (global._mongoClientPromise = new MongoClient(uri).connect())
 
-const getMongoClient = async (): Promise<MongoClient> => clientPromise
+export const getMongoClient = async (): Promise<MongoClient> => clientPromise
 
 export const getDb = async (name?: string) => {
     const client = await getMongoClient()

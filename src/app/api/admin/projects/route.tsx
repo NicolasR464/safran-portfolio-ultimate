@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 import { collections } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
-import { getDb } from '@/utils/mongo'
+import { getDb, getMongoClient } from '@/utils/mongo'
 import { ProjectSchema } from '@/types/project/schema'
 import { ProjectCategorySchema } from '@/types/projectCategory/schema'
 import { ProjectTableRowType } from '@/utils/enums'
@@ -63,124 +63,140 @@ export const PATCH = async (req: Request) => {
     }
 
     /* Project update */
-    if (body.type === ProjectTableRowType.enum.project) {
+    if (bodyParsed.data.type === ProjectTableRowType.enum.project) {
         const projectsCollection = database.collection<ProjectSchema>(
             collections.PROJECTS,
         )
 
-        // Moving inside the same category
-        if (
-            bodyParsed.data.categoryInitialId ===
-            bodyParsed.data.project.categoryId
-        ) {
-            if (
-                bodyParsed.data.orderInitial === bodyParsed.data.project.order
-            ) {
-                return
-            }
+        const projectPayload = bodyParsed.data
 
-            // Moving up
-            if (bodyParsed.data.project.order < bodyParsed.data.orderInitial) {
-                await projectsCollection.updateMany(
+        const client = await getMongoClient()
+        const mongoSession = client.startSession()
+
+        await mongoSession
+            .withTransaction(async () => {
+                // Moving inside the same category
+                if (
+                    projectPayload.categoryInitialId ===
+                    projectPayload.project.categoryId
+                ) {
+                    // Moving up
+                    if (
+                        projectPayload.project.order <
+                        projectPayload.orderInitial
+                    ) {
+                        await projectsCollection.updateMany(
+                            {
+                                categoryId: new ObjectId(
+                                    projectPayload.project.categoryId,
+                                ),
+                                order: {
+                                    $gte: projectPayload.project.order,
+                                    $lt: projectPayload.orderInitial,
+                                },
+                            },
+                            {
+                                $inc: {
+                                    order: 1,
+                                },
+                            },
+                            { session: mongoSession },
+                        )
+                    }
+
+                    // Moving down
+                    if (
+                        projectPayload.project.order >
+                        projectPayload.orderInitial
+                    ) {
+                        // Update projects with orders below the target
+                        await projectsCollection.updateMany(
+                            {
+                                categoryId: new ObjectId(
+                                    projectPayload.project.categoryId,
+                                ),
+                                order: {
+                                    $gt: projectPayload.orderInitial,
+                                    $lte: projectPayload.project.order,
+                                },
+                            },
+                            {
+                                $inc: {
+                                    order: -1,
+                                },
+                            },
+                            { session: mongoSession },
+                        )
+                    }
+                }
+
+                // Moving into an other category
+                if (
+                    projectPayload.categoryInitialId !==
+                    projectPayload.project.categoryId
+                ) {
+                    // Updating the old category
+                    await projectsCollection.updateMany(
+                        {
+                            categoryId: new ObjectId(
+                                projectPayload.categoryInitialId,
+                            ),
+                            order: {
+                                $gte: projectPayload.orderInitial,
+                            },
+                        },
+                        {
+                            $inc: {
+                                order: -1,
+                            },
+                        },
+                        { session: mongoSession },
+                    )
+
+                    // Updating the targeted category
+                    await projectsCollection.updateMany(
+                        {
+                            categoryId: new ObjectId(
+                                projectPayload.project.categoryId,
+                            ),
+                            order: {
+                                $gte: projectPayload.project.order,
+                            },
+                        },
+                        {
+                            $inc: {
+                                order: 1,
+                            },
+                        },
+                        { session: mongoSession },
+                    )
+                }
+
+                // Update the project
+                const { _id, categoryId, order, ...project } =
+                    projectPayload.project
+
+                await projectsCollection.updateOne(
+                    { _id: new ObjectId(_id) },
                     {
-                        categoryId: new ObjectId(
-                            bodyParsed.data.project.categoryId,
-                        ),
-                        order: {
-                            $gt: bodyParsed.data.project.order,
-                            $lte: bodyParsed.data.orderInitial,
+                        $set: {
+                            categoryId: new ObjectId(categoryId),
+                            order: order,
+                            ...project,
                         },
                     },
-                    {
-                        $inc: {
-                            order: 1,
-                        },
-                    },
+                    { session: mongoSession },
                 )
-            }
+            })
+            .finally(async () => {
+                await mongoSession.endSession()
+            })
 
-            // Moving down
-            if (bodyParsed.data.project.order > bodyParsed.data.orderInitial) {
-                await projectsCollection.updateMany(
-                    {
-                        categoryId: new ObjectId(
-                            bodyParsed.data.project.categoryId,
-                        ),
-                        order: {
-                            $gte: bodyParsed.data.orderInitial,
-                            $lt: bodyParsed.data.project.order,
-                        },
-                    },
-                    {
-                        $inc: {
-                            order: -1,
-                        },
-                    },
-                )
-            }
-        }
-
-        // Moving into an other category
-        if (
-            bodyParsed.data.categoryInitialId !==
-            bodyParsed.data.project.categoryId
-        ) {
-            // Updating the old category
-            await projectsCollection.updateMany(
-                {
-                    categoryId: new ObjectId(bodyParsed.data.categoryInitialId),
-                    order: {
-                        $gte: bodyParsed.data.orderInitial,
-                    },
-                },
-                {
-                    $inc: {
-                        order: -1,
-                    },
-                },
-            )
-
-            // Updating the targeted category
-            await projectsCollection.updateMany(
-                {
-                    categoryId: new ObjectId(
-                        bodyParsed.data.project.categoryId,
-                    ),
-                    order: {
-                        $gte: bodyParsed.data.project.order,
-                    },
-                },
-                {
-                    $inc: {
-                        order: 1,
-                    },
-                },
-            )
-        }
-
-        // Update the project
-        const { _id, categoryId, ...project } = bodyParsed.data.project
-
-        const projectUpdated = await projectsCollection.updateOne(
-            { _id: new ObjectId(_id) },
-            {
-                $set: {
-                    categoryId: new ObjectId(categoryId),
-                    ...project,
-                },
-            },
-        )
-
-        return NextResponse.json(projectUpdated, {
-            status: 200,
+        return new NextResponse(null, {
+            status: 204,
             statusText: 'Updated',
         })
     }
-
-    return NextResponse.json(null, {
-        status: 400,
-        statusText: backErrors.INVALID_REQUEST_BODY,
-    })
 }
 
 export const GET = async () => {
