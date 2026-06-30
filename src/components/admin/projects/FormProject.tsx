@@ -8,9 +8,13 @@ import { ProjectsCategoryResponse } from '@/types/apiResponses/admin/projects'
 import { ProjectTableRowType } from '@/utils/enums'
 import { queue as toastQueue } from '@/components/Toast'
 import { reorderRowsByOrder } from '@/utils/form'
-import { useState } from 'react'
+import { Key, useState } from 'react'
 import { Select, SelectItem } from '@/components/Select'
 import { ProjectSchema } from '@/types/project/schema'
+import { ToastColorVariant } from '@/types/ui/toast'
+import { embedSrcBuilder } from '@/utils'
+import { MyRadio, RadioGroup } from '@/components/RadioGroup'
+import { VideoPlayerType } from '@/types/project'
 
 type FormProjectProps = {
     setIsModalOpen: (isOpen: boolean) => void
@@ -19,6 +23,10 @@ type FormProjectProps = {
 }
 
 const FormProject = ({ projectSelected, setIsModalOpen }: FormProjectProps) => {
+    const [videoType, setVideoType] = useState<string | null>(
+        projectSelected.video?.player ?? null,
+    )
+
     const updateProjects = useProjectsStore((state) => state.updateProjects)
 
     const projectsByCategories = useProjectsStore(
@@ -41,42 +49,24 @@ const FormProject = ({ projectSelected, setIsModalOpen }: FormProjectProps) => {
     const [newProjectsCategory, setNewProjectsCategory] =
         useState<ProjectSchema[]>()
 
-    const handleChangeCategory = (categoryId: string) => {
-        const newCategory = projectsByCategories.find(
-            (category) => category.category._id.toString() === categoryId,
-        )?.projects
-
-        console.log({ newCategory })
-
-        setNewProjectsCategory(newCategory)
-    }
-
     return (
         <Form
             className='w-full flex justify-center'
             action={async (formData) => {
-                const projectTitle = String(formData.get('projectTitle'))
-                const projectOrder = Number(formData.get('projectOrder'))
+                const title = String(formData.get('projectTitle'))
+                const order = Number(formData.get('projectOrder'))
                 const categoryId = String(formData.get('categoryId'))
-
-                const reorderedProjects = reorderRowsByOrder(
-                    newProjectsCategory,
-                    projectSelected.id,
-                    projectOrder,
-                )
-
-                console.log({ reorderedProjects })
 
                 const updateResult = await updateProjects({
                     type: ProjectTableRowType.enum.project,
-                    projects: reorderedProjects.map((project, index) => ({
+                    categoryInitialId: projectSelected.categoryId,
+                    orderInitial: projectSelected.order,
+                    project: {
                         _id: projectSelected.id,
-                        categoryId: newCategory.id,
-                        order: index + 1,
-                        ...(project.id === projectSelected.id && {
-                            title: projectTitle,
-                        }),
-                    })),
+                        title,
+                        order,
+                        categoryId,
+                    },
                 })
 
                 console.log({ updateResult })
@@ -84,6 +74,9 @@ const FormProject = ({ projectSelected, setIsModalOpen }: FormProjectProps) => {
                 toastQueue.add(
                     {
                         title: updateResult.message,
+                        variant: updateResult.success
+                            ? ToastColorVariant.enum.success
+                            : ToastColorVariant.enum.error,
                     },
                     { timeout: 5000 },
                 )
@@ -98,13 +91,16 @@ const FormProject = ({ projectSelected, setIsModalOpen }: FormProjectProps) => {
                     <span className='italic'> {projectSelected.title}</span>
                 </h2>
 
+                {/** Project Title */}
                 <TextField
                     label='Project Title'
                     name='projectTitle'
                     placeholder='Update project title'
                     defaultValue={projectSelected.title}
+                    isRequired
                 />
 
+                {/** Project Order */}
                 <NumberField
                     label='Project Order'
                     name='projectOrder'
@@ -112,18 +108,21 @@ const FormProject = ({ projectSelected, setIsModalOpen }: FormProjectProps) => {
                     defaultValue={projectSelected.order}
                     maxValue={currentProjects.length}
                     minValue={1}
+                    isRequired
                 />
 
+                {/** Project Category */}
                 {currentCategory && (
                     <Select
                         label='Category'
                         name='categoryId'
                         defaultSelectedKey={currentCategory.category._id.toString()}
-                        onChange={(value) => {
-                            console.log({ value })
-
-                            handleChangeCategory(value)
+                        onChange={(value: Key | null) => {
+                            if (typeof value === 'string') {
+                                handleChangeCategory(value)
+                            }
                         }}
+                        isRequired
                     >
                         {projectsByCategories.map((group) => (
                             <SelectItem
@@ -136,6 +135,35 @@ const FormProject = ({ projectSelected, setIsModalOpen }: FormProjectProps) => {
                         ))}
                     </Select>
                 )}
+
+                {/** Project Images */}
+
+                {/** Video Fields */}
+                <h2 className='text-start text-xl font-bold text-white mb-4'>
+                    {'Video Fields'}
+                </h2>
+                {projectSelected.video && (
+                    <TextField
+                        label='Project Video'
+                        name='projectVideo'
+                        placeholder='Update project video'
+                        defaultValue={embedSrcBuilder(
+                            projectSelected.video.player,
+                            projectSelected.video.videoId,
+                        )}
+                    />
+                )}
+
+                <RadioGroup
+                    label='Video Player'
+                    value={videoType}
+                    onChange={setVideoType}
+                >
+                    <MyRadio value={VideoPlayerType.enum.youtube}>
+                        Youtube
+                    </MyRadio>
+                    <MyRadio value={VideoPlayerType.enum.vimeo}>Vimeo</MyRadio>
+                </RadioGroup>
 
                 <ButtonGeneric type='submit'>Update</ButtonGeneric>
             </div>

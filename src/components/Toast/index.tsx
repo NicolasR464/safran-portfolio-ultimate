@@ -73,18 +73,35 @@ export const MyToastRegion = () => {
     )
 }
 
+interface MyToastContent {
+    title: string
+    description?: string
+    variant?: 'success' | 'error' | 'info'
+}
+
+const toastVariantClasses: Record<
+    NonNullable<MyToastContent['variant']>,
+    string
+> = {
+    success: 'bg-green-600 focus-visible:outline-green-600',
+    error: 'bg-red-600 focus-visible:outline-red-600',
+    info: 'bg-blue-600 focus-visible:outline-blue-600',
+}
+
 export const MyToast = ({
     toast,
     className,
     children,
 }: ToastProps<MyToastContent>) => {
+    const variant = toast.content.variant ?? 'info'
+
     return (
         <Toast
             toast={toast}
             style={{ viewTransitionName: String(toast.key) } as CSSProperties}
             className={composeTailwindRenderProps(
                 className,
-                'flex items-center gap-4 bg-blue-600 px-4 py-3 rounded-lg outline-none forced-colors:outline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-blue-600 focus-visible:outline-offset-2 [view-transition-class:toast] font-sans w-[230px]',
+                `flex items-center gap-4 px-4 py-3 rounded-lg outline-none forced-colors:outline focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 [view-transition-class:toast] font-sans w-[230px] ${toastVariantClasses[variant]}`,
             )}
         >
             {children}
