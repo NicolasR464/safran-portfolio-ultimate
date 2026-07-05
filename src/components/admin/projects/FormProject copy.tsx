@@ -11,7 +11,6 @@ import { Select, SelectItem } from '@/components/Select'
 import { ToastColorVariant } from '@/types/ui/toast'
 import { MyRadio, RadioGroup } from '@/components/RadioGroup'
 import { VideoPlayerType } from '@/types/project'
-import { embedSrcBuilder } from '@/utils'
 
 type FormProjectProps = {
     setIsModalOpen: (isOpen: boolean) => void
@@ -30,47 +29,12 @@ const FormProject = ({
     const updateDraft = useProjectsStore(
         (state) => state.updateProjectFormDraft,
     )
-    const initDraft = useProjectsStore((state) => state.initProjectFormDraft)
     const clearDraft = useProjectsStore((state) => state.clearProjectFormDraft)
 
     const updateProjects = useProjectsStore((state) => state.updateProjects)
     const projectsByCategories = useProjectsStore(
         (state) => state.projectsByCategories,
     )
-
-    useEffect(() => {
-        if (draft?._id === projectSelected.id) return
-
-        initDraft({
-            _id: projectSelected.id,
-            title: projectSelected.title,
-            order: projectSelected.order,
-            categoryId: projectSelected.categoryId,
-            images: projectSelected.images ?? [],
-            videoUrl: projectSelected.video
-                ? embedSrcBuilder(
-                      projectSelected.video.player,
-                      projectSelected.video.videoId,
-                  )
-                : '',
-            videoType: projectSelected.video?.player ?? null,
-        })
-    }, [draft?._id, projectSelected.id, initDraft, projectSelected])
-
-    const formDraft = draft ?? {
-        _id: projectSelected.id,
-        title: projectSelected.title,
-        order: projectSelected.order,
-        categoryId: projectSelected.categoryId,
-        images: projectSelected.images ?? [],
-        videoUrl: projectSelected.video
-            ? embedSrcBuilder(
-                  projectSelected.video.player,
-                  projectSelected.video.videoId,
-              )
-            : '',
-        videoType: projectSelected.video?.player ?? null,
-    }
 
     useEffect(() => {
         const categoryFound = projectsByCategories.find(
@@ -81,6 +45,8 @@ const FormProject = ({
         setCategoryLength(categoryFound?.projects.length ?? 1)
     }, [draft?.categoryId, projectsByCategories])
 
+    if (!draft) return null
+
     return (
         <Form
             className='w-full flex justify-center'
@@ -90,11 +56,11 @@ const FormProject = ({
                     categoryInitialId: projectSelected.categoryId,
                     orderInitial: projectSelected.order,
                     project: {
-                        _id: formDraft._id,
-                        title: formDraft.title,
-                        order: formDraft.order,
-                        categoryId: formDraft.categoryId,
-                        images: formDraft.images,
+                        _id: draft._id,
+                        title: draft.title,
+                        order: draft.order,
+                        categoryId: draft.categoryId,
+                        images: draft.images,
                     },
                 })
 
@@ -117,7 +83,7 @@ const FormProject = ({
             <div className='flex flex-col p-4'>
                 <h2 className='text-center text-2xl font-bold text-white mb-4'>
                     Edit project:
-                    <span className='italic'> {formDraft.title}</span>
+                    <span className='italic'> {draft.title}</span>
                 </h2>
 
                 {/* Project Title */}
@@ -125,7 +91,7 @@ const FormProject = ({
                     label='Project Title'
                     name='projectTitle'
                     placeholder='Update project title'
-                    value={formDraft.title}
+                    value={draft.title}
                     onChange={(title) => updateDraft({ title })}
                     isRequired
                 />
@@ -135,7 +101,7 @@ const FormProject = ({
                     label='Project Order'
                     name='projectOrder'
                     placeholder='Update project order'
-                    value={formDraft.order}
+                    value={draft.order}
                     onChange={(order) => updateDraft({ order })}
                     maxValue={categoryLength ?? 1}
                     minValue={1}
@@ -146,7 +112,7 @@ const FormProject = ({
                 <Select
                     label='Category'
                     name='categoryId'
-                    value={formDraft.categoryId}
+                    defaultSelectedKey={draft.categoryId}
                     onChange={(value: Key | null) => {
                         if (typeof value !== 'string') return
 
@@ -160,9 +126,9 @@ const FormProject = ({
                         updateDraft({
                             categoryId: value,
                             order:
-                                foundCategoryLength < formDraft.order
+                                foundCategoryLength < draft.order
                                     ? foundCategoryLength + 1
-                                    : formDraft.order,
+                                    : draft.order,
                         })
 
                         setCategoryLength(foundCategoryLength + 1)
@@ -197,13 +163,13 @@ const FormProject = ({
                     label='Project Video'
                     name='projectVideo'
                     placeholder='Update project video'
-                    value={formDraft.videoUrl}
+                    value={draft.videoUrl}
                     onChange={(videoUrl) => updateDraft({ videoUrl })}
                 />
 
                 <RadioGroup
                     label='Video Player'
-                    value={formDraft.videoType}
+                    value={draft.videoType}
                     onChange={(videoType) =>
                         updateDraft({
                             videoType: videoType as VideoPlayerType,

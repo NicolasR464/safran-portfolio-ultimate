@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Collection, useDragAndDrop } from 'react-aria-components'
 import type { Key } from 'react-aria-components'
 import { MyToastRegion } from '@/components/Toast'
@@ -21,7 +21,8 @@ import ModalTrigger from '@/components/Modal/ModalTrigger'
 import Modal from '@/components/Modal'
 import FormCategory from '@/components/admin/projects/FormCategory'
 import FormProject from '@/components/admin/projects/FormProject'
-import { CategoryNode, ProjectTreeItem } from '@/types/admin/projectsTable'
+import { ProjectTreeItem } from '@/types/admin/projectsTable'
+import { CldUploadWidget } from 'next-cloudinary'
 
 const findItem = (
     items: ProjectTreeItem[],
@@ -68,6 +69,8 @@ const reorderCategoriesOnDrag = (
 const TableProjects = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMetadata, setModalMetadata] = useState<ProjectTreeItem>()
+    const [isCloudinaryOpen, setIsCloudinaryOpen] = useState(false)
+    const cloudinaryOpenRef = useRef<null | (() => void)>(null)
 
     const projectsByCategories = useProjectsStore(
         (state) => state.projectsByCategories,
@@ -93,6 +96,7 @@ const TableProjects = () => {
                 id: project._id.toString(),
                 kind: ProjectTableRowType.enum.project,
                 ...project,
+                categoryId: category._id.toString(),
             })),
         }),
     )
@@ -190,42 +194,6 @@ const TableProjects = () => {
                         order: 1,
                     },
                 })
-
-                return
-                const parentCategory = initialItems.find(
-                    (item): item is CategoryNode =>
-                        item.kind === ProjectTableRowType.enum.category &&
-                        item.children.some(
-                            (project) => project.id === targetItem.id,
-                        ),
-                )
-
-                if (!parentCategory) return
-
-                const projects = [...parentCategory.children]
-
-                const movedIndex = projects.findIndex(
-                    (project) => project.id === movedItem.id,
-                )
-                const targetIndex = projects.findIndex(
-                    (project) => project.id === targetItem.id,
-                )
-
-                if (movedIndex === -1 || targetIndex === -1) return
-
-                const [movedProject] = projects.splice(movedIndex, 1)
-
-                const nextTargetIndex = projects.findIndex(
-                    (project) => project.id === targetItem.id,
-                )
-
-                projects.splice(
-                    event.target.dropPosition === 'before'
-                        ? nextTargetIndex
-                        : nextTargetIndex + 1,
-                    0,
-                    movedProject,
-                )
             }
         },
     })
@@ -287,7 +255,7 @@ const TableProjects = () => {
 
             {/** Modal */}
             <ModalTrigger
-                isOpen={isModalOpen}
+                isOpen={isModalOpen && !isCloudinaryOpen}
                 onOpenChange={(open) => {
                     setIsModalOpen(open)
                 }}
@@ -308,10 +276,28 @@ const TableProjects = () => {
                         <FormProject
                             projectSelected={modalMetadata}
                             setIsModalOpen={setIsModalOpen}
+                            onUploadClick={() => {
+                                setIsCloudinaryOpen(true)
+                                setTimeout(() => {
+                                    cloudinaryOpenRef.current?.()
+                                }, 0)
+                            }}
                         />
                     )}
                 </Modal>
             </ModalTrigger>
+
+            <CldUploadWidget
+                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
+                onClose={() => {
+                    setIsCloudinaryOpen(false)
+                }}
+            >
+                {({ open }) => {
+                    cloudinaryOpenRef.current = open
+                    return null
+                }}
+            </CldUploadWidget>
         </div>
     )
 }

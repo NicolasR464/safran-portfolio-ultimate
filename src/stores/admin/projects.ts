@@ -10,50 +10,72 @@ import {
 } from '@/types/apiResponses/admin/projects'
 
 import { backErrors, backSuccess } from '@/utils/constants/messages'
+import { ImageMetadata, VideoPlayerType } from '@/types/project'
 
-// type UpdateProjectsPayload =
-//     | {
-//           type: typeof ProjectTableRowType.enum.category
-//           categories: {
-//               id: string
-//               order: number
-//           }[]
-//       }
-//     | {
-//           type: typeof ProjectTableRowType.enum.project
-//           categoryId?: string
-//           projects: {
-//               id: string
-//               order: number
-//               name?: string
-//           }[]
-//       }
+type ProjectFormDraft = {
+    _id: string
+    title: string
+    order: number
+    categoryId: string
+    images: ImageMetadata[]
+    videoUrl: string
+    videoType: VideoPlayerType | null
+}
 
 type ProjectsStore = {
     projectsByCategories: ProjectsListResponse
     isLoading: boolean
     initialized: boolean
+    projectFormDraft: ProjectFormDraft | null
 
     fetchProjects: () => Promise<void>
     updateProjects: (payload: UpdateProjectsPayload) => Promise<ActionResult>
+    initProjectFormDraft: (draft: ProjectFormDraft) => void
+    updateProjectFormDraft: (draft: Partial<ProjectFormDraft>) => void
+    clearProjectFormDraft: () => void
     reset: () => void
 }
 
-const initialState = {
+const initialState: Pick<
+    ProjectsStore,
+    'projectsByCategories' | 'isLoading' | 'initialized' | 'projectFormDraft'
+> = {
     projectsByCategories: [],
     isLoading: false,
     initialized: false,
+    projectFormDraft: null,
 }
 
 export const useProjectsStore = create<ProjectsStore>()(
     immer((set) => ({
         ...initialState,
 
+        initProjectFormDraft: (draft) => {
+            set((state) => {
+                state.projectFormDraft = draft
+            })
+        },
+
+        updateProjectFormDraft: (draft) => {
+            set((state) => {
+                if (!state.projectFormDraft) return
+
+                Object.assign(state.projectFormDraft, draft)
+            })
+        },
+
+        clearProjectFormDraft: () => {
+            set((state) => {
+                state.projectFormDraft = null
+            })
+        },
+
         reset: () => {
             set((state) => {
                 state.projectsByCategories = []
                 state.isLoading = false
                 state.initialized = false
+                state.projectFormDraft = null
             })
         },
 
@@ -85,7 +107,7 @@ export const useProjectsStore = create<ProjectsStore>()(
         },
 
         updateProjects: async (payload) => {
-            console.log('🔥  updateProjects')
+            console.log('🔥  updateProjects called in store')
             console.log({ payload })
 
             const fail = (message: string): ActionResult => {
