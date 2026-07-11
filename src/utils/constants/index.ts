@@ -18,3 +18,11 @@ export const localLogos = {
     loaderCinemaReel: { SRC: '/cinema-reel-white.png', ALT: 'Loading' },
     reel: { SRC: '/reel.png', ALT: 'Cinema reel' },
 }
+
+export const cloudinaryFolders = {
+    MAIN:
+        process.env.NEXT_PUBLIC_CLOUDINARY_MAIN_FOLDER ||
+        process.env.CLOUDINARY_MAIN_FOLDER ||
+        'saf_portfolio/',
+    PORTFOLIO: 'portfolio',
+}

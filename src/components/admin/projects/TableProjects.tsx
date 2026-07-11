@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Collection, useDragAndDrop } from 'react-aria-components'
 import type { Key } from 'react-aria-components'
 import { MyToastRegion } from '@/components/Toast'
+import { queue as toastQueue } from '@/components/Toast'
 
 import {
     Cell,
@@ -23,6 +24,8 @@ import FormCategory from '@/components/admin/projects/FormCategory'
 import FormProject from '@/components/admin/projects/FormProject'
 import { ProjectTreeItem } from '@/types/admin/projectsTable'
 import { CldUploadWidget } from 'next-cloudinary'
+import { cloudinaryFolders } from '@/utils/constants'
+import { ToastColorVariant } from '@/types/ui/toast'
 
 const findItem = (
     items: ProjectTreeItem[],
@@ -79,6 +82,12 @@ const TableProjects = () => {
     const isLoading = useProjectsStore((state) => state.isLoading)
     const fetchProjects = useProjectsStore((state) => state.fetchProjects)
     const updateProjects = useProjectsStore((state) => state.updateProjects)
+
+    const draft = useProjectsStore((state) => state.projectFormDraft)
+    const updateDraft = useProjectsStore(
+        (state) => state.updateProjectFormDraft,
+    )
+    const resetDraft = useProjectsStore((state) => state.clearProjectFormDraft)
 
     useEffect(() => {
         if (!initialized) {
@@ -209,6 +218,9 @@ const TableProjects = () => {
                 <Cell>
                     <ButtonGeneric
                         onPress={() => {
+                            if (draft?._id !== item.id) {
+                                resetDraft()
+                            }
                             setIsModalOpen(true)
                             setModalMetadata(item)
                         }}
@@ -279,7 +291,7 @@ const TableProjects = () => {
                             onUploadClick={() => {
                                 setIsCloudinaryOpen(true)
                                 setTimeout(() => {
-                                    cloudinaryOpenRef.current?.()
+                                    cloudinaryOpenRef?.current?.()
                                 }, 0)
                             }}
                         />
@@ -287,17 +299,55 @@ const TableProjects = () => {
                 </Modal>
             </ModalTrigger>
 
-            <CldUploadWidget
-                uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
-                onClose={() => {
-                    setIsCloudinaryOpen(false)
-                }}
-            >
-                {({ open }) => {
-                    cloudinaryOpenRef.current = open
-                    return null
-                }}
-            </CldUploadWidget>
+            {draft && (
+                <CldUploadWidget
+                    uploadPreset={
+                        process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
+                    }
+                    options={{
+                        multiple: true,
+                        sources: ['local', 'dropbox', 'google_drive'],
+                        folder:
+                            cloudinaryFolders.MAIN +
+                            cloudinaryFolders.PORTFOLIO,
+                        resourceType: 'image',
+                    }}
+                    onSuccess={(result) => {
+                        if (!result || !result.info) return
+
+                        const newImage = {
+                            imageId: result.info.public_id,
+                            url: result.info.secure_url,
+                            types: [],
+                        }
+
+                        console.log('draft in CloudiWidget : ', draft)
+
+                        updateDraft((currentDraft) => ({
+                            ...currentDraft,
+                            images: [...(currentDraft.images ?? []), newImage],
+                        }))
+                    }}
+                    onClose={() => {
+                        setIsCloudinaryOpen(false)
+                    }}
+                    onError={(error) => {
+                        if (error)
+                            toastQueue.add(
+                                {
+                                    title: error.toString(),
+                                    variant: ToastColorVariant.enum.error,
+                                },
+                                { timeout: 5000 },
+                            )
+                    }}
+                >
+                    {({ open }) => {
+                        cloudinaryOpenRef.current = open
+                        return null
+                    }}
+                </CldUploadWidget>
+            )}
         </div>
     )
 }

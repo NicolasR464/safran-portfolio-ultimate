@@ -24,7 +24,7 @@ const ButtonGeneric = ({
         <ReactAriaButton
             {...props}
             onPress={onPress}
-            className={`${className}     
+            className={`     
                 cursor-pointer
                 m-2
                 px-8
@@ -42,8 +42,9 @@ const ButtonGeneric = ({
                 hover:brightness-110
                 
                 text-white
-                font-poiret text-xl font-semibold
-                `}
+                font-poiret text-xl font-semibold  
+                ${className}
+            `}
             isDisabled={isDisabled}
         >
             {children}

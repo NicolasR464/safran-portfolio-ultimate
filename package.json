@@ -21,6 +21,7 @@
   "dependencies": {
     "@react-types/shared": "^3.34.0",
     "@tailwindcss/typography": "^0.5.19",
+    "cloudinary": "^2.10.0",
     "clsx": "^2.1.1",
     "embla-carousel": "^8.6.0",
     "embla-carousel-react": "^8.6.0",

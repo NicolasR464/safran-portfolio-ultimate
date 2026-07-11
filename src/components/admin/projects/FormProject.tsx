@@ -12,6 +12,8 @@ import { ToastColorVariant } from '@/types/ui/toast'
 import { MyRadio, RadioGroup } from '@/components/RadioGroup'
 import { VideoPlayerType } from '@/types/project'
 import { embedSrcBuilder } from '@/utils'
+import ProjectImagesGrid from './ProjectImagesGrid'
+import FormSeparator from './FormSeparator'
 
 type FormProjectProps = {
     setIsModalOpen: (isOpen: boolean) => void
@@ -31,12 +33,18 @@ const FormProject = ({
         (state) => state.updateProjectFormDraft,
     )
     const initDraft = useProjectsStore((state) => state.initProjectFormDraft)
-    const clearDraft = useProjectsStore((state) => state.clearProjectFormDraft)
 
     const updateProjects = useProjectsStore((state) => state.updateProjects)
     const projectsByCategories = useProjectsStore(
         (state) => state.projectsByCategories,
     )
+    const isLoading = useProjectsStore((state) => state.isLoading)
+
+    useEffect(() => {
+        console.count('🚀 DRAFT')
+
+        console.log({ draft })
+    }, [draft])
 
     useEffect(() => {
         if (draft?._id === projectSelected.id) return
@@ -109,7 +117,6 @@ const FormProject = ({
                 )
 
                 if (updateResult.success) {
-                    clearDraft()
                     setIsModalOpen(false)
                 }
             }}
@@ -120,25 +127,15 @@ const FormProject = ({
                     <span className='italic'> {formDraft.title}</span>
                 </h2>
 
+                <FormSeparator title='Description' />
+
                 {/* Project Title */}
                 <TextField
-                    label='Project Title'
+                    label='Project‘s title'
                     name='projectTitle'
                     placeholder='Update project title'
                     value={formDraft.title}
                     onChange={(title) => updateDraft({ title })}
-                    isRequired
-                />
-
-                {/* Project Order */}
-                <NumberField
-                    label='Project Order'
-                    name='projectOrder'
-                    placeholder='Update project order'
-                    value={formDraft.order}
-                    onChange={(order) => updateDraft({ order })}
-                    maxValue={categoryLength ?? 1}
-                    minValue={1}
                     isRequired
                 />
 
@@ -180,21 +177,39 @@ const FormProject = ({
                     ))}
                 </Select>
 
+                {/* Order of appearance */}
+                <NumberField
+                    label='Order of appearance'
+                    name='projectOrder'
+                    placeholder='Update project order'
+                    value={formDraft.order}
+                    onChange={(order) => updateDraft({ order })}
+                    maxValue={categoryLength ?? 1}
+                    minValue={1}
+                    isRequired
+                />
+
                 {/* Project Images */}
+                <FormSeparator title='Images' />
+
                 <ButtonGeneric
                     type='button'
                     onPress={onUploadClick}
+                    className='font-mono'
                 >
-                    Upload Files
+                    Upload Images
                 </ButtonGeneric>
 
-                <h2 className='text-start text-xl font-bold text-white mb-4'>
-                    Video Fields
-                </h2>
+                <ProjectImagesGrid
+                    images={formDraft.images}
+                    onImagesChange={(images) => updateDraft({ images })}
+                />
 
                 {/* Project Video */}
+                <FormSeparator title='Video' />
+
                 <TextField
-                    label='Project Video'
+                    label='Video URL '
                     name='projectVideo'
                     placeholder='Update project video'
                     value={formDraft.videoUrl}
@@ -217,7 +232,9 @@ const FormProject = ({
                     <MyRadio value={VideoPlayerType.enum.vimeo}>Vimeo</MyRadio>
                 </RadioGroup>
 
-                <ButtonGeneric type='submit'>Update</ButtonGeneric>
+                <ButtonGeneric type='submit'>
+                    {isLoading ? 'Updating...' : 'Update'}
+                </ButtonGeneric>
             </div>
         </Form>
     )

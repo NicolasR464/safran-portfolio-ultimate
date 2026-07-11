@@ -22,6 +22,10 @@ type ProjectFormDraft = {
     videoType: VideoPlayerType | null
 }
 
+type ProjectFormDraftUpdate =
+    | Partial<ProjectFormDraft>
+    | ((current: ProjectFormDraft) => Partial<ProjectFormDraft>)
+
 type ProjectsStore = {
     projectsByCategories: ProjectsListResponse
     isLoading: boolean
@@ -31,7 +35,7 @@ type ProjectsStore = {
     fetchProjects: () => Promise<void>
     updateProjects: (payload: UpdateProjectsPayload) => Promise<ActionResult>
     initProjectFormDraft: (draft: ProjectFormDraft) => void
-    updateProjectFormDraft: (draft: Partial<ProjectFormDraft>) => void
+    updateProjectFormDraft: (update: ProjectFormDraftUpdate) => void
     clearProjectFormDraft: () => void
     reset: () => void
 }
@@ -56,15 +60,28 @@ export const useProjectsStore = create<ProjectsStore>()(
             })
         },
 
-        updateProjectFormDraft: (draft) => {
+        updateProjectFormDraft: (update) =>
             set((state) => {
-                if (!state.projectFormDraft) return
+                const current = state.projectFormDraft
 
-                Object.assign(state.projectFormDraft, draft)
-            })
-        },
+                if (!current) {
+                    return {}
+                }
+
+                const changes =
+                    typeof update === 'function' ? update(current) : update
+
+                return {
+                    projectFormDraft: {
+                        ...current,
+                        ...changes,
+                    },
+                }
+            }),
 
         clearProjectFormDraft: () => {
+            console.count('🚀 clearProjectFormDraft')
+
             set((state) => {
                 state.projectFormDraft = null
             })
@@ -107,7 +124,8 @@ export const useProjectsStore = create<ProjectsStore>()(
         },
 
         updateProjects: async (payload) => {
-            console.log('🔥  updateProjects called in store')
+            console.log('🚀 updateProjects')
+
             console.log({ payload })
 
             const fail = (message: string): ActionResult => {
@@ -158,6 +176,7 @@ export const useProjectsStore = create<ProjectsStore>()(
                 state.projectsByCategories = parsedResponse
                 state.isLoading = false
                 state.initialized = true
+                state.clearProjectFormDraft()
             })
 
             return {
