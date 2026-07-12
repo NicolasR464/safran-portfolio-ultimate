@@ -19,6 +19,7 @@
     "shield": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm knip && pnpm test:unit"
   },
   "dependencies": {
+    "@mdxeditor/editor": "^4.0.4",
     "@react-types/shared": "^3.34.0",
     "@tailwindcss/typography": "^0.5.19",
     "cloudinary": "^2.10.0",

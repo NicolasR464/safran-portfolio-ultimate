@@ -12,8 +12,10 @@ import { ToastColorVariant } from '@/types/ui/toast'
 import { MyRadio, RadioGroup } from '@/components/RadioGroup'
 import { VideoPlayerType } from '@/types/project'
 import { embedSrcBuilder } from '@/utils'
-import ProjectImagesGrid from './ProjectImagesGrid'
-import FormSeparator from './FormSeparator'
+import ProjectImagesGrid from '@/components/admin/projects/ProjectImagesGrid'
+import FormSeparator from '@/components/admin/projects/FormSeparator'
+import WYSIWYG from '@/components/admin/WYSIWYG'
+import { X } from 'lucide-react'
 
 type FormProjectProps = {
     setIsModalOpen: (isOpen: boolean) => void
@@ -52,6 +54,7 @@ const FormProject = ({
         initDraft({
             _id: projectSelected.id,
             title: projectSelected.title,
+            description: projectSelected.description,
             order: projectSelected.order,
             categoryId: projectSelected.categoryId,
             images: projectSelected.images ?? [],
@@ -68,6 +71,7 @@ const FormProject = ({
     const formDraft = draft ?? {
         _id: projectSelected.id,
         title: projectSelected.title,
+        description: projectSelected.description,
         order: projectSelected.order,
         categoryId: projectSelected.categoryId,
         images: projectSelected.images ?? [],
@@ -91,7 +95,7 @@ const FormProject = ({
 
     return (
         <Form
-            className='w-full flex justify-center'
+            className='w-full flex justify-center max-h-[80vh] overflow-y-auto'
             action={async () => {
                 const updateResult = await updateProjects({
                     type: ProjectTableRowType.enum.project,
@@ -100,6 +104,7 @@ const FormProject = ({
                     project: {
                         _id: formDraft._id,
                         title: formDraft.title,
+                        description: formDraft.description,
                         order: formDraft.order,
                         categoryId: formDraft.categoryId,
                         images: formDraft.images,
@@ -122,7 +127,13 @@ const FormProject = ({
             }}
         >
             <div className='flex flex-col p-4'>
-                <h2 className='text-center text-2xl font-bold text-white mb-4'>
+                <ButtonGeneric
+                    className='absolute top-0 left-0 z-50'
+                    onClick={() => setIsModalOpen(false)}
+                >
+                    <X />
+                </ButtonGeneric>
+                <h2 className='z-20 text-center text-2xl font-bold text-white mt-6 p-2 px-12 mb-4 sticky top-0 bg-[var(--grey-dark)]'>
                     Edit project:
                     <span className='italic'> {formDraft.title}</span>
                 </h2>
@@ -138,6 +149,13 @@ const FormProject = ({
                     onChange={(title) => updateDraft({ title })}
                     isRequired
                 />
+
+                {/* Project Description */}
+                <div className='m-3'>
+                    <span className='text-sm'>Description</span>
+
+                    <WYSIWYG markdown={formDraft.description ?? ''} />
+                </div>
 
                 {/* Project Category */}
                 <Select
@@ -232,7 +250,10 @@ const FormProject = ({
                     <MyRadio value={VideoPlayerType.enum.vimeo}>Vimeo</MyRadio>
                 </RadioGroup>
 
-                <ButtonGeneric type='submit'>
+                <ButtonGeneric
+                    className='sticky bottom-2'
+                    type='submit'
+                >
                     {isLoading ? 'Updating...' : 'Update'}
                 </ButtonGeneric>
             </div>

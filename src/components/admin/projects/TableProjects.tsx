@@ -272,7 +272,7 @@ const TableProjects = () => {
                     setIsModalOpen(open)
                 }}
             >
-                <Modal>
+                <Modal isDismissable={false}>
                     {/** Category form */}
                     {modalMetadata?.kind ===
                         ProjectTableRowType.enum.category && (

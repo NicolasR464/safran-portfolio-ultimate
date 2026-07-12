@@ -15,11 +15,12 @@ import { ImageMetadata, VideoPlayerType } from '@/types/project'
 type ProjectFormDraft = {
     _id: string
     title: string
+    description?: string
     order: number
     categoryId: string
     images: ImageMetadata[]
-    videoUrl: string
-    videoType: VideoPlayerType | null
+    videoUrl?: string
+    videoType?: VideoPlayerType
 }
 
 type ProjectFormDraftUpdate =

@@ -226,8 +226,8 @@ const ProjectImagesGrid = ({
                     ].join(' ')}
                 >
                     {isDeleteMode
-                        ? 'Select images to delete, then click Delete again.'
-                        : 'Select a category, then click an image.'}
+                        ? 'ℹ️ Select images to delete, then click Delete again.'
+                        : 'ℹ️ Select a category, then click an image.'}
                 </p>
             </div>
 

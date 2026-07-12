@@ -3,7 +3,7 @@ import Image from 'next/image'
 
 const FormSeparator = ({ title }: { title: string }) => {
     return (
-        <div className='flex justify-center m-4'>
+        <div className='flex justify-center mt-6'>
             <span>
                 <Image
                     className='invert'

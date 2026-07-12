@@ -6,12 +6,11 @@ cloudinary.v2.config({
     secure: true,
 })
 
-console.log(cloudinary.v2.config())
-
 export const cloudinaryImagesDelete = async (imageIds: Set<string>) => {
     cloudinary.v2.api
         .delete_resources(Array.from(imageIds), {
             resource_type: 'image',
         })
-        .then((result) => console.log(result))
+        // oxlint-disable-next-line no-console
+        .catch((error) => console.error(error))
 }

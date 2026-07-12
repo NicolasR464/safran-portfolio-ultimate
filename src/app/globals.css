@@ -2,16 +2,21 @@
 @plugin "tailwindcss-animate";
 @plugin "tailwindcss-react-aria-components";
 @plugin "@tailwindcss/typography";
+@import '../../node_modules/@mdxeditor/editor/dist/style.css';
 
 :root {
-    --background: #000000;
     --header-height: 50px;
-}
 
-@theme inline {
-    --color-background: var(--background);
-    --font-mono: var(--font-cairo);
-    --font-poiret: var(--font-poiret-one);
+    --background: #000000;
+    --foreground: #e7e5e4;
+
+    --grey-dark: #1c1c1c;
+    --grey-light: #525252;
+    --grey-lighter: #737373;
+
+    --font-mono-stack:
+        ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        'Liberation Mono', 'Courier New', monospace;
 }
 
 body {
@@ -19,24 +24,203 @@ body {
     color: var(--foreground);
 }
 
-.active-button {
-    border: #bcbcbc 1.8px solid;
-    box-shadow:
-        0 0 10px rgba(255, 255, 255, 0.4),
-        0 0 20px rgba(255, 255, 255, 0.2);
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+
+    --font-mono: var(--font-cairo);
+    --font-poiret: var(--font-poiret-one);
 }
 
+/* WYSIWYG - MDXEditor theme */
+.wysiwyg-theme {
+    width: 100%;
+    min-width: 0;
+    color: #ffffff;
+    background: transparent;
+}
+
+.wysiwyg-theme [contenteditable='true'] {
+    box-sizing: border-box;
+    display: block;
+
+    width: 100%;
+    min-width: 0;
+
+    padding: 12px;
+
+    color: #ffffff !important;
+    caret-color: #ffffff;
+    background-color: var(--grey-dark) !important;
+
+    border: 1px solid var(--grey-light) !important;
+    border-radius: 8px;
+
+    outline: none !important;
+}
+
+/* Direct editable content */
+.wysiwyg-theme [contenteditable='true'] p {
+    margin: 0;
+    color: #ffffff !important;
+}
+
+.wysiwyg-theme
+    [contenteditable='true']
+    :where(span, strong, em, li, h1, h2, h3, blockquote) {
+    color: #ffffff !important;
+}
+
+/* Focus */
+.wysiwyg-theme [contenteditable='true']:focus,
+.wysiwyg-theme [contenteditable='true']:focus-visible {
+    border-color: #737373 !important;
+    box-shadow: 0 0 0 1px #737373;
+}
+
+/* Text selection */
+.wysiwyg-theme [contenteditable='true']::selection,
+.wysiwyg-theme [contenteditable='true'] *::selection {
+    color: #ffffff;
+    background: rgb(8 145 178 / 50%);
+}
+
+/* Placeholder */
+.wysiwyg-theme [contenteditable='true'] [data-placeholder],
+.wysiwyg-theme [contenteditable='true'] [data-placeholder]::before {
+    color: var(--grey-lighter) !important;
+}
+
+/* Remove default spacing */
+.wysiwyg-theme [contenteditable='true'] > :first-child {
+    margin-top: 0;
+}
+
+.wysiwyg-theme [contenteditable='true'] > :last-child {
+    margin-bottom: 0;
+}
+
+/* MDXEditor popovers, dialogs and tooltips */
+.mdxeditor-popup-container {
+    position: relative;
+    z-index: 99999 !important;
+    pointer-events: auto !important;
+}
+
+.mdxeditor-popup-container [data-radix-popper-content-wrapper] {
+    z-index: 100000 !important;
+    pointer-events: auto !important;
+}
+/* END - MDXEditor popovers, dialogs and tooltips */
+
+.wysiwyg-content {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 120px;
+    max-height: 320px;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 12px;
+
+    color: white !important;
+    caret-color: white;
+    background: var(--grey-dark) !important;
+
+    border: 1px solid var(--grey-light);
+    border-radius: 8px;
+    outline: none;
+
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.wysiwyg-content a {
+    color: #22d3ee !important;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    transition:
+        color 150ms ease,
+        text-decoration-color 150ms ease;
+}
+
+.wysiwyg-content a:hover {
+    color: #67e8f9 !important;
+    text-decoration-color: #67e8f9;
+}
+
+.wysiwyg-content a:visited {
+    color: #a78bfa !important;
+}
+
+.wysiwyg-content a:focus-visible {
+    outline: 2px solid #22d3ee;
+    outline-offset: 2px;
+    border-radius: 2px;
+}
+
+.wysiwyg-content h2 {
+    margin: 0.9rem 0 0.5rem;
+    font-size: 1.6rem;
+    line-height: 1.25;
+    font-weight: 700;
+}
+
+.wysiwyg-content h3 {
+    margin: 0.8rem 0 0.4rem;
+    font-size: 1.3rem;
+    line-height: 1.3;
+    font-weight: 600;
+}
+
+/* Bullet point list */
+.wysiwyg-theme .wysiwyg-content ul {
+    display: block !important;
+    margin: 0.75rem 0 !important;
+    padding-left: 0 !important;
+    list-style-type: disc !important;
+    list-style-position: inside !important;
+}
+
+.wysiwyg-theme .wysiwyg-content ul > li,
+.wysiwyg-theme .wysiwyg-content li[class*='_listitem_'] {
+    display: list-item !important;
+    margin: 0.25rem 0 !important;
+    padding-left: 0.25rem !important;
+    list-style-type: disc !important;
+    list-style-position: inside !important;
+}
+
+.wysiwyg-theme .wysiwyg-content li::marker {
+    color: white !important;
+}
+
+.wysiwyg-theme .wysiwyg-content ul ul > li {
+    list-style-type: circle !important;
+}
+
+.wysiwyg-theme .wysiwyg-content ul ul ul > li {
+    list-style-type: square !important;
+}
+
+/* END - WYSIWYG - MDXEditor theme */
+
+/* Button animation on data load */
 @keyframes glowPulse {
     0%,
     100% {
         box-shadow:
-            0 0 10px rgba(255, 255, 255, 0.4),
-            0 0 20px rgba(255, 255, 255, 0.2);
+            0 0 10px rgb(255 255 255 / 40%),
+            0 0 20px rgb(255 255 255 / 20%);
     }
+
     50% {
         box-shadow:
-            0 0 25px rgba(255, 255, 255, 0.8),
-            0 0 60px rgba(255, 255, 255, 0.4);
+            0 0 25px rgb(255 255 255 / 80%),
+            0 0 60px rgb(255 255 255 / 40%);
     }
 }
 
