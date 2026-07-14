@@ -4,6 +4,7 @@ export const VideoPlayerType = z.enum(['youtube', 'vimeo'])
 export type VideoPlayerType = z.infer<typeof VideoPlayerType>
 
 export const VideoMetadata = z.object({
+    url: z.url(),
     videoId: z.string().min(1),
     player: VideoPlayerType,
     isPublicRated: z.boolean().optional(),

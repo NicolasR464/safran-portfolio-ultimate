@@ -1,20 +1,12 @@
 import { CategoryNode, ProjectNode } from '@/types/admin/projectsTable'
-import { ProjectTableRowType } from '../enums'
+import { ProjectTableRowType } from '@/utils/enums/admin'
 
 export const reorderRowsByOrder = <T extends CategoryNode | ProjectNode>(
     rows: T[],
     movedId: string,
     nextOrder: number,
 ): T[] => {
-    console.log('🔥 reorderRowsByOrder')
-
-    console.log({ rows })
-    console.log({ movedId })
-    console.log({ nextOrder })
-
     const current = [...rows]
-
-    console.log({ current })
 
     const movedIndex = current.findIndex((row) => row.id === movedId)
 
@@ -23,8 +15,6 @@ export const reorderRowsByOrder = <T extends CategoryNode | ProjectNode>(
         const newProject = current.find(
             (row) => row.kind === ProjectTableRowType.enum.project,
         )
-
-        console.log('IN NEW PROJECT : ', newProject)
 
         if (!newProject) return current
 

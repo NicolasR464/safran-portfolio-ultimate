@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Collection, useDragAndDrop } from 'react-aria-components'
 import type { Key } from 'react-aria-components'
 import { MyToastRegion } from '@/components/Toast'
@@ -15,9 +15,9 @@ import {
     TableHeader,
 } from '@/components/Table'
 import { useProjectsStore } from '@/stores/admin/projects'
-import { ProjectTableRowType } from '@/utils/enums'
+import { FormMode, ProjectTableRowType } from '@/utils/enums/admin'
 import ButtonGeneric from '@/components/buttons/ButtonGeneric'
-import { Pencil } from 'lucide-react'
+import { Pencil, Trash } from 'lucide-react'
 import ModalTrigger from '@/components/Modal/ModalTrigger'
 import Modal from '@/components/Modal'
 import FormCategory from '@/components/admin/projects/FormCategory'
@@ -26,6 +26,7 @@ import { ProjectTreeItem } from '@/types/admin/projectsTable'
 import { CldUploadWidget } from 'next-cloudinary'
 import { cloudinaryFolders } from '@/utils/constants'
 import { ToastColorVariant } from '@/types/ui/toast'
+import ModalDelete from './ModalDelete'
 
 const findItem = (
     items: ProjectTreeItem[],
@@ -71,9 +72,13 @@ const reorderCategoriesOnDrag = (
 
 const TableProjects = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [modalMetadata, setModalMetadata] = useState<ProjectTreeItem>()
+    const [isDelete, setIsDelete] = useState(false)
+
     const [isCloudinaryOpen, setIsCloudinaryOpen] = useState(false)
     const cloudinaryOpenRef = useRef<null | (() => void)>(null)
+
+    const [formMode, setFormMode] = useState<FormMode | null>(null)
+    const [selectedItemId, setSelectedItemId] = useState<Key | null>(null)
 
     const projectsByCategories = useProjectsStore(
         (state) => state.projectsByCategories,
@@ -95,19 +100,31 @@ const TableProjects = () => {
         }
     }, [initialized, fetchProjects])
 
-    const initialItems: ProjectTreeItem[] = projectsByCategories.map(
-        ({ category, projects }) => ({
-            id: category._id.toString(),
-            kind: ProjectTableRowType.enum.category,
-            name: category.name,
-            order: category.order,
-            children: projects.map((project) => ({
-                id: project._id.toString(),
-                kind: ProjectTableRowType.enum.project,
-                ...project,
-                categoryId: category._id.toString(),
+    const initialItems = useMemo<ProjectTreeItem[]>(
+        () =>
+            projectsByCategories.map(({ category, projects }) => ({
+                id: category._id.toString(),
+                kind: ProjectTableRowType.enum.category,
+                name: category.name,
+                order: category.order,
+                children: projects.map((project) => ({
+                    ...project,
+                    id: project._id.toString(),
+                    kind: ProjectTableRowType.enum.project,
+                    categoryId: category._id.toString(),
+                })),
             })),
-        }),
+
+        [projectsByCategories],
+    )
+
+    const modalMetadata = useMemo(
+        () =>
+            selectedItemId !== null
+                ? findItem(initialItems, selectedItemId)
+                : undefined,
+
+        [initialItems, selectedItemId],
     )
 
     const { dragAndDropHooks } = useDragAndDrop({
@@ -215,17 +232,40 @@ const TableProjects = () => {
                 <Cell>{isCategory ? item.name : item.title}</Cell>
                 <Cell>{isCategory ? 'Category' : 'Project'}</Cell>
                 <Cell>{item.order}</Cell>
+
+                {/** Update button */}
                 <Cell>
                     <ButtonGeneric
                         onPress={() => {
                             if (draft?._id !== item.id) {
                                 resetDraft()
                             }
+
+                            setSelectedItemId(item.id)
+
+                            setFormMode(
+                                item.kind === ProjectTableRowType.enum.category
+                                    ? FormMode.enum['edit-category']
+                                    : FormMode.enum['edit-project'],
+                            )
+
                             setIsModalOpen(true)
-                            setModalMetadata(item)
                         }}
                     >
                         <Pencil />
+                    </ButtonGeneric>
+                </Cell>
+
+                {/** Delete button */}
+                <Cell>
+                    <ButtonGeneric
+                        onPress={() => {
+                            setSelectedItemId(item.id)
+                            setIsModalOpen(true)
+                            setIsDelete(true)
+                        }}
+                    >
+                        <Trash />
                     </ButtonGeneric>
                 </Cell>
 
@@ -240,9 +280,47 @@ const TableProjects = () => {
         return <p>Loading projects...</p>
     }
 
+    const selectedProject =
+        modalMetadata?.kind === ProjectTableRowType.enum.project
+            ? modalMetadata
+            : undefined
+
+    const selectedCategory =
+        modalMetadata?.kind === ProjectTableRowType.enum.category
+            ? modalMetadata
+            : undefined
+
+    const openCloudinary = () => {
+        setIsCloudinaryOpen(true)
+
+        setTimeout(() => {
+            cloudinaryOpenRef.current?.()
+        }, 0)
+    }
+
+    const closeAndResetForm = () => {
+        setIsModalOpen(false)
+        setSelectedItemId(null)
+        setFormMode(null)
+        resetDraft()
+    }
+
     return (
         <div className='px-4 pt-20 mt-8'>
             <MyToastRegion />
+
+            {/** Create project button */}
+            <ButtonGeneric
+                type='button'
+                onPress={() => {
+                    resetDraft()
+                    setSelectedItemId(null)
+                    setFormMode(FormMode.enum['create-project'])
+                    setIsModalOpen(true)
+                }}
+            >
+                Create project
+            </ButtonGeneric>
 
             <Table
                 aria-label='Projects'
@@ -259,7 +337,8 @@ const TableProjects = () => {
                     </Column>
                     <Column id='type'>Type</Column>
                     <Column id='order'>Order</Column>
-                    <Column id='userAction'>User Action</Column>
+                    <Column id='update'>Update</Column>
+                    <Column id='delete'>Delete</Column>
                 </TableHeader>
 
                 <TableBody items={initialItems}>{renderItem}</TableBody>
@@ -268,32 +347,43 @@ const TableProjects = () => {
             {/** Modal */}
             <ModalTrigger
                 isOpen={isModalOpen && !isCloudinaryOpen}
-                onOpenChange={(open) => {
-                    setIsModalOpen(open)
-                }}
+                onOpenChange={setIsModalOpen}
             >
                 <Modal isDismissable={false}>
-                    {/** Category form */}
-                    {modalMetadata?.kind ===
-                        ProjectTableRowType.enum.category && (
-                        <FormCategory
-                            categorySelected={modalMetadata}
+                    {formMode === FormMode.enum['edit-category'] &&
+                        selectedCategory && (
+                            <FormCategory
+                                categorySelected={selectedCategory}
+                                setIsModalOpen={setIsModalOpen}
+                                resetState={closeAndResetForm}
+                            />
+                        )}
+
+                    {formMode === FormMode.enum['create-project'] && (
+                        <FormProject
                             setIsModalOpen={setIsModalOpen}
+                            onImageUploadClick={openCloudinary}
+                            resetState={closeAndResetForm}
+                            formMode={formMode}
                         />
                     )}
 
-                    {/** Project form */}
-                    {modalMetadata?.kind ===
-                        ProjectTableRowType.enum.project && (
-                        <FormProject
-                            projectSelected={modalMetadata}
+                    {formMode === FormMode.enum['edit-project'] &&
+                        selectedProject && (
+                            <FormProject
+                                projectSelected={selectedProject}
+                                setIsModalOpen={setIsModalOpen}
+                                onImageUploadClick={openCloudinary}
+                                resetState={closeAndResetForm}
+                                formMode={formMode}
+                            />
+                        )}
+
+                    {isDelete && modalMetadata && (
+                        <ModalDelete
+                            rowSelected={modalMetadata}
                             setIsModalOpen={setIsModalOpen}
-                            onUploadClick={() => {
-                                setIsCloudinaryOpen(true)
-                                setTimeout(() => {
-                                    cloudinaryOpenRef?.current?.()
-                                }, 0)
-                            }}
+                            setIsDelete={setIsDelete}
                         />
                     )}
                 </Modal>
@@ -313,15 +403,15 @@ const TableProjects = () => {
                         resourceType: 'image',
                     }}
                     onSuccess={(result) => {
-                        if (!result || !result.info) return
+                        if (!result?.info || typeof result.info === 'string') {
+                            return
+                        }
 
                         const newImage = {
                             imageId: result.info.public_id,
                             url: result.info.secure_url,
                             types: [],
                         }
-
-                        console.log('draft in CloudiWidget : ', draft)
 
                         updateDraft((currentDraft) => ({
                             ...currentDraft,

@@ -1,16 +1,63 @@
-'use server'
+import { VideoPlayerType } from '@/types/project'
 
-import cloudinary from 'cloudinary'
+export const getVideoInfoFromUrl = (
+    url: string,
+): {
+    player: VideoPlayerType
+    id: string
+} | null => {
+    try {
+        const parsedUrl = new URL(url)
+        const hostname = parsedUrl.hostname.replace(/^www\./, '')
 
-cloudinary.v2.config({
-    secure: true,
-})
+        // YouTube
+        if (hostname === 'youtube.com' || hostname === 'm.youtube.com') {
+            const id = parsedUrl.searchParams.get('v')
 
-export const cloudinaryImagesDelete = async (imageIds: Set<string>) => {
-    cloudinary.v2.api
-        .delete_resources(Array.from(imageIds), {
-            resource_type: 'image',
-        })
-        // oxlint-disable-next-line no-console
-        .catch((error) => console.error(error))
+            if (!id) return null
+
+            return {
+                player: VideoPlayerType.enum.youtube,
+                id,
+            }
+        }
+
+        if (hostname === 'youtu.be') {
+            const id = parsedUrl.pathname.slice(1)
+
+            if (!id) return null
+
+            return {
+                player: VideoPlayerType.enum.youtube,
+                id,
+            }
+        }
+
+        // Vimeo
+        if (hostname === 'vimeo.com') {
+            const id = parsedUrl.pathname.split('/').filter(Boolean).pop()
+
+            if (!id) return null
+
+            return {
+                player: VideoPlayerType.enum.vimeo,
+                id,
+            }
+        }
+
+        if (hostname === 'player.vimeo.com') {
+            const id = parsedUrl.pathname.split('/').filter(Boolean).pop()
+
+            if (!id) return null
+
+            return {
+                player: VideoPlayerType.enum.vimeo,
+                id,
+            }
+        }
+
+        return null
+    } catch {
+        return null
+    }
 }

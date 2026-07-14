@@ -12,8 +12,10 @@ import {
     MDXEditor,
     toolbarPlugin,
 } from '@mdxeditor/editor'
-import type { FC } from 'react'
+import { useEffect, type FC } from 'react'
 import type { PointerEvent } from 'react'
+import { useDebouncedState } from '@mantine/hooks'
+import { useProjectsStore } from '@/stores/admin/projects'
 
 interface EditorProps {
     markdown: string
@@ -73,11 +75,23 @@ const handleToolbarPointerDownCapture = (
     }
 }
 
-const WYSIWYG: FC<EditorProps> = ({ markdown, onChange }) => {
+const WYSIWYG: FC<EditorProps> = ({ markdown }) => {
+    const [value, setValue] = useDebouncedState('', 400)
+
+    const updateDraft = useProjectsStore(
+        (state) => state.updateProjectFormDraft,
+    )
+
+    useEffect(() => {
+        updateDraft({ description: value })
+    }, [value, updateDraft])
+
     return (
         <MDXEditor
             markdown={markdown}
-            onChange={onChange}
+            onChange={(markdownContent) => {
+                setValue(markdownContent)
+            }}
             className='wysiwyg-theme'
             contentEditableClassName='wysiwyg-content'
             plugins={[
@@ -94,12 +108,15 @@ const WYSIWYG: FC<EditorProps> = ({ markdown, onChange }) => {
                             onPointerDownCapture={
                                 handleToolbarPointerDownCapture
                             }
-                            className='flex items-center gap-1'
+                            className='flex justify-around w-90 items-center gap-1'
                         >
-                            <BlockTypeSelect />
                             <BoldItalicUnderlineToggles />
+
                             <CreateLink />
+
                             <ListsToggle options={['bullet']} />
+
+                            <BlockTypeSelect />
                         </div>
                     ),
                 }),

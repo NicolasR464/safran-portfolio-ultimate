@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { ProjectTableRowType } from '@/utils/enums'
+import { ProjectTableRowType } from '@/utils/enums/admin'
 import { ProjectSchema } from '@/types/project/schema'
 
 export const ProjectNode = ProjectSchema.extend({

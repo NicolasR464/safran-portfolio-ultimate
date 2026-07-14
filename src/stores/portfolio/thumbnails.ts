@@ -1,15 +1,11 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
-import {
-    ThumbnailsCategory,
-    ThumbnailsResponse,
-} from '@/types/apiResponses/portfolio'
-
 import { searchParamsNames } from '@/utils/constants'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
 import { ProjectCategorySchema } from '@/types/projectCategory/schema'
+import { ThumbnailsCategory, ThumbnailsResponse } from '@/types/api/portfolio'
 
 type CategoryName = ProjectCategorySchema['name']
 

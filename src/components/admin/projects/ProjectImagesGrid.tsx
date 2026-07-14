@@ -1,16 +1,18 @@
 'use client'
 
-import { Key, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
+import type { Key } from 'react-aria-components'
 import { CldImage } from 'next-cloudinary'
 import { Trash2, X } from 'lucide-react'
 
 import { Tag, TagGroup } from '@/components/admin/TagGroup'
 import { ImageCategory, ImageMetadata } from '@/types/project'
-import { cloudinaryImagesDelete } from '@/utils/functions'
+import { cloudinaryImagesDelete } from '@/utils/functions/cloudinary'
 
 type ProjectImagesGridProps = {
     images: ImageMetadata[]
     onImagesChange: (images: ImageMetadata[]) => void
+    isTypeMissing: boolean
 }
 
 type Category = ImageMetadata['types'][number]
@@ -68,6 +70,7 @@ const getBorderBackground = (types: Category[]) => {
 const ProjectImagesGrid = ({
     images,
     onImagesChange,
+    isTypeMissing,
 }: ProjectImagesGridProps) => {
     const [selectedCategory, setSelectedCategory] = useState<Category | null>(
         null,
@@ -109,6 +112,12 @@ const ProjectImagesGrid = ({
         })
     }
 
+    const singleImageCategories: Category[] = [
+        ImageCategory.enum.thumbnail,
+        ImageCategory.enum.poster,
+        ImageCategory.enum.background,
+    ]
+
     const handleImageClick = (imageId: string) => {
         if (isDeleteMode) {
             toggleDeleteSelection(imageId)
@@ -117,17 +126,56 @@ const ProjectImagesGrid = ({
 
         if (!selectedCategory) return
 
+        const isSingleImageCategory =
+            singleImageCategories.includes(selectedCategory)
+
+        const clickedImage = images.find((image) => image.imageId === imageId)
+
+        if (!clickedImage) return
+
+        const isAlreadyAssigned =
+            clickedImage.types?.includes(selectedCategory) ?? false
+
         const updatedImages = images.map((image) => {
-            if (image.imageId !== imageId) {
+            const currentTypes = image.types ?? []
+            const isClickedImage = image.imageId === imageId
+
+            /*
+             * thumbnail, poster and background:
+             * remove the category from every image first.
+             */
+            if (isSingleImageCategory) {
+                const typesWithoutCategory = currentTypes.filter(
+                    (type) => type !== selectedCategory,
+                )
+
+                /*
+                 * If the clicked image already had the category,
+                 * clicking it again removes it completely.
+                 */
+                if (isClickedImage && !isAlreadyAssigned) {
+                    return {
+                        ...image,
+                        types: [...typesWithoutCategory, selectedCategory],
+                    }
+                }
+
+                return {
+                    ...image,
+                    types: typesWithoutCategory,
+                }
+            }
+
+            /*
+             * Carousel can be assigned to several images.
+             */
+            if (!isClickedImage) {
                 return image
             }
 
-            const currentTypes = image.types ?? []
-            const alreadyAssigned = currentTypes.includes(selectedCategory)
-
             return {
                 ...image,
-                types: alreadyAssigned
+                types: isAlreadyAssigned
                     ? currentTypes.filter((type) => type !== selectedCategory)
                     : [...currentTypes, selectedCategory],
             }
@@ -172,7 +220,7 @@ const ProjectImagesGrid = ({
                     selectionMode='single'
                     selectedKeys={selectedKeys}
                     onSelectionChange={handleSelectionChange}
-                    className='m-4'
+                    className='my-4 flex justify-between w-full'
                 >
                     {categories.map((category) => (
                         <Tag
@@ -234,9 +282,12 @@ const ProjectImagesGrid = ({
             <div className='grid max-h-80 grid-cols-2 gap-3 overflow-y-auto pr-1'>
                 {images.map((image) => {
                     const types = image.types ?? []
+
                     const isSelectedForDelete = selectedForDelete.has(
                         image.imageId,
                     )
+
+                    const hasMissingType = isTypeMissing && types.length === 0
 
                     return (
                         <button
@@ -246,25 +297,32 @@ const ProjectImagesGrid = ({
                             aria-pressed={
                                 isDeleteMode ? isSelectedForDelete : undefined
                             }
+                            aria-invalid={hasMissingType || undefined}
                             aria-label={
                                 isDeleteMode
                                     ? `${isSelectedForDelete ? 'Unselect' : 'Select'} image for deletion`
-                                    : `Assign ${selectedCategory ?? 'a category'} to image`
+                                    : hasMissingType
+                                      ? 'Image has no assigned type'
+                                      : `Assign ${selectedCategory ?? 'a category'} to image`
                             }
                             className={[
                                 'relative aspect-[4/3] rounded-lg p-[3px]',
+
                                 'transition-transform',
+
                                 isDeleteMode || selectedCategory
                                     ? 'cursor-pointer hover:scale-[1.02]'
                                     : 'cursor-default',
-                                isSelectedForDelete
+
+                                isSelectedForDelete || hasMissingType
                                     ? 'shadow-[0_0_14px_rgb(239_68_68/0.55)]'
                                     : '',
                             ].join(' ')}
                             style={{
-                                background: isSelectedForDelete
-                                    ? '#ef4444'
-                                    : getBorderBackground(types),
+                                background:
+                                    isSelectedForDelete || hasMissingType
+                                        ? '#ef4444'
+                                        : getBorderBackground(types),
                             }}
                         >
                             <span className='relative block h-full w-full overflow-hidden rounded-[5px] bg-neutral-950'>
@@ -278,9 +336,16 @@ const ProjectImagesGrid = ({
                                     sizes='240px'
                                     className={[
                                         'object-contain transition-opacity',
+
                                         isSelectedForDelete ? 'opacity-60' : '',
                                     ].join(' ')}
                                 />
+
+                                {hasMissingType && !isDeleteMode && (
+                                    <span className='absolute inset-x-0 bottom-0 bg-red-950/80 px-2 py-1 text-center text-xs font-medium text-red-100'>
+                                        Select at least one type
+                                    </span>
+                                )}
                             </span>
                         </button>
                     )

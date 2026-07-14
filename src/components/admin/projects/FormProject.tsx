@@ -2,262 +2,359 @@ import ButtonGeneric from '@/components/buttons/ButtonGeneric'
 import Form from '@/components/Form'
 import { NumberField } from '@/components/NumberFields'
 import TextField from '@/components/TextField'
-import { useProjectsStore } from '@/stores/admin/projects'
+import { ProjectFormDraft, useProjectsStore } from '@/stores/admin/projects'
 import { ProjectNode } from '@/types/admin/projectsTable'
-import { ProjectTableRowType } from '@/utils/enums'
+import { FormMode, ProjectTableRowType } from '@/utils/enums/admin'
 import { queue as toastQueue } from '@/components/Toast'
-import { Key, useEffect, useState } from 'react'
+import { Key, useEffect, useMemo, useState } from 'react'
 import { Select, SelectItem } from '@/components/Select'
 import { ToastColorVariant } from '@/types/ui/toast'
-import { MyRadio, RadioGroup } from '@/components/RadioGroup'
-import { VideoPlayerType } from '@/types/project'
-import { embedSrcBuilder } from '@/utils'
+
 import ProjectImagesGrid from '@/components/admin/projects/ProjectImagesGrid'
 import FormSeparator from '@/components/admin/projects/FormSeparator'
 import WYSIWYG from '@/components/admin/WYSIWYG'
 import { X } from 'lucide-react'
+import { ProjectCategorySchema } from '@/types/projectCategory/schema'
 
 type FormProjectProps = {
+    projectSelected?: ProjectNode
     setIsModalOpen: (isOpen: boolean) => void
-    projectSelected: ProjectNode
-    onUploadClick: () => void
+    onImageUploadClick: () => void
+    resetState: () => void
+    formMode: FormMode | null
 }
 
 const FormProject = ({
     projectSelected,
-    setIsModalOpen,
-    onUploadClick,
+    onImageUploadClick,
+    resetState,
+    formMode,
 }: FormProjectProps) => {
-    const [categoryLength, setCategoryLength] = useState<number>()
+    const [categoryLength, setCategoryLength] = useState<number>(1)
+    const [isImageTypeMissing, setIsImageTypeMissing] = useState(false)
+    const [title, setTitle] = useState('')
 
     const draft = useProjectsStore((state) => state.projectFormDraft)
     const updateDraft = useProjectsStore(
         (state) => state.updateProjectFormDraft,
     )
     const initDraft = useProjectsStore((state) => state.initProjectFormDraft)
-
     const updateProjects = useProjectsStore((state) => state.updateProjects)
+    const createProject = useProjectsStore((state) => state.createProject)
     const projectsByCategories = useProjectsStore(
         (state) => state.projectsByCategories,
     )
     const isLoading = useProjectsStore((state) => state.isLoading)
 
-    useEffect(() => {
-        console.count('🚀 DRAFT')
+    const firstCategory = projectsByCategories[0]
 
-        console.log({ draft })
-    }, [draft])
+    const emptyProjectDraft = useMemo<ProjectFormDraft>(
+        () => ({
+            _id: null,
+            title: '',
+            description: '',
+            order: 1,
+            categoryId: firstCategory?.category._id.toString() ?? '',
+            images: [],
+            videoUrl: '',
+        }),
+        [firstCategory],
+    )
 
-    useEffect(() => {
-        if (draft?._id === projectSelected.id) return
+    const selectedProjectDraft = useMemo<ProjectFormDraft | null>(() => {
+        if (!projectSelected) {
+            return null
+        }
 
-        initDraft({
+        return {
             _id: projectSelected.id,
             title: projectSelected.title,
-            description: projectSelected.description,
+            description: projectSelected.description ?? '',
             order: projectSelected.order,
             categoryId: projectSelected.categoryId,
             images: projectSelected.images ?? [],
-            videoUrl: projectSelected.video
-                ? embedSrcBuilder(
-                      projectSelected.video.player,
-                      projectSelected.video.videoId,
-                  )
-                : '',
-            videoType: projectSelected.video?.player ?? null,
-        })
-    }, [draft?._id, projectSelected.id, initDraft, projectSelected])
+            videoUrl: projectSelected.video && projectSelected.video.url,
+        }
+    }, [projectSelected])
 
-    const formDraft = draft ?? {
-        _id: projectSelected.id,
-        title: projectSelected.title,
-        description: projectSelected.description,
-        order: projectSelected.order,
-        categoryId: projectSelected.categoryId,
-        images: projectSelected.images ?? [],
-        videoUrl: projectSelected.video
-            ? embedSrcBuilder(
-                  projectSelected.video.player,
-                  projectSelected.video.videoId,
-              )
-            : '',
-        videoType: projectSelected.video?.player ?? null,
-    }
+    const isCreateMode = formMode === FormMode.enum['create-project']
 
     useEffect(() => {
+        if (isCreateMode) {
+            if (draft?._id === null) {
+                return
+            }
+
+            initDraft(emptyProjectDraft)
+            return
+        }
+
+        if (!selectedProjectDraft) {
+            return
+        }
+
+        if (draft?._id === selectedProjectDraft._id) {
+            return
+        }
+
+        initDraft(selectedProjectDraft)
+    }, [
+        formMode,
+        draft?._id,
+        emptyProjectDraft,
+        selectedProjectDraft,
+        initDraft,
+        isCreateMode,
+    ])
+
+    const formDraft =
+        draft ?? (isCreateMode ? emptyProjectDraft : selectedProjectDraft)
+
+    useEffect(() => {
+        setTitle(formDraft?.title ?? '')
+    }, [formDraft, formDraft?._id, isCreateMode])
+
+    useEffect(() => {
+        if (!formDraft) {
+            return
+        }
+
         const categoryFound = projectsByCategories.find(
-            (categoryItem) =>
-                categoryItem.category._id.toString() === draft?.categoryId,
+            (categoryItem: { category: ProjectCategorySchema }) =>
+                categoryItem.category._id.toString() === formDraft.categoryId,
         )
 
-        setCategoryLength(categoryFound?.projects.length ?? 1)
-    }, [draft?.categoryId, projectsByCategories])
+        setCategoryLength(
+            Math.max((categoryFound?.projects.length ?? 0) + 1, 1),
+        )
+    }, [formDraft, formDraft?.categoryId, projectsByCategories])
+
+    if (!formDraft) {
+        return null
+    }
+
+    const handleSubmit = async () => {
+        const hasMissingImageType = formDraft.images.some(
+            (image) => !image.types?.length,
+        )
+
+        if (hasMissingImageType) {
+            setIsImageTypeMissing(true)
+            return
+        }
+
+        setIsImageTypeMissing(false)
+
+        const projectPayload = {
+            title,
+            description: formDraft.description,
+            order: formDraft.order,
+            categoryId: formDraft.categoryId,
+            images: formDraft.images,
+            videoUrl: formDraft.videoUrl,
+        }
+
+        const result = isCreateMode
+            ? await createProject(projectPayload)
+            : await updateProjects({
+                  type: ProjectTableRowType.enum.project,
+                  categoryInitialId: projectSelected!.categoryId,
+                  orderInitial: projectSelected!.order,
+                  project: {
+                      _id: formDraft._id!,
+                      ...projectPayload,
+                      ...(formDraft.videoUrl && {
+                          videoUrl: formDraft.videoUrl,
+                      }),
+                  },
+              })
+
+        toastQueue.add(
+            {
+                title: result.message,
+                variant: result.success
+                    ? ToastColorVariant.enum.success
+                    : ToastColorVariant.enum.error,
+            },
+            { timeout: 5000 },
+        )
+
+        if (result.success) {
+            resetState()
+        }
+    }
 
     return (
-        <Form
-            className='w-full flex justify-center max-h-[80vh] overflow-y-auto'
-            action={async () => {
-                const updateResult = await updateProjects({
-                    type: ProjectTableRowType.enum.project,
-                    categoryInitialId: projectSelected.categoryId,
-                    orderInitial: projectSelected.order,
-                    project: {
-                        _id: formDraft._id,
-                        title: formDraft.title,
-                        description: formDraft.description,
-                        order: formDraft.order,
-                        categoryId: formDraft.categoryId,
-                        images: formDraft.images,
-                    },
-                })
+        <div>
+            <Form
+                className='flex max-h-[80vh] w-full justify-center overflow-y-auto'
+                action={handleSubmit}
+            >
+                <div className='flex min-w-0 flex-col p-4 m-2'>
+                    <ButtonGeneric
+                        type='button'
+                        className='absolute left-0 top-0 z-50'
+                        onClick={() => resetState()}
+                    >
+                        <X />
+                    </ButtonGeneric>
 
-                toastQueue.add(
-                    {
-                        title: updateResult.message,
-                        variant: updateResult.success
-                            ? ToastColorVariant.enum.success
-                            : ToastColorVariant.enum.error,
-                    },
-                    { timeout: 5000 },
-                )
+                    <h2 className='sticky top-0 z-20 mt-6 mb-4 bg-[var(--grey-dark)] p-2 px-12 text-center text-2xl font-bold text-white'>
+                        {isCreateMode ? 'Create project' : 'Edit project'}
 
-                if (updateResult.success) {
-                    setIsModalOpen(false)
-                }
-            }}
-        >
-            <div className='flex flex-col p-4'>
-                <ButtonGeneric
-                    className='absolute top-0 left-0 z-50'
-                    onClick={() => setIsModalOpen(false)}
-                >
-                    <X />
-                </ButtonGeneric>
-                <h2 className='z-20 text-center text-2xl font-bold text-white mt-6 p-2 px-12 mb-4 sticky top-0 bg-[var(--grey-dark)]'>
-                    Edit project:
-                    <span className='italic'> {formDraft.title}</span>
-                </h2>
+                        {!isCreateMode && (
+                            <span className='italic'> {formDraft.title}</span>
+                        )}
+                    </h2>
 
-                <FormSeparator title='Description' />
+                    {/* Information */}
+                    <FormSeparator title='Information' />
 
-                {/* Project Title */}
-                <TextField
-                    label='Project‘s title'
-                    name='projectTitle'
-                    placeholder='Update project title'
-                    value={formDraft.title}
-                    onChange={(title) => updateDraft({ title })}
-                    isRequired
-                />
+                    <TextField
+                        label='Project‘s title'
+                        name='projectTitle'
+                        placeholder={
+                            isCreateMode
+                                ? 'Project title'
+                                : 'Edit project title'
+                        }
+                        value={title}
+                        onChange={setTitle}
+                        onBlur={() => updateDraft({ title })}
+                        isRequired
+                    />
 
-                {/* Project Description */}
-                <div className='m-3'>
-                    <span className='text-sm'>Description</span>
+                    <div className='mt-2'>
+                        <span className='text-sm'>Description</span>
 
-                    <WYSIWYG markdown={formDraft.description ?? ''} />
-                </div>
+                        <WYSIWYG
+                            key={
+                                isCreateMode
+                                    ? 'create-project'
+                                    : (formDraft._id ?? 'project')
+                            }
+                            markdown={formDraft.description ?? ''}
+                            onChange={(description) =>
+                                updateDraft({
+                                    description,
+                                })
+                            }
+                        />
+                    </div>
 
-                {/* Project Category */}
-                <Select
-                    label='Category'
-                    name='categoryId'
-                    value={formDraft.categoryId}
-                    onChange={(value: Key | null) => {
-                        if (typeof value !== 'string') return
+                    <Select
+                        label='Category'
+                        name='categoryId'
+                        className='mt-2'
+                        value={formDraft.categoryId}
+                        onChange={(value: Key | null) => {
+                            if (typeof value !== 'string') {
+                                return
+                            }
 
-                        const foundCategoryLength =
-                            projectsByCategories.find(
-                                (categoryItem) =>
+                            const category = projectsByCategories.find(
+                                (categoryItem: {
+                                    category: ProjectCategorySchema
+                                }) =>
                                     categoryItem.category._id.toString() ===
                                     value,
-                            )?.projects.length ?? 1
+                            )
 
-                        updateDraft({
-                            categoryId: value,
-                            order:
-                                foundCategoryLength < formDraft.order
-                                    ? foundCategoryLength + 1
-                                    : formDraft.order,
-                        })
+                            const nextCategoryLength =
+                                (category?.projects.length ?? 0) + 1
 
-                        setCategoryLength(foundCategoryLength + 1)
-                    }}
-                    isRequired
-                >
-                    {projectsByCategories.map((group) => (
-                        <SelectItem
-                            key={group.category._id.toString()}
-                            id={group.category._id.toString()}
-                            category={group.category.name}
+                            updateDraft({
+                                categoryId: value,
+                                order: Math.min(
+                                    formDraft.order,
+                                    nextCategoryLength,
+                                ),
+                            })
+
+                            setCategoryLength(nextCategoryLength)
+                        }}
+                        isRequired
+                    >
+                        {projectsByCategories.map(
+                            (group: { category: ProjectCategorySchema }) => (
+                                <SelectItem
+                                    key={group.category._id.toString()}
+                                    id={group.category._id.toString()}
+                                    category={group.category.name}
+                                >
+                                    {group.category.name}
+                                </SelectItem>
+                            ),
+                        )}
+                    </Select>
+
+                    <NumberField
+                        className='mt-2'
+                        label='Order of appearance'
+                        name='projectOrder'
+                        placeholder='Project order'
+                        value={formDraft.order}
+                        onChange={(order) => updateDraft({ order })}
+                        maxValue={categoryLength}
+                        minValue={1}
+                        isRequired
+                    />
+
+                    {/* Images */}
+                    <div className='m-2 flex flex-col'>
+                        <FormSeparator title='Images' />
+
+                        <ButtonGeneric
+                            type='button'
+                            onPress={onImageUploadClick}
+                            className='font-mono'
                         >
-                            {group.category.name}
-                        </SelectItem>
-                    ))}
-                </Select>
+                            Upload Images
+                        </ButtonGeneric>
 
-                {/* Order of appearance */}
-                <NumberField
-                    label='Order of appearance'
-                    name='projectOrder'
-                    placeholder='Update project order'
-                    value={formDraft.order}
-                    onChange={(order) => updateDraft({ order })}
-                    maxValue={categoryLength ?? 1}
-                    minValue={1}
-                    isRequired
-                />
+                        <ProjectImagesGrid
+                            images={formDraft.images}
+                            onImagesChange={(images) => {
+                                setIsImageTypeMissing(
+                                    images.some(
+                                        (image) => !image.types?.length,
+                                    ),
+                                )
 
-                {/* Project Images */}
-                <FormSeparator title='Images' />
+                                updateDraft({ images })
+                            }}
+                            isTypeMissing={isImageTypeMissing}
+                        />
+                    </div>
 
-                <ButtonGeneric
-                    type='button'
-                    onPress={onUploadClick}
-                    className='font-mono'
-                >
-                    Upload Images
-                </ButtonGeneric>
+                    {/* Video */}
+                    <div className='m-2 flex flex-col'>
+                        <FormSeparator title='Video' />
 
-                <ProjectImagesGrid
-                    images={formDraft.images}
-                    onImagesChange={(images) => updateDraft({ images })}
-                />
+                        <TextField
+                            label='Video URL'
+                            name='projectVideo'
+                            placeholder='Project video'
+                            value={formDraft.videoUrl}
+                            onChange={(videoUrl) => updateDraft({ videoUrl })}
+                        />
+                    </div>
 
-                {/* Project Video */}
-                <FormSeparator title='Video' />
-
-                <TextField
-                    label='Video URL '
-                    name='projectVideo'
-                    placeholder='Update project video'
-                    value={formDraft.videoUrl}
-                    onChange={(videoUrl) => updateDraft({ videoUrl })}
-                />
-
-                <RadioGroup
-                    label='Video Player'
-                    value={formDraft.videoType}
-                    onChange={(videoType) =>
-                        updateDraft({
-                            videoType: videoType as VideoPlayerType,
-                        })
-                    }
-                >
-                    <MyRadio value={VideoPlayerType.enum.youtube}>
-                        Youtube
-                    </MyRadio>
-
-                    <MyRadio value={VideoPlayerType.enum.vimeo}>Vimeo</MyRadio>
-                </RadioGroup>
-
-                <ButtonGeneric
-                    className='sticky bottom-2'
-                    type='submit'
-                >
-                    {isLoading ? 'Updating...' : 'Update'}
-                </ButtonGeneric>
-            </div>
-        </Form>
+                    <ButtonGeneric
+                        className='sticky bottom-2'
+                        type='submit'
+                    >
+                        {isLoading
+                            ? isCreateMode
+                                ? 'Creating...'
+                                : 'Updating...'
+                            : isCreateMode
+                              ? 'Create'
+                              : 'Update'}
+                    </ButtonGeneric>
+                </div>
+            </Form>
+        </div>
     )
 }
 

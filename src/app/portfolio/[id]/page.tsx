@@ -1,12 +1,13 @@
 import Image from 'next/image'
 
 import ButtonBack from '@/components/buttons/ButtonBack'
-
-import { embedSrcBuilder } from '@/utils'
-import { ImageCategory } from '@/types/project'
 import ModalContainerImages from '@/components/Modal/ModalContainerImages'
 
+import { embedSrcBuilder } from '@/utils'
 import { getProjectWithCategory } from '@/utils/mongo/mongoQueries/project'
+import { ImageCategory } from '@/types/project'
+
+import MarkdownDisplay from '@/components/MarkdownDisplay'
 
 /** Single Project page displaying a project's details. */
 const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
@@ -52,6 +53,16 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
             </div>
 
             <section className='relative z-10 mx-auto flex min-h-[calc(100dvh-var(--header-height))] w-full max-w-6xl flex-col justify-end gap-8 px-6 pb-10 pt-24'>
+                <div>
+                    <h1 className='text-3xl font-black font-mono tracking-tight md:text-5xl text-center'>
+                        {project.title}
+                    </h1>
+
+                    <p className='mt-2 text-sm uppercase tracking-[0.3em] text-white/60 text-center'>
+                        {project.category.name}
+                    </p>
+                </div>
+
                 {/* Video */}
                 {!!embedSrc && (
                     <div className='flex w-full justify-center'>
@@ -82,23 +93,10 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                     </div>
                 )}
 
-                {/* Project Metadata */}
+                {/* Description */}
                 <div className='w-full max-w-3xl mx-auto'>
-                    <h1 className='text-3xl font-black font-mono tracking-tight md:text-5xl text-center'>
-                        {project.title}
-                    </h1>
-
-                    <p className='mt-2 text-sm uppercase tracking-[0.3em] text-white/60 text-center'>
-                        {project.category.name}
-                    </p>
-
                     {!!project.description && (
-                        <div
-                            className='prose prose-neutral max-w-none mt-4 text-left prose prose-invert max-w-none prose-h2:text-3xl prose-h2:font-semibold prose-h2:mb-4 prose-h3:text-xl prose-h3:font-medium prose-h3:mt-8 prose-h3:mb-3 prose-p:leading-8 prose-p:mb-4 prose-li:mb-2 prose-strong:text-white'
-                            dangerouslySetInnerHTML={{
-                                __html: project.description,
-                            }}
-                        />
+                        <MarkdownDisplay markdown={project.description} />
                     )}
                 </div>
 

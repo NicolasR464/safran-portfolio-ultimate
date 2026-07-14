@@ -3,24 +3,31 @@ import { immer } from 'zustand/middleware/immer'
 
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
-import {
-    ActionResult,
-    ProjectsListResponse,
-    UpdateProjectsPayload,
-} from '@/types/apiResponses/admin/projects'
 
 import { backErrors, backSuccess } from '@/utils/constants/messages'
-import { ImageMetadata, VideoPlayerType } from '@/types/project'
+import { ImageMetadata } from '@/types/project'
+import { ProjectTableRowType } from '@/utils/enums/admin'
+import {
+    CRUDResult,
+    ProjectsListResponse,
+    UpdateProjectsPayload,
+} from '@/types/api/admin/projects'
 
-type ProjectFormDraft = {
-    _id: string
+export type ProjectFormDraft = {
+    _id: string | null
     title: string
     description?: string
     order: number
     categoryId: string
     images: ImageMetadata[]
     videoUrl?: string
-    videoType?: VideoPlayerType
+}
+
+export type CreateProjectPayload = Omit<ProjectFormDraft, '_id'>
+
+export type DeleteRowPayload = {
+    _id: string
+    type: ProjectTableRowType
 }
 
 type ProjectFormDraftUpdate =
@@ -34,7 +41,10 @@ type ProjectsStore = {
     projectFormDraft: ProjectFormDraft | null
 
     fetchProjects: () => Promise<void>
-    updateProjects: (payload: UpdateProjectsPayload) => Promise<ActionResult>
+    createProject: (project: CreateProjectPayload) => Promise<CRUDResult>
+    updateProjects: (payload: UpdateProjectsPayload) => Promise<CRUDResult>
+    deleteRow: (payload: DeleteRowPayload) => Promise<CRUDResult>
+
     initProjectFormDraft: (draft: ProjectFormDraft) => void
     updateProjectFormDraft: (update: ProjectFormDraftUpdate) => void
     clearProjectFormDraft: () => void
@@ -52,7 +62,7 @@ const initialState: Pick<
 }
 
 export const useProjectsStore = create<ProjectsStore>()(
-    immer((set) => ({
+    immer((set, get) => ({
         ...initialState,
 
         initProjectFormDraft: (draft) => {
@@ -61,28 +71,23 @@ export const useProjectsStore = create<ProjectsStore>()(
             })
         },
 
-        updateProjectFormDraft: (update) =>
+        updateProjectFormDraft: (update) => {
             set((state) => {
                 const current = state.projectFormDraft
 
-                if (!current) {
-                    return {}
-                }
+                if (!current) return
 
                 const changes =
                     typeof update === 'function' ? update(current) : update
 
-                return {
-                    projectFormDraft: {
-                        ...current,
-                        ...changes,
-                    },
+                state.projectFormDraft = {
+                    ...current,
+                    ...changes,
                 }
-            }),
+            })
+        },
 
         clearProjectFormDraft: () => {
-            console.count('🚀 clearProjectFormDraft')
-
             set((state) => {
                 state.projectFormDraft = null
             })
@@ -102,49 +107,129 @@ export const useProjectsStore = create<ProjectsStore>()(
                 state.isLoading = true
             })
 
-            const apiResponse = await apiClientSide<ProjectsListResponse>(
-                localApiEndpoints.ADMIN.PROJECTS,
-            )
+            try {
+                const apiResponse = await apiClientSide<ProjectsListResponse>(
+                    localApiEndpoints.ADMIN.PROJECTS,
+                )
 
-            if (!apiResponse.ok) {
+                if (!apiResponse.ok) {
+                    set((state) => {
+                        state.isLoading = false
+                        state.initialized = true
+                    })
+
+                    return
+                }
+
+                const parsedResponse = await apiResponse.json()
+
+                set((state) => {
+                    state.projectsByCategories = parsedResponse
+                    state.isLoading = false
+                    state.initialized = true
+                })
+            } catch {
                 set((state) => {
                     state.isLoading = false
                     state.initialized = true
                 })
-
-                return
             }
-
-            const parsedResponse = await apiResponse.json()
-
-            set((state) => {
-                state.projectsByCategories = parsedResponse
-                state.isLoading = false
-                state.initialized = true
-            })
         },
 
-        updateProjects: async (payload) => {
-            console.log('🚀 updateProjects')
+        createProject: async (project) => {
+            set((state) => {
+                state.isLoading = true
+            })
 
-            console.log({ payload })
+            try {
+                const apiResponse = await apiClientSide.post(
+                    localApiEndpoints.ADMIN.PROJECTS,
+                    {
+                        json: project,
+                    },
+                )
 
-            const fail = (message: string): ActionResult => {
+                if (!apiResponse.ok) {
+                    return {
+                        success: false,
+                        message:
+                            apiResponse.statusText || backErrors.UPDATE_FAILED,
+                    }
+                }
+
+                await get().fetchProjects()
+
                 set((state) => {
-                    state.isLoading = false
+                    state.projectFormDraft = null
                 })
 
                 return {
-                    success: false,
-                    message,
+                    success: true,
+                    message: 'Project created',
                 }
+            } catch {
+                return {
+                    success: false,
+                    message: 'Project creation failed',
+                }
+            } finally {
+                set((state) => {
+                    state.isLoading = false
+                })
             }
+        },
+
+        updateProjects: async (payload) => {
+            set((state) => {
+                state.isLoading = true
+            })
+
+            try {
+                const apiResponse = await apiClientSide.patch(
+                    localApiEndpoints.ADMIN.PROJECTS,
+                    {
+                        json: payload,
+                    },
+                )
+
+                if (!apiResponse.ok) {
+                    return {
+                        success: false,
+                        message: backErrors.UPDATE_FAILED,
+                    }
+                }
+
+                await get().fetchProjects()
+
+                set((state) => {
+                    state.projectFormDraft = null
+                })
+
+                return {
+                    success: true,
+                    message: backSuccess.UPDATE_SUCCEEDED,
+                }
+            } catch {
+                return {
+                    success: false,
+                    message: backErrors.UPDATE_FAILED,
+                }
+            } finally {
+                set((state) => {
+                    state.isLoading = false
+                })
+            }
+        },
+
+        deleteRow: async (payload) => {
+            console.log('deleteRow')
+            console.log({ payload })
 
             set((state) => {
                 state.isLoading = true
             })
 
-            const apiResponse = await apiClientSide.patch(
+            const apiResponse = await apiClientSide.delete(
                 localApiEndpoints.ADMIN.PROJECTS,
                 {
                     json: payload,
@@ -152,37 +237,25 @@ export const useProjectsStore = create<ProjectsStore>()(
             )
 
             if (!apiResponse.ok) {
-                set((state) => {
-                    state.isLoading = false
-                })
-
-                return fail(backErrors.UPDATE_FAILED)
+                return {
+                    success: false,
+                    message: apiResponse.statusText || 'Deletion failed',
+                }
             }
 
-            const projectsResponse = await apiClientSide<ProjectsListResponse>(
-                localApiEndpoints.ADMIN.PROJECTS,
-            )
-
-            if (!projectsResponse.ok) {
-                set((state) => {
-                    state.isLoading = false
-                })
-
-                return fail(backErrors.UPDATE_FAILED)
-            }
-
-            const parsedResponse = await projectsResponse.json()
+            await get().fetchProjects()
 
             set((state) => {
-                state.projectsByCategories = parsedResponse
+                state.projectFormDraft = null
                 state.isLoading = false
-                state.initialized = true
-                state.clearProjectFormDraft()
             })
 
             return {
                 success: true,
-                message: backSuccess.UPDATE_SUCCEEDED,
+                message:
+                    payload.type === ProjectTableRowType.enum.project
+                        ? 'Project deleted'
+                        : 'Category deleted',
             }
         },
     })),
