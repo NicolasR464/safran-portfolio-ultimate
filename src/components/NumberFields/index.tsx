@@ -16,7 +16,7 @@ import {
 import { composeTailwindRenderProps } from '@/utils/ui'
 import Input from '@/components/Input'
 
-export interface NumberFieldProps extends AriaNumberFieldProps {
+interface NumberFieldProps extends AriaNumberFieldProps {
     label?: string
     description?: string
     errorMessage?: string | ((validation: ValidationResult) => string)

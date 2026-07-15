@@ -21,10 +21,8 @@
   "dependencies": {
     "@mantine/hooks": "^9.4.1",
     "@mdxeditor/editor": "^4.0.4",
-    "@react-types/shared": "^3.34.0",
     "@tailwindcss/typography": "^0.5.19",
     "cloudinary": "^2.10.0",
-    "clsx": "^2.1.1",
     "embla-carousel": "^8.6.0",
     "embla-carousel-react": "^8.6.0",
     "immer": "11.1.4",
@@ -38,7 +36,6 @@
     "react-aria-components": "1.17.0",
     "react-dom": "19.2.3",
     "react-markdown": "^10.1.0",
-    "react-stately": "^3.46.0",
     "tailwind-merge": "3.5.0",
     "tailwind-variants": "3.2.2",
     "tailwindcss-animate": "1.0.7",

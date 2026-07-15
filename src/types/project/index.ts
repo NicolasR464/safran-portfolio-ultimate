@@ -26,8 +26,8 @@ export const ImageMetadata = z.object({
 })
 export type ImageMetadata = z.infer<typeof ImageMetadata>
 
-export const ProjectCategory = z.object({
+const ProjectCategory = z.object({
     name: z.string().min(1),
     order: z.number().int().nonnegative(),
 })
-export type ProjectCategory = z.infer<typeof ProjectCategory>
+type ProjectCategory = z.infer<typeof ProjectCategory>

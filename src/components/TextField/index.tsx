@@ -24,7 +24,7 @@ const inputStyles = tv({
     },
 })
 
-export interface TextFieldProps extends AriaTextFieldProps {
+interface TextFieldProps extends AriaTextFieldProps {
     label?: string
     description?: string
     placeholder?: string

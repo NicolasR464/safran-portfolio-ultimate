@@ -13,8 +13,9 @@ import {
     UpdateProjectsPayload,
     DeleteRowPayload,
 } from '@/types/api/admin/projects'
-import { getVideoInfoFromUrl } from '@/utils/functions'
+
 import { cloudinaryImagesDelete } from '@/utils/functions/cloudinary'
+import { getVideoInfoFromUrl } from '@/utils/functions/video'
 
 /** Get all projects with categories */
 export const GET = async () => {

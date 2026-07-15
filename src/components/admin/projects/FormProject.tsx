@@ -15,6 +15,8 @@ import FormSeparator from '@/components/admin/projects/FormSeparator'
 import WYSIWYG from '@/components/admin/WYSIWYG'
 import { X } from 'lucide-react'
 import { ProjectCategorySchema } from '@/types/projectCategory/schema'
+import { embedSrcBuilder } from '@/utils/functions/video'
+import { VideoPlayerType } from '@/types/project'
 
 type FormProjectProps = {
     projectSelected?: ProjectNode
@@ -66,6 +68,13 @@ const FormProject = ({
             return null
         }
 
+        const videoUrl =
+            projectSelected.video?.url ||
+            embedSrcBuilder(
+                projectSelected.video?.player ?? VideoPlayerType.enum.youtube,
+                projectSelected.video?.videoId ?? '',
+            )
+
         return {
             _id: projectSelected.id,
             title: projectSelected.title,
@@ -73,7 +82,7 @@ const FormProject = ({
             order: projectSelected.order,
             categoryId: projectSelected.categoryId,
             images: projectSelected.images ?? [],
-            videoUrl: projectSelected.video && projectSelected.video.url,
+            videoUrl,
         }
     }, [projectSelected])
 

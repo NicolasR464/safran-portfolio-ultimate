@@ -1,11 +1,10 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
-import { CategoriesResponse } from '@/types/apiResponses/portfolio'
-
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
 import { ProjectCategorySchema } from '@/types/projectCategory/schema'
+import { CategoriesResponse } from '@/types/api/portfolio'
 
 type CategoriesStore = {
     categories: ProjectCategorySchema[]

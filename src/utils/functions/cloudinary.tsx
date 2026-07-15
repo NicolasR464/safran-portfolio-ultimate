@@ -1,4 +1,3 @@
-// oxlint-disable no-console
 'use server'
 
 import cloudinary from 'cloudinary'
@@ -19,7 +18,9 @@ export const cloudinaryImagesDelete = async (
             resource_type: 'image',
         })
         .catch((error) => {
+            // oxlint-disable-next-line no-console
             console.error('Cloudinary cleanup failed:', error)
+            // oxlint-disable-next-line no-console
             console.error('Image IDs:', [...imageIds])
         })
 }

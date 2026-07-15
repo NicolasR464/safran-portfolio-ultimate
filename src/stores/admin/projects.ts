@@ -23,9 +23,9 @@ export type ProjectFormDraft = {
     videoUrl?: string
 }
 
-export type CreateProjectPayload = Omit<ProjectFormDraft, '_id'>
+type CreateProjectPayload = Omit<ProjectFormDraft, '_id'>
 
-export type DeleteRowPayload = {
+type DeleteRowPayload = {
     _id: string
     type: ProjectTableRowType
 }
@@ -222,9 +222,6 @@ export const useProjectsStore = create<ProjectsStore>()(
         },
 
         deleteRow: async (payload) => {
-            console.log('deleteRow')
-            console.log({ payload })
-
             set((state) => {
                 state.isLoading = true
             })

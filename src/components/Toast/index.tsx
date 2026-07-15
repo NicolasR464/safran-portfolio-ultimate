@@ -88,7 +88,7 @@ const toastVariantClasses: Record<
     info: 'bg-blue-600 focus-visible:outline-blue-600',
 }
 
-export const MyToast = ({
+const MyToast = ({
     toast,
     className,
     children,

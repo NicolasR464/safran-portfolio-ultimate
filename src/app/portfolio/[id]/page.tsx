@@ -3,11 +3,11 @@ import Image from 'next/image'
 import ButtonBack from '@/components/buttons/ButtonBack'
 import ModalContainerImages from '@/components/Modal/ModalContainerImages'
 
-import { embedSrcBuilder } from '@/utils'
 import { getProjectWithCategory } from '@/utils/mongo/mongoQueries/project'
 import { ImageCategory } from '@/types/project'
 
 import MarkdownDisplay from '@/components/MarkdownDisplay'
+import { embedSrcBuilder } from '@/utils/functions/video'
 
 /** Single Project page displaying a project's details. */
 const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
@@ -52,7 +52,7 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                 <div className='absolute inset-0 bg-gradient-to-b from-black/10 via-black/35 to-black' />
             </div>
 
-            <section className='relative z-10 mx-auto flex min-h-[calc(100dvh-var(--header-height))] w-full max-w-6xl flex-col justify-end gap-8 px-6 pb-10 pt-24'>
+            <section className='relative z-10 mx-auto flex min-h-[calc(100dvh-var(--header-height))] w-full max-w-6xl flex-col justify-start gap-8 px-6 pb-10 pt-24'>
                 <div>
                     <h1 className='text-3xl font-black font-mono tracking-tight md:text-5xl text-center'>
                         {project.title}
@@ -78,18 +78,17 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                 )}
 
                 {/* Image Poster */}
-                {!!imagePoster?.url && (
+                {imagePoster?.url && (
                     <div className='flex w-full justify-center'>
-                        <div className='relative flex max-h-[70dvh] w-full max-w-5xl items-center justify-center overflow-hidden bg-black/35 shadow-2xl backdrop-blur-[2px]'>
-                            <Image
-                                src={imagePoster.url}
-                                alt={project.title || 'Project poster image'}
-                                width={1200}
-                                height={1200}
-                                priority
-                                className='h-auto max-h-[70dvh] w-auto max-w-full object-contain'
-                            />
-                        </div>
+                        <Image
+                            src={imagePoster.url}
+                            alt={project.title || 'Project poster image'}
+                            width={1200}
+                            height={1200}
+                            priority
+                            sizes='(max-width: 768px) 90vw, 60vw'
+                            className='h-[55dvh] w-auto max-w-full object-contain'
+                        />
                     </div>
                 )}
 

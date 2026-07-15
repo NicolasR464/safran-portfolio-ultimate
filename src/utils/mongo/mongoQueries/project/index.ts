@@ -5,12 +5,8 @@ import { ProjectSchema } from '@/types/project/schema'
 import { collections } from '@/utils/constants'
 import { ProjectCategorySchema } from '@/types/projectCategory/schema'
 import { getDb } from '@/utils/mongo'
-import {
-    ProjectsCategoryResponse,
-    ProjectsListResponse,
-} from '@/types/apiResponses/admin/projects'
 
-export type ProjectWithCategory = ProjectSchema & {
+type ProjectWithCategory = ProjectSchema & {
     category: ProjectCategorySchema
 }
 
