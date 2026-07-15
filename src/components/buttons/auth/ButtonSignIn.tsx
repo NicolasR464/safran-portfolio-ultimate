@@ -6,7 +6,7 @@ const ButtonSignIn = () => {
         <form
             action={async () => {
                 'use server'
-                await signIn('google')
+                await signIn('google', { redirectTo: '/admin' })
             }}
         >
             <ButtonGeneric type='submit'>Signin with Gmail</ButtonGeneric>
