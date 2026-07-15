@@ -1,4 +1,5 @@
 import './globals.css'
+import '@mdxeditor/editor/style.css'
 
 import type { Metadata } from 'next'
 import { Cairo, Poiret_One } from 'next/font/google'

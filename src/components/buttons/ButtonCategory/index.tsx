@@ -1,7 +1,6 @@
 import ButtonGeneric from '@/components/buttons/ButtonGeneric'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
-import { keyToCategory } from '@/utils/constants'
 
 type ButtonCategoryProperties = {
     category: string
@@ -65,7 +64,7 @@ const ButtonCategory = ({ category }: ButtonCategoryProperties) => {
                 ${isLoading && 'animate-glow'}
             `}
         >
-            {keyToCategory[category]}
+            {category}
         </ButtonGeneric>
     )
 }

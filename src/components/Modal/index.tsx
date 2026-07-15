@@ -19,20 +19,19 @@ const overlayStyles = tv({
     },
 })
 
+const modalBase =
+    'max-h-[calc(var(--visual-viewport-height)*.9)] rounded-2xl bg-white bg-clip-padding border border-black/10 dark:border-white/10 dark:bg-neutral-800/70 dark:backdrop-blur-2xl dark:backdrop-saturate-200 forced-colors:bg-[Canvas]'
+
 const modalStyles = tv({
-    base: 'font-sans text-left align-middle text-neutral-700 shadow-2xl outline-none dark:text-neutral-300',
+    base: 'relative font-sans text-left align-middle text-neutral-700 shadow-2xl outline-none dark:text-neutral-300',
     variants: {
         size: {
-            default:
-                'w-full max-w-[min(90vw,450px)] max-h-[calc(var(--visual-viewport-height)*.9)] rounded-2xl bg-white bg-clip-padding border border-black/10 dark:border-white/10 dark:bg-neutral-800/70 dark:backdrop-blur-2xl dark:backdrop-saturate-200 forced-colors:bg-[Canvas]',
+            default: `w-[450px] max-w-[90vw] ${modalBase}`,
+            sm: `w-[350px] max-w-[90vw] ${modalBase}`,
+            md: `w-[550px] max-w-[90vw] ${modalBase}`,
+            lg: `w-[750px] max-w-[90vw] ${modalBase}`,
             gallery:
-                'relative w-[95vw] sm:w-[min(66.666vw,calc(66.666dvh*16/9))] max-w-none max-h-none border-0 bg-transparent shadow-none',
-        },
-        isEntering: {
-            true: 'animate-in zoom-in-105 ease-out duration-200',
-        },
-        isExiting: {
-            true: 'animate-out zoom-out-95 ease-in duration-200',
+                'relative w-[95vw] sm:w-[min(66.666vw,_calc(66.666dvh*16/9))] max-w-none max-h-none border-0 bg-transparent shadow-none',
         },
     },
     defaultVariants: {
@@ -40,18 +39,27 @@ const modalStyles = tv({
     },
 })
 
-type ModalProps = ModalOverlayProps & VariantProps<typeof modalStyles>
+type ModalProps = ModalOverlayProps &
+    VariantProps<typeof modalStyles> & {
+        children: React.ReactNode
+    }
 
-const Modal = ({ size, ...props }: ModalProps) => {
+const Modal = ({
+    size,
+    isDismissable = true,
+    children,
+    ...props
+}: ModalProps) => {
     return (
         <ModalOverlay
             {...props}
+            isDismissable={isDismissable}
+            shouldCloseOnInteractOutside={(element) => {
+                return !element.closest('.mdxeditor-popup-container')
+            }}
             className={overlayStyles}
         >
-            <RACModal
-                {...props}
-                className={modalStyles({ size })}
-            />
+            <RACModal className={modalStyles({ size })}>{children}</RACModal>
         </ModalOverlay>
     )
 }

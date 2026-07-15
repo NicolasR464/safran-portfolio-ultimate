@@ -1,10 +1,6 @@
 import { type NextRequest } from 'next/server'
 import { NextResponse } from 'next/server'
 
-import {
-    ThumbnailsCategory,
-    ThumbnailsResponse,
-} from '@/types/apiResponses/portfolio'
 import { ProjectSchema } from '@/types/project/schema'
 import {
     collections,
@@ -13,7 +9,8 @@ import {
 } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
 import { getDb } from '@/utils/mongo'
-import { thumbnailsPipeline } from '@/utils/mongoPipelines/portfolio/thumbnails'
+import { thumbnailsPipeline } from '@/utils/mongo/mongoPipelines/portfolio/thumbnails'
+import { ThumbnailsCategory, ThumbnailsResponse } from '@/types/api/portfolio'
 
 /** This returns the thumbnails info for the portfolio main page. */
 export const GET = async (request: NextRequest) => {

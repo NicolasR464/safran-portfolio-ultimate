@@ -5,23 +5,19 @@ if (!uri) {
     throw new Error('Missing MONGODB_URI')
 }
 
-const DEFAULT_DB = process.env.MONGO_DB
+const DEFAULT_DB = process.env.DB_NAME
 
 declare global {
     var _mongoClientPromise: Promise<MongoClient> | undefined
 }
 
-const client = new MongoClient(uri)
-
 const clientPromise =
     global._mongoClientPromise ??
-    (global._mongoClientPromise = client.connect())
+    (global._mongoClientPromise = new MongoClient(uri).connect())
 
-const getMongoClient = async (): Promise<MongoClient> => {
-    return clientPromise
-}
+export const getMongoClient = async (): Promise<MongoClient> => clientPromise
 
 export const getDb = async (name?: string) => {
-    const c = await getMongoClient()
-    return c.db(name ?? DEFAULT_DB)
+    const client = await getMongoClient()
+    return client.db(name ?? DEFAULT_DB)
 }

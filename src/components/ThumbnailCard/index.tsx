@@ -4,8 +4,8 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useRef, useState } from 'react'
 
-import { Thumbnail } from '@/types/apiResponses/portfolio'
 import { urls } from '@/utils/constants/urls'
+import { Thumbnail } from '@/types/api/portfolio'
 
 const ThumbnailCard = ({ metadata }: { metadata: Thumbnail }) => {
     const { title, _id, imageUrl } = metadata

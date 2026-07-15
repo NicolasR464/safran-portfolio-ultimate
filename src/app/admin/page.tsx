@@ -1,6 +1,7 @@
 import { auth } from '@/handlers/auth'
 import ButtonSignIn from '@/components/buttons/auth/ButtonSignIn'
 import ButtonSignOut from '@/components/buttons/auth/ButtonSignOut'
+import TableProjects from '@/components/admin/projects/TableProjects'
 
 const Admin = async () => {
     const session = await auth()
@@ -13,7 +14,10 @@ const Admin = async () => {
                     <div className='fixed right-0 top-(--header-height)'>
                         <ButtonSignOut />
                     </div>
-                    <div className='text-white'>Admin content</div>
+
+                    <div className='text-white'>
+                        <TableProjects />
+                    </div>
                 </>
             )}
 

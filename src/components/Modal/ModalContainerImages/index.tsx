@@ -1,23 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import {
-    Button,
-    DialogTrigger,
-    DialogTriggerProps,
-} from 'react-aria-components'
+import { Button, DialogTriggerProps } from 'react-aria-components'
 import Image from 'next/image'
 
 import ImagesCarousel from '@/components/ImagesCarousel'
-import Dialog from '@/components/Modal/Dialog'
+
 import Modal from '@/components/Modal'
 import { ImageMetadata } from '@/types/project'
+import ModalTrigger from '@/components/Modal/ModalTrigger'
 
 interface ModalGalleryProps extends Omit<DialogTriggerProps, 'children'> {
     images: ImageMetadata[]
 }
 
-const ModalContainer = ({ images }: ModalGalleryProps) => {
+const ModalContainerImages = ({ images }: ModalGalleryProps) => {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
 
     return (
@@ -38,30 +35,22 @@ const ModalContainer = ({ images }: ModalGalleryProps) => {
             ))}
 
             {selectedIndex !== null && (
-                <DialogTrigger
+                <ModalTrigger
                     isOpen
                     onOpenChange={(open) => {
                         if (!open) setSelectedIndex(null)
                     }}
                 >
-                    {/* Dummy trigger required by API */}
-                    <span />
-
-                    <Modal
-                        isDismissable
-                        size='gallery'
-                    >
-                        <Dialog className='flex h-full w-full items-center justify-center p-0 outline-none'>
-                            <ImagesCarousel
-                                imagesCarousel={images}
-                                initialImageIndex={selectedIndex}
-                            />
-                        </Dialog>
+                    <Modal size='gallery'>
+                        <ImagesCarousel
+                            imagesCarousel={images}
+                            initialImageIndex={selectedIndex}
+                        />
                     </Modal>
-                </DialogTrigger>
+                </ModalTrigger>
             )}
         </div>
     )
 }
 
-export default ModalContainer
+export default ModalContainerImages

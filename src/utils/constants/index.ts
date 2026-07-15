@@ -1,6 +1,7 @@
 export const collections = {
-    PROJECTS: 'projects',
     ABOUT: 'about',
+    PROJECT_CATEGORIES: 'projectCategories',
+    PROJECTS: 'projects',
     VIDEOS: 'videos',
 }
 
@@ -12,15 +13,16 @@ export const searchParamsNames = {
 
 export const DEFAULT_BATCH_SIZE = 10
 
-export const keyToCategory: Record<string, string> = {
-    music_video: 'Music Video',
-    commercial: 'Commercial',
-    narrative: 'Narrative',
-    reel: 'Reel',
+export const localLogos = {
+    instagramLogo: { SRC: '/ig-logo.webp', ALT: 'Instagram logo' },
+    loaderCinemaReel: { SRC: '/cinema-reel-white.png', ALT: 'Loading' },
+    reel: { SRC: '/reel.png', ALT: 'Cinema reel' },
 }
 
-export const localLogos = {
-    reel: { SRC: '/reel.png', ALT: 'Cinema reel' },
-    loaderCinemaReel: { SRC: '/cinema-reel-white.png', ALT: 'Loading' },
-    instagramLogo: { SRC: '/ig-logo.webp', ALT: 'Instagram logo' },
+export const cloudinaryFolders = {
+    MAIN:
+        process.env.NEXT_PUBLIC_CLOUDINARY_MAIN_FOLDER ||
+        process.env.CLOUDINARY_MAIN_FOLDER ||
+        'saf_portfolio/',
+    PORTFOLIO: 'portfolio',
 }

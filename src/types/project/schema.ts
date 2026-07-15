@@ -6,9 +6,9 @@ import { ImageMetadata, VideoMetadata } from './index'
 export const ProjectSchema = z.object({
     _id: z.instanceof(ObjectId),
     title: z.string().min(1),
-    description: z.string().min(1).optional(),
+    description: z.string().optional(),
     video: VideoMetadata.optional(),
-    category: z.string().min(1),
+    categoryId: z.instanceof(ObjectId),
     images: ImageMetadata.array(),
     order: z.number().int().nonnegative(),
 })

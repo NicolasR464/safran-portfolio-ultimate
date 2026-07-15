@@ -16,7 +16,7 @@ import { DropdownItem } from '@/components/ListBox'
 import { Popover } from '@/components/PopOver'
 import { useCategoriesStore } from '@/stores/portfolio/categories'
 import { useThumbnailsStore } from '@/stores/portfolio/thumbnails'
-import { keyToCategory } from '@/utils/constants'
+
 import { composeTailwindRenderProps, focusRing } from '@/utils/ui'
 
 const styles = tv({
@@ -83,7 +83,7 @@ export const Select = <
             <Button className={styles}>
                 <SelectValue className='flex-1 text-sm text-white/80'>
                     {({ selectedText, defaultChildren }) =>
-                        keyToCategory[selectedText] || defaultChildren
+                        selectedText || defaultChildren
                     }
                 </SelectValue>
 

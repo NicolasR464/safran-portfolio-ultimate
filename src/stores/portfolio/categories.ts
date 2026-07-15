@@ -1,18 +1,18 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
-import { CategoriesResponse } from '@/types/apiResponses/portfolio'
-import { ProjectSchema } from '@/types/project/schema'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
+import { ProjectCategorySchema } from '@/types/projectCategory/schema'
+import { CategoriesResponse } from '@/types/api/portfolio'
 
 type CategoriesStore = {
-    categories: ProjectSchema['category'][]
+    categories: ProjectCategorySchema[]
     isLoading: boolean
     initialized: boolean
     error: boolean
-    activeCategory: ProjectSchema['category']
-    setActiveCategory: (category: ProjectSchema['category']) => void
+    activeCategory: ProjectCategorySchema['name'] | ''
+    setActiveCategory: (category: ProjectCategorySchema['name']) => void
     fetchCategories: () => Promise<void>
 }
 
@@ -25,8 +25,13 @@ export const useCategoriesStore = create<CategoriesStore>()(
         activeCategory: '',
 
         fetchCategories: async () => {
+            set((state) => {
+                state.isLoading = true
+                state.error = false
+            })
+
             const apiResponse = await apiClientSide<CategoriesResponse>(
-                `${localApiEndpoints.CATEGORIES}`,
+                localApiEndpoints.CATEGORIES,
             )
 
             if (!apiResponse.ok) {
@@ -47,7 +52,7 @@ export const useCategoriesStore = create<CategoriesStore>()(
             })
         },
 
-        setActiveCategory: (category: ProjectSchema['category']) => {
+        setActiveCategory: (category) => {
             set((state) => {
                 state.activeCategory = category
             })

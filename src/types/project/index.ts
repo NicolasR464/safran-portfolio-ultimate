@@ -4,6 +4,7 @@ export const VideoPlayerType = z.enum(['youtube', 'vimeo'])
 export type VideoPlayerType = z.infer<typeof VideoPlayerType>
 
 export const VideoMetadata = z.object({
+    url: z.url(),
     videoId: z.string().min(1),
     player: VideoPlayerType,
     isPublicRated: z.boolean().optional(),
@@ -24,3 +25,9 @@ export const ImageMetadata = z.object({
     types: z.array(ImageCategory.default(ImageCategory.enum.thumbnail)),
 })
 export type ImageMetadata = z.infer<typeof ImageMetadata>
+
+const ProjectCategory = z.object({
+    name: z.string().min(1),
+    order: z.number().int().nonnegative(),
+})
+type ProjectCategory = z.infer<typeof ProjectCategory>

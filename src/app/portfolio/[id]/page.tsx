@@ -1,36 +1,19 @@
-import { ObjectId } from 'mongodb'
 import Image from 'next/image'
-import { notFound } from 'next/navigation'
 
 import ButtonBack from '@/components/buttons/ButtonBack'
-import { ProjectSchema } from '@/types/project/schema'
-import { collections, keyToCategory } from '@/utils/constants'
-import { getDb } from '@/utils/mongo'
-import { embedSrcBuilder } from '@/utils'
+import ModalContainerImages from '@/components/Modal/ModalContainerImages'
+
+import { getProjectWithCategory } from '@/utils/mongo/mongoQueries/project'
 import { ImageCategory } from '@/types/project'
-import ModalContainer from '@/components/Modal/ModalContainer'
+
+import MarkdownDisplay from '@/components/MarkdownDisplay'
+import { embedSrcBuilder } from '@/utils/functions/video'
 
 /** Single Project page displaying a project's details. */
 const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
     const { id } = await params
 
-    if (!ObjectId.isValid(id)) {
-        notFound()
-    }
-
-    const database = await getDb()
-
-    const projectsCollection = database.collection<ProjectSchema>(
-        collections.PROJECTS,
-    )
-
-    const project = await projectsCollection.findOne({
-        _id: new ObjectId(id),
-    })
-
-    if (!project) {
-        notFound()
-    }
+    const project = await getProjectWithCategory(id)
 
     const embedSrc =
         project.video &&
@@ -69,7 +52,17 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                 <div className='absolute inset-0 bg-gradient-to-b from-black/10 via-black/35 to-black' />
             </div>
 
-            <section className='relative z-10 mx-auto flex min-h-[calc(100dvh-var(--header-height))] w-full max-w-6xl flex-col justify-end gap-8 px-6 pb-10 pt-24'>
+            <section className='relative z-10 mx-auto flex min-h-[calc(100dvh-var(--header-height))] w-full max-w-6xl flex-col justify-start gap-8 px-6 pb-10 pt-24'>
+                <div>
+                    <h1 className='text-3xl font-black font-mono tracking-tight md:text-5xl text-center'>
+                        {project.title}
+                    </h1>
+
+                    <p className='mt-2 text-sm uppercase tracking-[0.3em] text-white/60 text-center'>
+                        {project.category.name}
+                    </p>
+                </div>
+
                 {/* Video */}
                 {!!embedSrc && (
                     <div className='flex w-full justify-center'>
@@ -85,44 +78,30 @@ const Project = async ({ params }: { params: Promise<{ id: string }> }) => {
                 )}
 
                 {/* Image Poster */}
-                {!!imagePoster?.url && (
+                {imagePoster?.url && (
                     <div className='flex w-full justify-center'>
-                        <div className='relative flex max-h-[70dvh] w-full max-w-5xl items-center justify-center overflow-hidden bg-black/35 shadow-2xl backdrop-blur-[2px]'>
-                            <Image
-                                src={imagePoster.url}
-                                alt={project.title || 'Project poster image'}
-                                width={1200}
-                                height={1200}
-                                priority
-                                className='h-auto max-h-[70dvh] w-auto max-w-full object-contain'
-                            />
-                        </div>
+                        <Image
+                            src={imagePoster.url}
+                            alt={project.title || 'Project poster image'}
+                            width={1200}
+                            height={1200}
+                            priority
+                            sizes='(max-width: 768px) 90vw, 60vw'
+                            className='h-[55dvh] w-auto max-w-full object-contain'
+                        />
                     </div>
                 )}
 
-                {/* Project Metadata */}
+                {/* Description */}
                 <div className='w-full max-w-3xl mx-auto'>
-                    <h1 className='text-3xl font-black font-mono tracking-tight md:text-5xl text-center'>
-                        {project.title}
-                    </h1>
-
-                    <p className='mt-2 text-sm uppercase tracking-[0.3em] text-white/60 text-center'>
-                        {keyToCategory[project.category]}
-                    </p>
-
                     {!!project.description && (
-                        <div
-                            className='prose prose-neutral max-w-none mt-4 text-left prose prose-invert max-w-none prose-h2:text-3xl prose-h2:font-semibold prose-h2:mb-4 prose-h3:text-xl prose-h3:font-medium prose-h3:mt-8 prose-h3:mb-3 prose-p:leading-8 prose-p:mb-4 prose-li:mb-2 prose-strong:text-white'
-                            dangerouslySetInnerHTML={{
-                                __html: project.description,
-                            }}
-                        />
+                        <MarkdownDisplay markdown={project.description} />
                     )}
                 </div>
 
                 {/* Carousel Images */}
                 {!!imagesCarousel?.length && (
-                    <ModalContainer images={imagesCarousel} />
+                    <ModalContainerImages images={imagesCarousel} />
                 )}
             </section>
         </div>
