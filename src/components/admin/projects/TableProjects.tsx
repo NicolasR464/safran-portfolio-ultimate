@@ -314,11 +314,11 @@ const TableProjects = () => {
     }
 
     return (
-        <div>
+        <div className='w-full min-w-0 overflow-hidden'>
             <MyToastRegion />
 
             {/** Create buttons */}
-            <div className='flex w-screen justify-center'>
+            <div className='flex w-full flex-wrap justify-center gap-3 px-4'>
                 {/** Create category */}
                 <ButtonGeneric
                     type='button'
@@ -355,28 +355,58 @@ const TableProjects = () => {
                 />
             </div>
 
-            <div className='px-4 pb-6'>
-                <Table
-                    aria-label='Projects'
-                    treeColumn='name'
-                    defaultExpandedKeys={initialItems.map((item) => item.id)}
-                    dragAndDropHooks={dragAndDropHooks}
-                >
-                    <TableHeader className='sticky top-0 z-20 bg-neutral-700/95 backdrop-blur-md'>
-                        <Column
-                            id='name'
-                            isRowHeader
-                        >
-                            Name
-                        </Column>
-                        <Column id='type'>Type</Column>
-                        <Column id='order'>Order</Column>
-                        <Column id='update'>Update</Column>
-                        <Column id='delete'>Delete</Column>
-                    </TableHeader>
+            <div className='w-full min-w-0 px-4 pb-6'>
+                <div className='w-full overflow-x-auto overscroll-x-contain'>
+                    <Table
+                        aria-label='Projects'
+                        treeColumn='name'
+                        defaultExpandedKeys={initialItems.map(
+                            (item) => item.id,
+                        )}
+                        dragAndDropHooks={dragAndDropHooks}
+                        className='min-w-[800px]'
+                    >
+                        <TableHeader className='sticky top-0 z-20 bg-neutral-700/95 backdrop-blur-md'>
+                            <Column
+                                id='name'
+                                isRowHeader
+                                className='min-w-[280px]'
+                            >
+                                Name
+                            </Column>
 
-                    <TableBody items={initialItems}>{renderItem}</TableBody>
-                </Table>
+                            <Column
+                                id='type'
+                                className='min-w-[140px]'
+                            >
+                                Type
+                            </Column>
+
+                            <Column
+                                id='order'
+                                className='min-w-[100px]'
+                            >
+                                Order
+                            </Column>
+
+                            <Column
+                                id='update'
+                                className='min-w-[120px]'
+                            >
+                                Update
+                            </Column>
+
+                            <Column
+                                id='delete'
+                                className='min-w-[120px]'
+                            >
+                                Delete
+                            </Column>
+                        </TableHeader>
+
+                        <TableBody items={initialItems}>{renderItem}</TableBody>
+                    </Table>
+                </div>
             </div>
 
             {/** Modal */}

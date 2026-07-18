@@ -25,4 +25,5 @@ export const cloudinaryFolders = {
         process.env.CLOUDINARY_MAIN_FOLDER ||
         'saf_portfolio/',
     PORTFOLIO: 'portfolio',
+    HOME_PAGE_VIDEO: 'home',
 }

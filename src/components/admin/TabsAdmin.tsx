@@ -2,6 +2,7 @@
 
 import { Tab, TabList, TabPanel, TabPanels, Tabs } from '@/components/Tabs'
 import TableProjects from '@/components/admin/projects/TableProjects'
+import HomeVideos from '@/components/admin/home/HomeVideos'
 
 const TabsAdmin = () => {
     return (
@@ -37,7 +38,7 @@ const TabsAdmin = () => {
                     id='home'
                     className='flex items-center justify-center'
                 >
-                    {'<Home />'}
+                    <HomeVideos />
                 </TabPanel>
 
                 <TabPanel
@@ -51,7 +52,7 @@ const TabsAdmin = () => {
                     id='about'
                     className='flex items-center justify-center'
                 >
-                    {'  <Settings />'}
+                    {'🚧 En cours 🚧'}
                 </TabPanel>
             </TabPanels>
         </Tabs>

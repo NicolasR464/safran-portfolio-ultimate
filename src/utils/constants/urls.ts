@@ -14,3 +14,6 @@ export const urls = {
             'https://res.cloudinary.com/niikkoo/video/upload/v1775045868/saf_portfolio/home_page_video/video-small-screen.mp4',
     },
 }
+
+export const phoneSizeIllustrationSRC =
+    'https://res.cloudinary.com/niikkoo/image/upload/v1784394873/saf_portfolio/misc/Screenshot_2026-07-18_at_19.04.34.jpg'
