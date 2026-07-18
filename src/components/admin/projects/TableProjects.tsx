@@ -328,7 +328,7 @@ const TableProjects = () => {
                 defaultExpandedKeys={initialItems.map((item) => item.id)}
                 dragAndDropHooks={dragAndDropHooks}
             >
-                <TableHeader className='sticky top-0 z-20 bg-neutral-100/95 dark:bg-neutral-700/95 backdrop-blur-md'>
+                <TableHeader className='sticky top-0 z-20 bg-neutral-700/95 backdrop-blur-md'>
                     <Column
                         id='name'
                         isRowHeader
