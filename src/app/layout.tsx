@@ -48,9 +48,9 @@ const RootLayout = async ({
                 className={`${poiretOne.variable} ${cairo.variable} antialiased`}
             >
                 <header className='fixed top-0 z-[100] h-(--header-height) backdrop-blur-sm'>
-                    <div className='flex w-screen h-full justify-between items-center'>
+                    <div className='flex w-screen h-full justify-between items-center p-3'>
                         <Link href={'/'}>
-                            <h1 className='ml-4 font-semibold text-2xl text-white font-poiret '>
+                            <h1 className='font-semibold text-2xl text-white font-poiret '>
                                 Safran Lecuivre
                             </h1>
                         </Link>

@@ -108,13 +108,15 @@ const WYSIWYG: FC<EditorProps> = ({ markdown }) => {
                             onPointerDownCapture={
                                 handleToolbarPointerDownCapture
                             }
-                            className='flex justify-around w-90 items-center gap-1'
+                            className='flex justify-between w-full gap-1'
                         >
-                            <BoldItalicUnderlineToggles />
+                            <div className='flex'>
+                                <BoldItalicUnderlineToggles />
 
-                            <CreateLink />
+                                <CreateLink />
 
-                            <ListsToggle options={['bullet']} />
+                                <ListsToggle options={['bullet']} />
+                            </div>
 
                             <BlockTypeSelect />
                         </div>

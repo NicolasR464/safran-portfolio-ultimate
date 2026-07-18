@@ -1,20 +1,25 @@
 import { z } from 'zod'
 
+import { ImageMetadata } from '@/types/project'
 import { ProjectSchema } from '@/types/project/schema'
 import { ProjectCategorySchema } from '@/types/projectCategory/schema'
 import { ProjectTableRowType } from '@/utils/enums/admin'
-import { ImageMetadata } from '@/types/project'
 
 const ProjectsCategoryResponse = z.object({
     category: ProjectCategorySchema,
     projects: ProjectSchema.array(),
 })
+
 export type ProjectsCategoryResponse = z.infer<typeof ProjectsCategoryResponse>
 
 export const ProjectsListResponse = ProjectsCategoryResponse.array()
+
 export type ProjectsListResponse = z.infer<typeof ProjectsListResponse>
 
-export type CRUDResult = { success: boolean; message: string }
+export type CRUDResult = {
+    success: boolean
+    message: string
+}
 
 export const CreateProjectPayload = z.object({
     title: z.string().trim().min(1),
@@ -27,7 +32,29 @@ export const CreateProjectPayload = z.object({
 
 export type CreateProjectPayload = z.infer<typeof CreateProjectPayload>
 
-export const UpdateProjectsPayload = z.union([
+export const CreateCategoryPayload = z.object({
+    name: z.string().trim().min(1),
+    order: z.number().int().min(1),
+})
+
+export type CreateCategoryPayload = z.infer<typeof CreateCategoryPayload>
+
+export const CreateProjectOrCategoryPayload = z.discriminatedUnion('type', [
+    z.object({
+        type: z.literal(ProjectTableRowType.enum.project),
+        project: CreateProjectPayload,
+    }),
+    z.object({
+        type: z.literal(ProjectTableRowType.enum.category),
+        category: CreateCategoryPayload,
+    }),
+])
+
+export type CreateProjectOrCategoryPayload = z.infer<
+    typeof CreateProjectOrCategoryPayload
+>
+
+export const UpdateProjectsPayload = z.discriminatedUnion('type', [
     z.object({
         type: z.literal(ProjectTableRowType.enum.category),
         categories: ProjectCategorySchema.extend({
@@ -39,7 +66,6 @@ export const UpdateProjectsPayload = z.union([
         type: z.literal(ProjectTableRowType.enum.project),
         categoryInitialId: z.string().min(1),
         orderInitial: z.number(),
-        /** Updated project's data */
         project: ProjectSchema.extend({
             _id: z.string().min(1),
             categoryId: z.string().min(1),
@@ -49,6 +75,7 @@ export const UpdateProjectsPayload = z.union([
         }),
     }),
 ])
+
 export type UpdateProjectsPayload = z.infer<typeof UpdateProjectsPayload>
 
 export const DeleteRowPayload = z.object({
