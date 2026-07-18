@@ -10,7 +10,7 @@ const Admin = async () => {
         <>
             {/* Signed in */}
             {session && session.user?.email && (
-                <>
+                <div className='flex flex-col'>
                     <div className='fixed right-0 top-(--header-height)'>
                         <ButtonSignOut />
                     </div>
@@ -18,7 +18,7 @@ const Admin = async () => {
                     <div className='text-white'>
                         <TableProjects />
                     </div>
-                </>
+                </div>
             )}
 
             {/* Not signed in */}

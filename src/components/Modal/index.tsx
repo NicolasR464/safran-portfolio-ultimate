@@ -20,13 +20,13 @@ const overlayStyles = tv({
 })
 
 const modalBase =
-    'max-h-[calc(var(--visual-viewport-height)*.9)] rounded-2xl bg-neutral-800/70 bg-clip-padding border border-white/10 backdrop-blur-2xl backdrop-saturate-200 forced-colors:bg-[Canvas]'
+    'rounded-2xl bg-neutral-800/70 bg-clip-padding border border-white/10 backdrop-blur-2xl backdrop-saturate-200 forced-colors:bg-[Canvas]'
 
 const modalStyles = tv({
     base: 'relative font-sans text-left align-middle text-neutral-300 shadow-2xl outline-none',
     variants: {
         size: {
-            default: `w-[450px] max-w-[90vw] ${modalBase}`,
+            default: `max-w-[90vw] ${modalBase}`,
             sm: `w-[350px] max-w-[90vw] ${modalBase}`,
             md: `w-[550px] max-w-[90vw] ${modalBase}`,
             lg: `w-[750px] max-w-[90vw] ${modalBase}`,

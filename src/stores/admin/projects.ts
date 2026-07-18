@@ -25,6 +25,11 @@ export type ProjectFormDraft = {
 
 type CreateProjectPayload = Omit<ProjectFormDraft, '_id'>
 
+type CreateCategoryPayload = {
+    name: string
+    order: number
+}
+
 type DeleteRowPayload = {
     _id: string
     type: ProjectTableRowType
@@ -42,6 +47,7 @@ type ProjectsStore = {
 
     fetchProjects: () => Promise<void>
     createProject: (project: CreateProjectPayload) => Promise<CRUDResult>
+    createCategory: (category: CreateCategoryPayload) => Promise<CRUDResult>
     updateProjects: (payload: UpdateProjectsPayload) => Promise<CRUDResult>
     deleteRow: (payload: DeleteRowPayload) => Promise<CRUDResult>
 
@@ -113,11 +119,6 @@ export const useProjectsStore = create<ProjectsStore>()(
                 )
 
                 if (!apiResponse.ok) {
-                    set((state) => {
-                        state.isLoading = false
-                        state.initialized = true
-                    })
-
                     return
                 }
 
@@ -125,10 +126,10 @@ export const useProjectsStore = create<ProjectsStore>()(
 
                 set((state) => {
                     state.projectsByCategories = parsedResponse
-                    state.isLoading = false
-                    state.initialized = true
                 })
             } catch {
+                // The caller handles the displayed error when necessary.
+            } finally {
                 set((state) => {
                     state.isLoading = false
                     state.initialized = true
@@ -145,7 +146,10 @@ export const useProjectsStore = create<ProjectsStore>()(
                 const apiResponse = await apiClientSide.post(
                     localApiEndpoints.ADMIN.PROJECTS,
                     {
-                        json: project,
+                        json: {
+                            type: ProjectTableRowType.enum.project,
+                            project,
+                        },
                     },
                 )
 
@@ -153,7 +157,7 @@ export const useProjectsStore = create<ProjectsStore>()(
                     return {
                         success: false,
                         message:
-                            apiResponse.statusText || backErrors.UPDATE_FAILED,
+                            apiResponse.statusText || 'Project creation failed',
                     }
                 }
 
@@ -179,6 +183,49 @@ export const useProjectsStore = create<ProjectsStore>()(
             }
         },
 
+        createCategory: async (category) => {
+            set((state) => {
+                state.isLoading = true
+            })
+
+            try {
+                const apiResponse = await apiClientSide.post(
+                    localApiEndpoints.ADMIN.PROJECTS,
+                    {
+                        json: {
+                            type: ProjectTableRowType.enum.category,
+                            category,
+                        },
+                    },
+                )
+
+                if (!apiResponse.ok) {
+                    return {
+                        success: false,
+                        message:
+                            apiResponse.statusText ||
+                            'Category creation failed',
+                    }
+                }
+
+                await get().fetchProjects()
+
+                return {
+                    success: true,
+                    message: 'Category created',
+                }
+            } catch {
+                return {
+                    success: false,
+                    message: 'Category creation failed',
+                }
+            } finally {
+                set((state) => {
+                    state.isLoading = false
+                })
+            }
+        },
+
         updateProjects: async (payload) => {
             set((state) => {
                 state.isLoading = true
@@ -195,7 +242,8 @@ export const useProjectsStore = create<ProjectsStore>()(
                 if (!apiResponse.ok) {
                     return {
                         success: false,
-                        message: backErrors.UPDATE_FAILED,
+                        message:
+                            apiResponse.statusText || backErrors.UPDATE_FAILED,
                     }
                 }
 
@@ -226,33 +274,43 @@ export const useProjectsStore = create<ProjectsStore>()(
                 state.isLoading = true
             })
 
-            const apiResponse = await apiClientSide.delete(
-                localApiEndpoints.ADMIN.PROJECTS,
-                {
-                    json: payload,
-                },
-            )
+            try {
+                const apiResponse = await apiClientSide.delete(
+                    localApiEndpoints.ADMIN.PROJECTS,
+                    {
+                        json: payload,
+                    },
+                )
 
-            if (!apiResponse.ok) {
+                if (!apiResponse.ok) {
+                    return {
+                        success: false,
+                        message: apiResponse.statusText || 'Deletion failed',
+                    }
+                }
+
+                await get().fetchProjects()
+
+                set((state) => {
+                    state.projectFormDraft = null
+                })
+
+                return {
+                    success: true,
+                    message:
+                        payload.type === ProjectTableRowType.enum.project
+                            ? 'Project deleted'
+                            : 'Category deleted',
+                }
+            } catch {
                 return {
                     success: false,
-                    message: apiResponse.statusText || 'Deletion failed',
+                    message: 'Deletion failed',
                 }
-            }
-
-            await get().fetchProjects()
-
-            set((state) => {
-                state.projectFormDraft = null
-                state.isLoading = false
-            })
-
-            return {
-                success: true,
-                message:
-                    payload.type === ProjectTableRowType.enum.project
-                        ? 'Project deleted'
-                        : 'Category deleted',
+            } finally {
+                set((state) => {
+                    state.isLoading = false
+                })
             }
         },
     })),

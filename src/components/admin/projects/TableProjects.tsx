@@ -17,7 +17,13 @@ import {
 import { useProjectsStore } from '@/stores/admin/projects'
 import { FormMode, ProjectTableRowType } from '@/utils/enums/admin'
 import ButtonGeneric from '@/components/buttons/ButtonGeneric'
-import { Pencil, Trash } from 'lucide-react'
+import {
+    FolderPlus,
+    Pencil,
+    DiamondPlus,
+    Trash,
+    SquareArrowOutUpRight,
+} from 'lucide-react'
 import ModalTrigger from '@/components/Modal/ModalTrigger'
 import Modal from '@/components/Modal'
 import FormCategory from '@/components/admin/projects/FormCategory'
@@ -27,6 +33,8 @@ import { CldUploadWidget } from 'next-cloudinary'
 import { cloudinaryFolders } from '@/utils/constants'
 import { ToastColorVariant } from '@/types/ui/toast'
 import ModalDelete from './ModalDelete'
+import { urls } from '@/utils/constants/urls'
+import ButtonLink from '@/components/buttons/ButtonLink'
 
 const findItem = (
     items: ProjectTreeItem[],
@@ -306,43 +314,70 @@ const TableProjects = () => {
     }
 
     return (
-        <div className='px-4 pt-20 mt-8'>
+        <div>
             <MyToastRegion />
 
-            {/** Create project button */}
-            <ButtonGeneric
-                type='button'
-                onPress={() => {
-                    resetDraft()
-                    setSelectedItemId(null)
-                    setFormMode(FormMode.enum['create-project'])
-                    setIsModalOpen(true)
-                }}
-            >
-                Create project
-            </ButtonGeneric>
+            {/** Create buttons */}
+            <div className='flex w-screen justify-center'>
+                {/** Create category */}
+                <ButtonGeneric
+                    type='button'
+                    className={'flex'}
+                    onPress={() => {
+                        resetDraft()
+                        setSelectedItemId(null)
+                        setFormMode(FormMode.enum['create-category'])
+                        setIsModalOpen(true)
+                    }}
+                >
+                    <FolderPlus /> <span className='ml-2'>Category</span>
+                </ButtonGeneric>
 
-            <Table
-                aria-label='Projects'
-                treeColumn='name'
-                defaultExpandedKeys={initialItems.map((item) => item.id)}
-                dragAndDropHooks={dragAndDropHooks}
-            >
-                <TableHeader className='sticky top-0 z-20 bg-neutral-700/95 backdrop-blur-md'>
-                    <Column
-                        id='name'
-                        isRowHeader
-                    >
-                        Name
-                    </Column>
-                    <Column id='type'>Type</Column>
-                    <Column id='order'>Order</Column>
-                    <Column id='update'>Update</Column>
-                    <Column id='delete'>Delete</Column>
-                </TableHeader>
+                {/** Create project */}
+                <ButtonGeneric
+                    type='button'
+                    className={'flex'}
+                    onPress={() => {
+                        resetDraft()
+                        setSelectedItemId(null)
+                        setFormMode(FormMode.enum['create-project'])
+                        setIsModalOpen(true)
+                    }}
+                >
+                    <DiamondPlus /> <span className='ml-2'>Project</span>
+                </ButtonGeneric>
 
-                <TableBody items={initialItems}>{renderItem}</TableBody>
-            </Table>
+                <ButtonLink
+                    text='Portfolio'
+                    href={urls.visitor.PORTFOLIO}
+                    logo={<SquareArrowOutUpRight size={24} />}
+                    target='_blank'
+                />
+            </div>
+
+            <div className='px-4 pb-6'>
+                <Table
+                    aria-label='Projects'
+                    treeColumn='name'
+                    defaultExpandedKeys={initialItems.map((item) => item.id)}
+                    dragAndDropHooks={dragAndDropHooks}
+                >
+                    <TableHeader className='sticky top-0 z-20 bg-neutral-700/95 backdrop-blur-md'>
+                        <Column
+                            id='name'
+                            isRowHeader
+                        >
+                            Name
+                        </Column>
+                        <Column id='type'>Type</Column>
+                        <Column id='order'>Order</Column>
+                        <Column id='update'>Update</Column>
+                        <Column id='delete'>Delete</Column>
+                    </TableHeader>
+
+                    <TableBody items={initialItems}>{renderItem}</TableBody>
+                </Table>
+            </div>
 
             {/** Modal */}
             <ModalTrigger
@@ -350,12 +385,21 @@ const TableProjects = () => {
                 onOpenChange={setIsModalOpen}
             >
                 <Modal isDismissable={false}>
+                    {formMode === FormMode.enum['create-category'] && (
+                        <FormCategory
+                            setIsModalOpen={setIsModalOpen}
+                            resetState={closeAndResetForm}
+                            formMode={formMode}
+                        />
+                    )}
+
                     {formMode === FormMode.enum['edit-category'] &&
                         selectedCategory && (
                             <FormCategory
                                 categorySelected={selectedCategory}
                                 setIsModalOpen={setIsModalOpen}
                                 resetState={closeAndResetForm}
+                                formMode={formMode}
                             />
                         )}
 
@@ -432,8 +476,10 @@ const TableProjects = () => {
                             )
                     }}
                 >
-                    {({ open }) => {
-                        cloudinaryOpenRef.current = open
+                    {({ open, error, isLoading }) => {
+                        cloudinaryOpenRef.current =
+                            !isLoading && !error ? open : null
+
                         return null
                     }}
                 </CldUploadWidget>

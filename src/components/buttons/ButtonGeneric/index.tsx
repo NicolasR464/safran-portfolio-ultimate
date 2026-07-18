@@ -27,7 +27,7 @@ const ButtonGeneric = ({
             className={`     
                 cursor-pointer
                 m-2
-                px-8
+                px-6
                 sm:px-5 
                 py-2
                 rounded-full
@@ -43,6 +43,10 @@ const ButtonGeneric = ({
                 
                 text-white
                 font-poiret text-xl font-semibold  
+
+                flex
+                justify-center items-center
+
                 ${className}
             `}
             isDisabled={isDisabled}
