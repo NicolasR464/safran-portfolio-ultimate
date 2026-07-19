@@ -27,8 +27,8 @@ const ButtonGeneric = ({
             className={`     
                 cursor-pointer
                 m-2
-                px-6
-                sm:px-5 
+                px-4
+                sm:px-4
                 py-2
                 rounded-full
             
