@@ -8,6 +8,7 @@ const ButtonSignIn = () => {
                 'use server'
                 await signIn('google', { redirectTo: '/admin' })
             }}
+            className='mt-20'
         >
             <ButtonGeneric type='submit'>Signin with Gmail</ButtonGeneric>
         </form>

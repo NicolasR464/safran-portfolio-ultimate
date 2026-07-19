@@ -1,8 +1,12 @@
 'use client'
 
-import { VideoHomeSchema } from '@/types/video/schema'
+import { VideoHomeResponse } from '@/types/video/schema'
 
-const VideoPlr = ({ videoURL }: { videoURL: VideoHomeSchema['videoUrl'] }) => {
+const VideoHomePlr = ({
+    videoURL,
+}: {
+    videoURL: VideoHomeResponse['videoUrl']
+}) => {
     return (
         <video
             autoPlay
@@ -15,4 +19,4 @@ const VideoPlr = ({ videoURL }: { videoURL: VideoHomeSchema['videoUrl'] }) => {
     )
 }
 
-export default VideoPlr
+export default VideoHomePlr

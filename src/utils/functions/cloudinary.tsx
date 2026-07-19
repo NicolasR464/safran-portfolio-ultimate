@@ -24,3 +24,18 @@ export const cloudinaryImagesDelete = async (
             console.error('Image IDs:', [...imageIds])
         })
 }
+
+export const cloudinaryVideoDelete = async (videoId: string): Promise<void> => {
+    if (!videoId) {
+        throw new Error('Missing Cloudinary video ID')
+    }
+
+    const result = await cloudinary.v2.uploader.destroy(videoId, {
+        resource_type: 'video',
+        invalidate: true,
+    })
+
+    if (result.result !== 'ok' && result.result !== 'not found') {
+        throw new Error(`Cloudinary deletion failed: ${result.result}`)
+    }
+}

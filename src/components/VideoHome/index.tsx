@@ -3,51 +3,67 @@
 import { useEffect, useState } from 'react'
 
 import LoaderCinemaReel from '@/components/LoaderCinemaReel'
-import VideoPlr from '@/components/VideoPlr'
-import useIsMobile from '@/hooks/useIsMobile'
-import { ScreenSize } from '@/types/video'
+import VideoHomePlr from '@/components/VideoPlr'
+
+import {
+    type VideoHomeResponse,
+    VideoHomeResponseSchema,
+} from '@/types/video/schema'
 import { searchParamsNames } from '@/utils/constants'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
-import { VideoHomeSchema } from '@/types/video/schema'
+import useScreenType from '@/hooks/useIsMobile'
 
 /** Video displayed on the home page */
 const VideoHome = () => {
-    const [video, setVideo] = useState<VideoHomeSchema>()
-    const [isLoading, setIsLoading] = useState<boolean>(true)
+    const screenType = useScreenType()
 
-    const isMobile = useIsMobile()
+    const [video, setVideo] = useState<VideoHomeResponse>()
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
-        const getVideoID = async () => {
-            const screenSize = isMobile
-                ? ScreenSize.enum['1:1']
-                : ScreenSize.enum['16:9']
+        const getVideo = async () => {
+            setIsLoading(true)
+            setVideo(undefined)
 
-            const apiResponse = await apiClientSide<VideoHomeSchema>(
-                `${localApiEndpoints.VIDEO}?${searchParamsNames.SCREEN_SIZE}=${screenSize}`,
+            const searchParams = new URLSearchParams({
+                [searchParamsNames.SCREEN_TYPE]: screenType,
+            })
+
+            const apiResponse = await apiClientSide(
+                `${localApiEndpoints.VIDEO}?${searchParams.toString()}`,
             )
 
             if (!apiResponse.ok) {
+                setIsLoading(false)
                 return
             }
 
-            const videoData = await apiResponse.json()
+            const body: unknown = await apiResponse.json()
+            const parsedVideo = VideoHomeResponseSchema.safeParse(body)
 
+            if (!parsedVideo.success) {
+                setIsLoading(false)
+                return
+            }
+
+            setVideo(parsedVideo.data)
             setIsLoading(false)
-
-            setVideo(videoData)
         }
 
-        getVideoID()
-    }, [isMobile])
+        void getVideo()
+    }, [screenType])
 
     return (
-        <div className='flex justify-center items-center w-screen h-[80vh] sm:h-screen'>
+        <section className='flex min-h-[80dvh] w-full items-center justify-center overflow-hidden sm:min-h-dvh'>
             {isLoading && <LoaderCinemaReel size={100} />}
 
-            {video && <VideoPlr videoURL={video.videoUrl} />}
-        </div>
+            {!isLoading && video && (
+                <div className='w-full'>
+                    <VideoHomePlr videoURL={video.videoUrl} />
+                </div>
+            )}
+        </section>
     )
 }
 

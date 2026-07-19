@@ -4,5 +4,6 @@ export const localApiEndpoints = {
     VIDEO: 'video',
     ADMIN: {
         PROJECTS: 'admin/projects',
+        VIDEOS: 'admin/videos',
     },
 }

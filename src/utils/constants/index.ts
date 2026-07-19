@@ -8,7 +8,7 @@ export const collections = {
 export const searchParamsNames = {
     BATCH_NUMBER: 'batch_number',
     CATEGORY: 'category',
-    SCREEN_SIZE: 'screen_size',
+    SCREEN_TYPE: 'screen_type',
 }
 
 export const DEFAULT_BATCH_SIZE = 10
@@ -25,4 +25,5 @@ export const cloudinaryFolders = {
         process.env.CLOUDINARY_MAIN_FOLDER ||
         'saf_portfolio/',
     PORTFOLIO: 'portfolio',
+    HOME_PAGE_VIDEO: 'home',
 }

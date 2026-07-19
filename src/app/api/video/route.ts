@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-import { ScreenSize } from '@/types/video'
 import { collections, searchParamsNames } from '@/utils/constants'
 import { backErrors } from '@/utils/constants/messages'
 import { getDb } from '@/utils/mongo'
-import { VideoHomeSchema } from '@/types/video/schema'
+import { ScreenTypeSchema, VideoHomeResponse } from '@/types/video/schema'
+import { VideoHomeDocument } from '@/types/video/server'
 
 /** This returns video properties, filtered by user screen size. A video here is hosted on a private cloud, contrary to Projects' videos hosted by Youtube or Vimeo. */
 export const GET = async (request: NextRequest) => {
@@ -17,34 +17,38 @@ export const GET = async (request: NextRequest) => {
         })
     }
 
-    const videosCollection = database.collection<VideoHomeSchema>(
+    const videosCollection = database.collection<VideoHomeDocument>(
         collections.VIDEOS,
     )
 
     const searchParams = request.nextUrl.searchParams
 
-    const screenSize = ScreenSize.safeParse(
-        searchParams.get(searchParamsNames.SCREEN_SIZE),
+    const screenType = ScreenTypeSchema.safeParse(
+        searchParams.get(searchParamsNames.SCREEN_TYPE),
     )
 
-    // If screen size is provided, filter by it.
-    if (screenSize.success) {
-        const video = await videosCollection.findOne<VideoHomeSchema>({
-            screenSize: screenSize.data,
+    if (!screenType.success) {
+        return NextResponse.json(null, {
+            status: 400,
+            statusText: backErrors.INVALID_SCREEN_TYPE,
         })
-
-        if (!video) {
-            return NextResponse.json(null, {
-                status: 404,
-                statusText: backErrors.VIDEO_NOT_FOUND,
-            })
-        }
-
-        return NextResponse.json<VideoHomeSchema>(video)
     }
 
-    return NextResponse.json(null, {
-        status: 403,
-        statusText: backErrors.INVALID_SCREEN_SIZE,
+    const video = await videosCollection.findOne({
+        screenTypes: screenType.data,
+    })
+
+    if (!video) {
+        return NextResponse.json(null, {
+            status: 404,
+            statusText: backErrors.VIDEO_NOT_FOUND,
+        })
+    }
+
+    return NextResponse.json<VideoHomeResponse>({
+        _id: video._id.toString(),
+        videoUrl: video.videoUrl,
+        videoId: video.videoId,
+        screenTypes: video.screenTypes,
     })
 }

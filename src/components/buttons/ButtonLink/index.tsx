@@ -26,7 +26,7 @@ const ButtonLink = ({
             <ButtonGeneric>
                 {Logo && Logo}
 
-                <span className='ml-2'> {text && text}</span>
+                {text && <span className={Logo ? 'ml-2' : ''}> {text}</span>}
             </ButtonGeneric>
         </Link>
     )

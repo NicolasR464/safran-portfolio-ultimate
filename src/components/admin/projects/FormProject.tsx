@@ -13,7 +13,7 @@ import { ToastColorVariant } from '@/types/ui/toast'
 import ProjectImagesGrid from '@/components/admin/projects/ProjectImagesGrid'
 import FormSeparator from '@/components/admin/projects/FormSeparator'
 import WYSIWYG from '@/components/admin/WYSIWYG'
-import { X } from 'lucide-react'
+import { ImagePlus, Info, Upload, X } from 'lucide-react'
 import { ProjectCategorySchema } from '@/types/projectCategory/schema'
 import { embedSrcBuilder } from '@/utils/functions/video'
 import { VideoPlayerType } from '@/types/project'
@@ -197,25 +197,28 @@ const FormProject = ({
         <Form
             className={[
                 'relative',
-                'h-[80dvh]',
-                'w-[calc(98vw-2rem)] max-w-xl',
+                'box-border',
+                'h-[80dvh] max-h-[calc(100dvh-2rem)]',
+                'w-[calc(100dvw-2rem)] max-w-xl',
+                'min-w-0',
                 'overflow-x-hidden overflow-y-auto',
                 'overscroll-contain',
                 'rounded-2xl',
+                'bg-[var(--grey-dark)]',
             ].join(' ')}
             action={handleSubmit}
         >
             {/* Header */}
-            <div className='sticky top-0 z-30 px-4 pb-2 pt-4  bg-[var(--grey-dark)]/40 backdrop-blur-2xl'>
+            <div className='sticky top-0 z-30 box-border w-full min-w-0 bg-[var(--grey-dark)]/80 px-3 pb-2 pt-3 backdrop-blur-2xl sm:px-4 sm:pt-4'>
                 <ButtonGeneric
                     type='button'
-                    className='absolute left-1 top-1 z-40'
+                    className='absolute left-2 top-2 z-40'
                     onPress={resetState}
                 >
                     <X />
                 </ButtonGeneric>
 
-                <h2 className='min-h-12 px-15 text-center text-xl font-bold text-white'>
+                <h2 className='min-h-12 min-w-0 break-words px-14 text-center text-lg font-bold text-white sm:px-16 sm:text-xl'>
                     {isCreateMode ? 'Create project' : 'Edit project'}
 
                     {!isCreateMode && (
@@ -225,143 +228,164 @@ const FormProject = ({
             </div>
 
             {/* Form content */}
-            <div className='min-w-0 px-4 pb-28'>
-                <FormSeparator title='Information' />
-
-                <TextField
-                    label='Project‘s title'
-                    name='projectTitle'
-                    placeholder={
-                        isCreateMode ? 'Project title' : 'Edit project title'
-                    }
-                    value={title}
-                    onChange={setTitle}
-                    onBlur={() => updateDraft({ title })}
-                    isRequired
+            <div className='box-border flex w-full min-w-0 max-w-full flex-col overflow-x-hidden px-3 pb-28 sm:px-4'>
+                <FormSeparator
+                    title='Information'
+                    icon={<Info />}
                 />
 
-                <div className='min-w-0'>
-                    <span className='text-sm'>Description</span>
-
-                    <WYSIWYG
-                        key={
+                <div className='w-full min-w-0 max-w-full'>
+                    <TextField
+                        label='Project‘s title'
+                        name='projectTitle'
+                        placeholder={
                             isCreateMode
-                                ? 'create-project'
-                                : (formDraft._id ?? 'project')
+                                ? 'Project title'
+                                : 'Edit project title'
                         }
-                        markdown={formDraft.description ?? ''}
-                        onChange={(description) => {
-                            updateDraft({ description })
-                        }}
+                        value={title}
+                        onChange={setTitle}
+                        onBlur={() => updateDraft({ title })}
+                        isRequired
                     />
                 </div>
 
-                <Select
-                    label='Category'
-                    name='categoryId'
-                    className='mt-2'
-                    value={formDraft.categoryId}
-                    onChange={(value: Key | null) => {
-                        if (typeof value !== 'string') {
-                            return
-                        }
+                <div className='w-full min-w-0 max-w-full overflow-hidden'>
+                    <span className='text-sm'>Description</span>
 
-                        const category = projectsByCategories.find(
-                            (categoryItem: {
-                                category: ProjectCategorySchema
-                            }) =>
-                                categoryItem.category._id.toString() === value,
-                        )
-
-                        const nextCategoryLength =
-                            (category?.projects.length ?? 0) + 1
-
-                        updateDraft({
-                            categoryId: value,
-                            order: Math.min(
-                                formDraft.order,
-                                nextCategoryLength,
-                            ),
-                        })
-
-                        setCategoryLength(nextCategoryLength)
-                    }}
-                    isRequired
-                >
-                    {projectsByCategories.map(
-                        (group: { category: ProjectCategorySchema }) => (
-                            <SelectItem
-                                key={group.category._id.toString()}
-                                id={group.category._id.toString()}
-                                category={group.category.name}
-                            >
-                                {group.category.name}
-                            </SelectItem>
-                        ),
-                    )}
-                </Select>
-
-                <NumberField
-                    className='mt-2'
-                    label='Order of appearance'
-                    name='projectOrder'
-                    placeholder='Project order'
-                    value={formDraft.order}
-                    onChange={(order) => updateDraft({ order })}
-                    maxValue={categoryLength}
-                    minValue={1}
-                    isRequired
-                />
-
-                {/* Images */}
-                <div className='mt-4 flex min-w-0 flex-col'>
-                    <FormSeparator title='Images' />
-
-                    <ButtonGeneric
-                        type='button'
-                        onPress={onImageUploadClick}
-                        className='font-mono'
-                    >
-                        Upload Images
-                    </ButtonGeneric>
-
-                    <div className='min-w-0'>
-                        <ProjectImagesGrid
-                            images={formDraft.images}
-                            onImagesChange={(images) => {
-                                setIsImageTypeMissing(
-                                    images.some(
-                                        (image) => !image.types?.length,
-                                    ),
-                                )
-
-                                updateDraft({ images })
+                    <div className='w-full min-w-0 max-w-full overflow-x-auto'>
+                        <WYSIWYG
+                            key={
+                                isCreateMode
+                                    ? 'create-project'
+                                    : (formDraft._id ?? 'project')
+                            }
+                            markdown={formDraft.description ?? ''}
+                            onChange={(description) => {
+                                updateDraft({ description })
                             }}
-                            isTypeMissing={isImageTypeMissing}
                         />
                     </div>
                 </div>
 
+                <div className='w-full min-w-0 max-w-full'>
+                    <Select
+                        label='Category'
+                        name='categoryId'
+                        className='mt-2 w-full min-w-0 max-w-full'
+                        value={formDraft.categoryId}
+                        onChange={(value: Key | null) => {
+                            if (typeof value !== 'string') {
+                                return
+                            }
+
+                            const category = projectsByCategories.find(
+                                (categoryItem: {
+                                    category: ProjectCategorySchema
+                                }) =>
+                                    categoryItem.category._id.toString() ===
+                                    value,
+                            )
+
+                            const nextCategoryLength =
+                                (category?.projects.length ?? 0) + 1
+
+                            updateDraft({
+                                categoryId: value,
+                                order: Math.min(
+                                    formDraft.order,
+                                    nextCategoryLength,
+                                ),
+                            })
+
+                            setCategoryLength(nextCategoryLength)
+                        }}
+                        isRequired
+                    >
+                        {projectsByCategories.map(
+                            (group: { category: ProjectCategorySchema }) => (
+                                <SelectItem
+                                    key={group.category._id.toString()}
+                                    id={group.category._id.toString()}
+                                    category={group.category.name}
+                                >
+                                    {group.category.name}
+                                </SelectItem>
+                            ),
+                        )}
+                    </Select>
+                </div>
+
+                <div className='w-full min-w-0 max-w-full'>
+                    <NumberField
+                        className='mt-2 w-full min-w-0 max-w-full'
+                        label='Order of appearance'
+                        name='projectOrder'
+                        placeholder='Project order'
+                        value={formDraft.order}
+                        onChange={(order) => updateDraft({ order })}
+                        maxValue={categoryLength}
+                        minValue={1}
+                        isRequired
+                    />
+                </div>
+
+                {/* Images */}
+                <div className='mt-4 flex w-full min-w-0 max-w-full flex-col overflow-hidden'>
+                    <FormSeparator
+                        title='Images'
+                        icon={<ImagePlus />}
+                    />
+
+                    <ButtonGeneric
+                        type='button'
+                        onPress={onImageUploadClick}
+                        className='w-full min-w-0 font-mono'
+                    >
+                        <Upload /> <span className='ml-2'>Upload Images</span>
+                    </ButtonGeneric>
+
+                    {!!formDraft.images.length && (
+                        <div className='w-full min-w-0 max-w-full overflow-x-auto'>
+                            <ProjectImagesGrid
+                                images={formDraft.images}
+                                onImagesChange={(images) => {
+                                    setIsImageTypeMissing(
+                                        images.some(
+                                            (image) => !image.types?.length,
+                                        ),
+                                    )
+
+                                    updateDraft({ images })
+                                }}
+                                isTypeMissing={isImageTypeMissing}
+                            />
+                        </div>
+                    )}
+                </div>
+
                 {/* Video */}
-                <div className='mt-4 flex min-w-0 flex-col'>
+                <div className='mt-4 flex w-full min-w-0 max-w-full flex-col'>
                     <FormSeparator title='Video' />
 
-                    <TextField
-                        label='Video URL'
-                        name='projectVideo'
-                        placeholder='Project video'
-                        value={formDraft.videoUrl}
-                        onChange={(videoUrl) => {
-                            updateDraft({ videoUrl })
-                        }}
-                    />
+                    <div className='w-full min-w-0 max-w-full'>
+                        <TextField
+                            label='Video URL'
+                            name='projectVideo'
+                            placeholder='Project video'
+                            value={formDraft.videoUrl}
+                            onChange={(videoUrl) => {
+                                updateDraft({ videoUrl })
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Footer */}
-            <div className='sticky bottom-0 z-30 p-2 mr-5'>
+            <div className='sticky bottom-0 z-30 box-border w-full min-w-0 bg-[var(--grey-dark)]/80 p-2 backdrop-blur-2xl'>
                 <ButtonGeneric
-                    className='w-full'
+                    className='w-full min-w-0'
                     type='submit'
                     isDisabled={isLoading}
                 >

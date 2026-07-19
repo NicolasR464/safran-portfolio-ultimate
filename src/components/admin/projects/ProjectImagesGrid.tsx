@@ -297,7 +297,6 @@ const ProjectImagesGrid = ({
                             aria-pressed={
                                 isDeleteMode ? isSelectedForDelete : undefined
                             }
-                            aria-invalid={hasMissingType || undefined}
                             aria-label={
                                 isDeleteMode
                                     ? `${isSelectedForDelete ? 'Unselect' : 'Select'} image for deletion`

@@ -1,5 +1,5 @@
 import { Check, Minus } from 'lucide-react'
-import React from 'react'
+
 import {
     Checkbox as AriaCheckbox,
     type CheckboxProps,
