@@ -413,16 +413,7 @@ const HomeVideos = () => {
                     }
 
                     setVideoUrl(result.info.secure_url)
-                    // setVideoId(result.info.public_id)
                     setVideoId(result.info.public_id)
-
-                    toastQueue.add(
-                        {
-                            title: 'Video uploaded',
-                            variant: ToastColorVariant.enum.success,
-                        },
-                        { timeout: 5000 },
-                    )
                 }}
                 onClose={() => {
                     setIsUploadWidgetOpen(false)

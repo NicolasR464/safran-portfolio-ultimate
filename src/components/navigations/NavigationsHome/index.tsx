@@ -8,10 +8,7 @@ import ButtonLink from '@/components/buttons/ButtonLink'
 import ButtonsGroup from '@/components/buttons/ButtonsGroup'
 import { localLogos } from '@/utils/constants'
 import { urls } from '@/utils/constants/urls'
-
-const handleMailPress = () => {
-    window.location.href = `mailto:${process.env.NEXT_PUBLIC_MAIL_ADDRESS}`
-}
+import { handleMailPress } from '@/utils/functions'
 
 /** Links on the Home page */
 const NavigationsHome = () => {
