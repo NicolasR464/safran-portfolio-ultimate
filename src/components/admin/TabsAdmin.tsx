@@ -7,7 +7,7 @@ import HomeVideos from '@/components/admin/home/HomeVideos'
 const TabsAdmin = () => {
     return (
         <Tabs className={'mt-4'}>
-            <div className='sticky top-[var(--header-height)] z-50 flex justify-center py-3'>
+            <div className='sticky top-[var(--header-height)] z-20 flex justify-center py-3'>
                 <TabList
                     className={
                         'border border-neutral-700 p-4 rounded-full bg-black/60 backdrop-blur-sm'
