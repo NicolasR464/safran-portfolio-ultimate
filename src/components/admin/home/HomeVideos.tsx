@@ -50,7 +50,7 @@ const screenTypeOptions: Array<{
     },
 ]
 
-export const HomeVideos = () => {
+const HomeVideos = () => {
     const videos = useHomeVideosStore((state) => state.videos)
     const isFetching = useHomeVideosStore((state) => state.isFetching)
     const isCreating = useHomeVideosStore((state) => state.isCreating)

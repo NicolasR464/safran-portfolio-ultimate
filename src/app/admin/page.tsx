@@ -11,9 +11,9 @@ const Admin = async () => {
             {/* Signed in */}
             {session && session.user?.email && (
                 <>
-                    {/* <div className='fixed right-0 top-(--header-height)'>
+                    <div className='fixed right-0 top-(--header-height)'>
                         <ButtonSignOut />
-                    </div> */}
+                    </div>
 
                     <TabsAdmin />
                 </>

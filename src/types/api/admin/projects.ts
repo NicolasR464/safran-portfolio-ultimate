@@ -21,7 +21,7 @@ export type CRUDResult = {
     message: string
 }
 
-export const CreateProjectPayload = z.object({
+const CreateProjectPayload = z.object({
     title: z.string().trim().min(1),
     description: z.string(),
     order: z.number().int().min(1),
@@ -30,14 +30,12 @@ export const CreateProjectPayload = z.object({
     videoUrl: z.string().optional(),
 })
 
-export type CreateProjectPayload = z.infer<typeof CreateProjectPayload>
-
-export const CreateCategoryPayload = z.object({
+const CreateCategoryPayload = z.object({
     name: z.string().trim().min(1),
     order: z.number().int().min(1),
 })
 
-export type CreateCategoryPayload = z.infer<typeof CreateCategoryPayload>
+type CreateCategoryPayload = z.infer<typeof CreateCategoryPayload>
 
 export const CreateProjectOrCategoryPayload = z.discriminatedUnion('type', [
     z.object({

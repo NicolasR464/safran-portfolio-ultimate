@@ -10,8 +10,6 @@ import { VideoHomeDocument } from '@/types/video/server'
 export const GET = async (request: NextRequest) => {
     const database = await getDb()
 
-    console.log('GET')
-
     if (!database) {
         return NextResponse.json(null, {
             status: 500,
@@ -29,8 +27,6 @@ export const GET = async (request: NextRequest) => {
         searchParams.get(searchParamsNames.SCREEN_TYPE),
     )
 
-    console.log('screenType : ', screenType)
-
     if (!screenType.success) {
         return NextResponse.json(null, {
             status: 400,
@@ -41,8 +37,6 @@ export const GET = async (request: NextRequest) => {
     const video = await videosCollection.findOne({
         screenTypes: screenType.data,
     })
-
-    console.log({ video })
 
     if (!video) {
         return NextResponse.json(null, {

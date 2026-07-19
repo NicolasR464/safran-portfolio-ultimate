@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import LoaderCinemaReel from '@/components/LoaderCinemaReel'
-import VideoPlr from '@/components/VideoPlr'
+import VideoHomePlr from '@/components/VideoPlr'
 
 import {
     type VideoHomeResponse,
@@ -60,7 +60,7 @@ const VideoHome = () => {
 
             {!isLoading && video && (
                 <div className='w-full'>
-                    <VideoPlr videoURL={video.videoUrl} />
+                    <VideoHomePlr videoURL={video.videoUrl} />
                 </div>
             )}
         </section>
