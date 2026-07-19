@@ -180,7 +180,7 @@ const HomeVideos = () => {
     }
 
     return (
-        <div className='flex w-full min-w-0 flex-col items-center gap-6 px-4 pb-10'>
+        <div className='flex w-full min-w-0 flex-col items-center px-4 pb-10'>
             <MyToastRegion />
 
             <ButtonLink

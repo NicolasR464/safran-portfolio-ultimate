@@ -350,8 +350,8 @@ const TableProjects = () => {
             <MyToastRegion />
 
             {/** Create buttons */}
-            <div className='flex w-full flex-wrap justify-center gap-3 px-4'>
-                {/** Create category */}
+            <div className='flex w-full flex-wrap-reverse justify-center'>
+                {/* Create category */}
                 <ButtonGeneric
                     type='button'
                     className={'flex'}
@@ -365,7 +365,7 @@ const TableProjects = () => {
                     <FolderPlus /> <span className='ml-2'>Category</span>
                 </ButtonGeneric>
 
-                {/** Create project */}
+                {/* Create project */}
                 <ButtonGeneric
                     type='button'
                     className={'flex'}
@@ -379,6 +379,7 @@ const TableProjects = () => {
                     <DiamondPlus /> <span className='ml-2'>Project</span>
                 </ButtonGeneric>
 
+                {/* Redirection to Portfolio page */}
                 <ButtonLink
                     text='Portfolio'
                     href={urls.visitor.PORTFOLIO}
