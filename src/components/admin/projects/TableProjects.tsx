@@ -36,6 +36,7 @@ import ModalDelete from './ModalDelete'
 import { urls } from '@/utils/constants/urls'
 import ButtonLink from '@/components/buttons/ButtonLink'
 import { ImageCategory } from '@/types/project'
+import useScreenType from '@/hooks/useIsMobile'
 
 const findItem = (
     items: ProjectTreeItem[],
@@ -80,6 +81,8 @@ const reorderCategoriesOnDrag = (
 }
 
 const TableProjects = () => {
+    const screenType = useScreenType()
+
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isDelete, setIsDelete] = useState(false)
 
@@ -354,6 +357,8 @@ const TableProjects = () => {
                 {/* Create category */}
                 <ButtonGeneric
                     type='button'
+                    font='mono'
+                    smallText={screenType === 'phone'}
                     className={'flex'}
                     onPress={() => {
                         resetDraft()
@@ -368,6 +373,8 @@ const TableProjects = () => {
                 {/* Create project */}
                 <ButtonGeneric
                     type='button'
+                    font='mono'
+                    smallText={screenType === 'phone'}
                     className={'flex'}
                     onPress={() => {
                         resetDraft()
@@ -382,6 +389,8 @@ const TableProjects = () => {
                 {/* Redirection to Portfolio page */}
                 <ButtonLink
                     text='Portfolio'
+                    font='mono'
+                    smallText={screenType === 'phone'}
                     href={urls.visitor.PORTFOLIO}
                     logo={<SquareArrowOutUpRight size={24} />}
                     target='_blank'

@@ -247,6 +247,7 @@ const VideoCell = ({ video, videos }: VideoCellProps) => {
 
                 <ButtonGeneric
                     type='button'
+                    font='mono'
                     aria-label='Copy video URL'
                     onPress={() => {
                         void handleCopy()
@@ -293,6 +294,7 @@ const VideoCell = ({ video, videos }: VideoCellProps) => {
             <div className='flex flex-wrap gap-3'>
                 <ButtonGeneric
                     type='button'
+                    font='mono'
                     onPress={() => {
                         void handleUpdate()
                     }}
@@ -308,6 +310,7 @@ const VideoCell = ({ video, videos }: VideoCellProps) => {
 
                 <ButtonGeneric
                     type='button'
+                    font='mono'
                     onPress={() => {
                         void handleDelete()
                     }}

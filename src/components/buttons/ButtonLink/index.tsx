@@ -9,12 +9,16 @@ type ButtonProperties = {
     text?: string
     href: string
     logo?: ReactNode
+    font?: string
+    smallText?: boolean
     target?: '_blank' | '_self' | '_parent' | '_top'
 }
 
 const ButtonLink = ({
     text,
     href,
+    font,
+    smallText,
     logo: Logo,
     target = '_self',
 }: ButtonProperties) => {
@@ -23,7 +27,10 @@ const ButtonLink = ({
             href={href}
             target={target}
         >
-            <ButtonGeneric>
+            <ButtonGeneric
+                smallText={smallText}
+                font={font}
+            >
                 {Logo && Logo}
 
                 {text && <span className={Logo ? 'ml-2' : ''}> {text}</span>}

@@ -10,6 +10,8 @@ type ButtonGenericProps = ReactAriaButtonProps & {
     children: ReactNode
     className?: string
     isDisabled?: boolean
+    font?: string
+    smallText?: boolean
     onPress?: () => void
 }
 
@@ -17,6 +19,8 @@ const ButtonGeneric = ({
     children,
     className = '',
     onPress,
+    font = 'poiret',
+    smallText = false,
     isDisabled = false,
     ...props
 }: ButtonGenericProps) => {
@@ -26,9 +30,11 @@ const ButtonGeneric = ({
             onPress={onPress}
             className={`     
                 cursor-pointer
-                m-2
-                px-4
+                m-1
+                sm:m-2
+                px-2
                 sm:px-4
+
                 py-2
                 rounded-full
             
@@ -42,8 +48,11 @@ const ButtonGeneric = ({
                 hover:brightness-110
                 
                 text-white
-                font-poiret text-xl font-semibold  
 
+                font-${font}
+                font-mono  
+                font-semibold  
+                ${smallText ? 'text-l' : 'text-xl'}
                 flex
                 justify-center items-center
 
