@@ -230,6 +230,7 @@ const HomeVideos = () => {
                                     type='button'
                                     className='flex w-full items-center justify-center gap-2'
                                     onPress={openUploadWidget}
+                                    font='mono'
                                 >
                                     <Upload size={18} />
 
@@ -254,6 +255,7 @@ const HomeVideos = () => {
 
                                             <ButtonGeneric
                                                 type='button'
+                                                font='mono'
                                                 aria-label='Copy uploaded video URL'
                                                 onPress={() => {
                                                     void navigator.clipboard.writeText(
@@ -327,6 +329,7 @@ const HomeVideos = () => {
 
                             <ButtonGeneric
                                 type='submit'
+                                font='mono'
                                 className='w-full sm:w-fit'
                                 isDisabled={
                                     isCreating ||

@@ -34,7 +34,7 @@ export const Table = (props: TableProps) => {
         <ResizableTableContainer
             onScroll={props.onScroll}
             className={twMerge(
-                'max-w-7xl h-[70vh] mx-auto overflow-y-auto scroll-pt-[2.281rem] relative bg-neutral-900 box-border border border-neutral-700 rounded-lg font-sans',
+                'max-w-7xl h-[65vh] sm:h-[70vh] mx-auto overflow-y-auto scroll-pt-[2.281rem] relative bg-neutral-900 box-border border border-neutral-700 rounded-lg font-sans',
                 props.className,
             )}
         >

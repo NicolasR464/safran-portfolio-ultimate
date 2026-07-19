@@ -153,6 +153,7 @@ const FormCategory = ({
                 <div className='relative flex min-w-0 flex-col p-4 m-2'>
                     <ButtonGeneric
                         type='button'
+                        font='mono'
                         className='absolute left-0 top-0 z-50'
                         onPress={() => {
                             setIsModalOpen(false)
@@ -209,6 +210,7 @@ const FormCategory = ({
                     <ButtonGeneric
                         className='mt-4 backdrop-blur-2xl'
                         type='submit'
+                        font='mono'
                         isDisabled={isLoading}
                     >
                         {isLoading
