@@ -8,10 +8,8 @@ import Link from 'next/link'
 import { Separator } from '@/components/Separator'
 import StagingCapsule from '@/components/StagingCapsule'
 import { auth } from '@/handlers/auth'
-import { urls } from '@/utils/constants/urls'
-import { Cog } from 'lucide-react'
 
-import ButtonLink from '@/components/buttons/ButtonLink'
+import MenuBurger from '@/components/Menu/MenuBurger'
 
 // Main Font
 const poiretOne = Poiret_One({
@@ -60,13 +58,7 @@ const RootLayout = async ({
                             <StagingCapsule />
                         )}
 
-                        {/* If user logged in */}
-                        {session?.user && (
-                            <ButtonLink
-                                href={urls.admin.MAIN}
-                                logo={<Cog size={24} />}
-                            />
-                        )}
+                        <MenuBurger isLoggedIn={!!session?.user} />
                     </div>
 
                     <Separator />

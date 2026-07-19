@@ -1,17 +1,26 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import { Copy, Save, Trash } from 'lucide-react'
+import {
+    Copy,
+    Dot,
+    Laptop,
+    Save,
+    Smartphone,
+    Tablet,
+    Trash,
+} from 'lucide-react'
 
 import ButtonGeneric from '@/components/buttons/ButtonGeneric'
 import { Checkbox } from '@/components/Checkbox'
 import { queue as toastQueue } from '@/components/Toast'
 import { useHomeVideosStore } from '@/stores/admin/videosHome'
 import { ToastColorVariant as ToastVariant } from '@/types/ui/toast'
-import type {
-    ScreenType,
-    VideoHomeResponse,
-    VideosHomeListResponse,
+import {
+    ScreenTypeSchema,
+    type ScreenType,
+    type VideoHomeResponse,
+    type VideosHomeListResponse,
 } from '@/types/video/schema'
 
 type VideoCellProps = {
@@ -203,6 +212,24 @@ const VideoCell = ({ video, videos }: VideoCellProps) => {
 
     return (
         <article className='flex min-w-0 flex-col gap-4 rounded-2xl border border-neutral-700 p-4'>
+            <div className='flex w-full justify-center'>
+                <Dot />
+
+                {screenTypes.includes(ScreenTypeSchema.enum.phone) && (
+                    <Smartphone />
+                )}
+
+                {screenTypes.includes(ScreenTypeSchema.enum.tablet) && (
+                    <Tablet />
+                )}
+
+                {screenTypes.includes(ScreenTypeSchema.enum.computer) && (
+                    <Laptop />
+                )}
+
+                <Dot />
+            </div>
+
             <video
                 src={video.videoUrl}
                 controls
@@ -276,7 +303,7 @@ const VideoCell = ({ video, videos }: VideoCellProps) => {
                 >
                     <Save size={16} />
 
-                    {isUpdating ? 'Updating...' : 'Update video'}
+                    {isUpdating ? 'Updating...' : 'Update'}
                 </ButtonGeneric>
 
                 <ButtonGeneric
@@ -289,7 +316,7 @@ const VideoCell = ({ video, videos }: VideoCellProps) => {
                 >
                     <Trash size={16} />
 
-                    {isDeleting ? 'Deleting...' : 'Delete video'}
+                    {isDeleting ? 'Deleting...' : 'Delete'}
                 </ButtonGeneric>
             </div>
         </article>

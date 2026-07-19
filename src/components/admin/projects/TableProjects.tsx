@@ -29,12 +29,13 @@ import Modal from '@/components/Modal'
 import FormCategory from '@/components/admin/projects/FormCategory'
 import FormProject from '@/components/admin/projects/FormProject'
 import { ProjectTreeItem } from '@/types/admin/projectsTable'
-import { CldUploadWidget } from 'next-cloudinary'
+import { CldImage, CldUploadWidget } from 'next-cloudinary'
 import { cloudinaryFolders } from '@/utils/constants'
 import { ToastColorVariant } from '@/types/ui/toast'
 import ModalDelete from './ModalDelete'
 import { urls } from '@/utils/constants/urls'
 import ButtonLink from '@/components/buttons/ButtonLink'
+import { ImageCategory } from '@/types/project'
 
 const findItem = (
     items: ProjectTreeItem[],
@@ -235,8 +236,29 @@ const TableProjects = () => {
     const renderItem = (item: ProjectTreeItem) => {
         const isCategory = item.kind === ProjectTableRowType.enum.category
 
+        const thumbnailImage = !isCategory
+            ? item.images.find((image) =>
+                  image.types.includes(ImageCategory.enum.thumbnail),
+              )
+            : undefined
+
         return (
             <Row id={item.id}>
+                <Cell>
+                    {!isCategory && thumbnailImage && (
+                        <CldImage
+                            src={thumbnailImage.url}
+                            alt={`${item.title} thumbnail`}
+                            width={64}
+                            height={40}
+                            crop='fill'
+                            gravity='auto'
+                            format='auto'
+                            quality='auto'
+                            className='h-10 w-16 rounded-md object-cover'
+                        />
+                    )}
+                </Cell>
                 <Cell>{isCategory ? item.name : item.title}</Cell>
                 <Cell>{isCategory ? 'Category' : 'Project'}</Cell>
                 <Cell>{item.order}</Cell>
@@ -275,6 +297,16 @@ const TableProjects = () => {
                     >
                         <Trash />
                     </ButtonGeneric>
+                </Cell>
+
+                <Cell>
+                    {!isCategory && (
+                        <ButtonLink
+                            href={`${urls.visitor.PORTFOLIO}/${item.id}`}
+                            logo={<SquareArrowOutUpRight size={24} />}
+                            target='_blank'
+                        />
+                    )}
                 </Cell>
 
                 {isCategory && (
@@ -368,6 +400,14 @@ const TableProjects = () => {
                     >
                         <TableHeader className='sticky top-0 z-20 bg-neutral-700/95 backdrop-blur-md'>
                             <Column
+                                id='thumbnail'
+                                isRowHeader
+                                className='min-w-[280px]'
+                            >
+                                Thumbnail
+                            </Column>
+
+                            <Column
                                 id='name'
                                 isRowHeader
                                 className='min-w-[280px]'
@@ -401,6 +441,13 @@ const TableProjects = () => {
                                 className='min-w-[120px]'
                             >
                                 Delete
+                            </Column>
+
+                            <Column
+                                id='check'
+                                className='min-w-[120px]'
+                            >
+                                Check
                             </Column>
                         </TableHeader>
 
