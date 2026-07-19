@@ -1,6 +1,5 @@
 import { z } from 'zod'
-
-import { ScreenTypeSchema } from '../video/schema'
+import { ScreenTypeSchema, VideoHomeResponse } from '@/types/video/schema'
 
 export const CreateVideoHomePayloadSchema = z.object({
     videoUrl: z.url(),
@@ -49,7 +48,47 @@ export type DeleteVideoHomePayload = z.infer<
     typeof DeleteVideoHomePayloadSchema
 >
 
-export type VideoHomeCRUDResult = {
-    success: boolean
+export type VideoHomeCRUDResult =
+    | {
+          success: true
+          message: string
+          _id: string
+      }
+    | {
+          success: false
+          message: string
+      }
+
+export type VideoHomeErrorResult = {
+    success: false
     message: string
+    errors?: unknown
 }
+
+export type CreateVideoHomeResult =
+    | {
+          success: true
+          message: string
+          video: VideoHomeResponse
+      }
+    | VideoHomeErrorResult
+
+export type UpdateVideoHomeResult =
+    | {
+          success: true
+          message: string
+          _id: string
+      }
+    | {
+          success: false
+          message: string
+          errors?: unknown
+      }
+
+export type DeleteVideoHomeResult =
+    | {
+          success: true
+          message: string
+          _id: string
+      }
+    | VideoHomeErrorResult

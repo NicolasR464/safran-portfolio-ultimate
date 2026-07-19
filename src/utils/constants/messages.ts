@@ -3,7 +3,7 @@ export const backErrors = {
     DATABASE_QUERY_ERROR: 'Database query error',
     INVALID_REQUEST_BODY: 'Invalid request body',
     INVALID_SEARCH_PARAMS: 'Invalid search params',
-    INVALID_SCREEN_SIZE: 'Invalid screen size',
+    INVALID_SCREEN_TYPE: 'Invalid screen type',
     INVALID_TOKEN: 'Invalid token',
     MISSING_TOKEN: 'Missing token',
     SERVER_ERROR: 'Server error',

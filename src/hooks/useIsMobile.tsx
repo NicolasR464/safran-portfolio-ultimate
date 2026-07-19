@@ -1,20 +1,39 @@
 import { useEffect, useState } from 'react'
 
-const useIsMobile = (breakpoint = 500): boolean => {
-    const [isMobile, setIsMobile] = useState(false)
+import { type ScreenType } from '@/types/video/schema'
 
-    useEffect(() => {
-        const check = () => {
-            setIsMobile(window.innerWidth < breakpoint)
-        }
+const getScreenType = (): ScreenType => {
+    const width = window.innerWidth
 
-        check()
+    if (width < 500) {
+        return 'phone'
+    }
 
-        window.addEventListener('resize', check)
-        return () => window.removeEventListener('resize', check)
-    }, [breakpoint])
+    if (width < 1024) {
+        return 'tablet'
+    }
 
-    return isMobile
+    return 'computer'
 }
 
-export default useIsMobile
+const useScreenType = (): ScreenType => {
+    const [screenType, setScreenType] = useState<ScreenType>('computer')
+
+    useEffect(() => {
+        const handleResize = () => {
+            setScreenType(getScreenType())
+        }
+
+        handleResize()
+
+        window.addEventListener('resize', handleResize)
+
+        return () => {
+            window.removeEventListener('resize', handleResize)
+        }
+    }, [])
+
+    return screenType
+}
+
+export default useScreenType

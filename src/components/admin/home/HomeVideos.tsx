@@ -2,7 +2,12 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { CldImage, CldUploadWidget } from 'next-cloudinary'
-import { Copy, SquareArrowOutUpRight, Upload } from 'lucide-react'
+import {
+    Copy,
+    MonitorSmartphone,
+    SquareArrowOutUpRight,
+    Upload,
+} from 'lucide-react'
 
 import FormSeparator from '@/components/admin/projects/FormSeparator'
 import ButtonGeneric from '@/components/buttons/ButtonGeneric'
@@ -47,7 +52,8 @@ const screenTypeOptions: Array<{
 
 export const HomeVideos = () => {
     const videos = useHomeVideosStore((state) => state.videos)
-    const isLoading = useHomeVideosStore((state) => state.isLoading)
+    const isFetching = useHomeVideosStore((state) => state.isFetching)
+    const isCreating = useHomeVideosStore((state) => state.isCreating)
     const initialized = useHomeVideosStore((state) => state.initialized)
     const fetchVideos = useHomeVideosStore((state) => state.fetchVideos)
     const createVideo = useHomeVideosStore((state) => state.createVideo)
@@ -188,23 +194,23 @@ export const HomeVideos = () => {
                 <FormSeparator title='Home Videos' />
             </div>
 
-            <div className='w-full max-w-3xl overflow-hidden'>
+            <div className='w-full max-w-3xl overflow-hidden flex justify-center '>
                 <CldImage
                     src={phoneSizeIllustrationSRC}
                     alt='Supported video formats for phone, tablet and computer screens'
-                    width={800}
+                    width={400}
                     height={400}
                     crop='fit'
                     format='auto'
                     quality='auto'
                     sizes='(max-width: 768px) 100vw, 768px'
-                    className='h-auto w-full object-contain'
+                    className='h-auto w-full max-w-[320] object-contain'
                 />
             </div>
 
             <div className='grid w-full min-w-0 max-w-5xl grid-cols-1 gap-8 lg:grid-cols-[minmax(280px,0.8fr)_minmax(0,1.2fr)]'>
                 <section className='min-w-0 rounded-2xl border border-neutral-700 p-4 sm:p-5'>
-                    <h2 className='mb-5 text-lg font-semibold'>
+                    <h2 className='mb-5 text-lg font-semibold flex'>
                         Add a home video
                     </h2>
 
@@ -274,8 +280,9 @@ export const HomeVideos = () => {
                             </div>
 
                             <fieldset className='min-w-0'>
-                                <legend className='text-sm font-medium'>
-                                    Screen types
+                                <legend className='text-sm font-medium flex'>
+                                    <MonitorSmartphone />
+                                    <span className='ml-2'>Screen types</span>
                                 </legend>
 
                                 <p className='mt-1 text-sm text-neutral-400'>
@@ -322,12 +329,12 @@ export const HomeVideos = () => {
                                 type='submit'
                                 className='w-full sm:w-fit'
                                 isDisabled={
-                                    isLoading ||
+                                    isCreating ||
                                     !videoUrl ||
                                     screenTypes.length === 0
                                 }
                             >
-                                {isLoading ? 'Creating...' : 'Create video'}
+                                {isCreating ? 'Creating...' : 'Create video'}
                             </ButtonGeneric>
                         </Form>
                     )}
@@ -336,7 +343,7 @@ export const HomeVideos = () => {
                 <section className='flex min-w-0 flex-col gap-4'>
                     <h2 className='text-lg font-semibold'>Configured videos</h2>
 
-                    {!initialized && isLoading && (
+                    {!initialized && isFetching && (
                         <p className='text-sm text-neutral-400'>
                             Loading videos...
                         </p>

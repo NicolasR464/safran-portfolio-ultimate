@@ -7,31 +7,33 @@ import HomeVideos from '@/components/admin/home/HomeVideos'
 const TabsAdmin = () => {
     return (
         <Tabs className={'mt-10'}>
-            <TabList
-                className={'flex justify-center'}
-                aria-label='Tabs'
-            >
-                <Tab
-                    className={'cursor-pointer'}
-                    id='home'
+            <div className='flex justify-center '>
+                <TabList
+                    className={'border border-neutral-700 p-4 rounded-full'}
+                    aria-label='Tabs'
                 >
-                    Home
-                </Tab>
+                    <Tab
+                        className={'cursor-pointer'}
+                        id='home'
+                    >
+                        Home
+                    </Tab>
 
-                <Tab
-                    id='projects'
-                    className={'cursor-pointer'}
-                >
-                    Projects
-                </Tab>
+                    <Tab
+                        id='projects'
+                        className={'cursor-pointer'}
+                    >
+                        Projects
+                    </Tab>
 
-                <Tab
-                    id='about'
-                    className={'cursor-pointer'}
-                >
-                    About
-                </Tab>
-            </TabList>
+                    <Tab
+                        id='about'
+                        className={'cursor-pointer'}
+                    >
+                        About
+                    </Tab>
+                </TabList>
+            </div>
 
             <TabPanels>
                 <TabPanel

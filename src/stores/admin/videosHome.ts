@@ -1,299 +1,189 @@
 import { create } from 'zustand'
-import { immer } from 'zustand/middleware/immer'
 
-import {
-    VideosHomeListResponseSchema,
-    type VideoHomeResponse,
-    type VideosHomeListResponse,
+import type {
+    VideoHomeResponse,
+    VideosHomeListResponse,
 } from '@/types/video/schema'
-import {
-    type CreateVideoHomePayload,
-    type DeleteVideoHomePayload,
-    type UpdateVideoHomePayload,
-    type VideoHomeCRUDResult,
+import type {
+    CreateVideoHomePayload,
+    CreateVideoHomeResult,
+    DeleteVideoHomePayload,
+    DeleteVideoHomeResult,
+    UpdateVideoHomePayload,
+    UpdateVideoHomeResult,
+    VideoHomeCRUDResult,
 } from '@/types/admin/videoUpload'
 import { localApiEndpoints } from '@/utils/constants/endpoints'
 import { apiClientSide } from '@/utils/ky'
 
-export type VideoHomeFormDraft = {
-    _id: string | null
-    videoUrl: string
-    screenTypes: VideoHomeResponse['screenTypes']
-}
-
-type VideoHomeFormDraftUpdate =
-    | Partial<VideoHomeFormDraft>
-    | ((current: VideoHomeFormDraft) => Partial<VideoHomeFormDraft>)
-
-type VideosHomeStore = {
-    videos: VideosHomeListResponse
-    isLoading: boolean
+type HomeVideosStore = {
+    videos: VideoHomeResponse[]
     initialized: boolean
-    videoFormDraft: VideoHomeFormDraft | null
 
-    fetchVideos: (manageLoading?: boolean) => Promise<boolean>
+    isFetching: boolean
+    isCreating: boolean
+    updatingVideoIds: string[]
+    deletingVideoIds: string[]
+
+    fetchVideos: () => Promise<void>
 
     createVideo: (
         payload: CreateVideoHomePayload,
-    ) => Promise<VideoHomeCRUDResult>
+    ) => Promise<CreateVideoHomeResult>
 
     updateVideo: (
         payload: UpdateVideoHomePayload,
-    ) => Promise<VideoHomeCRUDResult>
+    ) => Promise<UpdateVideoHomeResult>
 
     deleteVideo: (
         payload: DeleteVideoHomePayload,
-    ) => Promise<VideoHomeCRUDResult>
-
-    initVideoFormDraft: (draft: VideoHomeFormDraft) => void
-    updateVideoFormDraft: (update: VideoHomeFormDraftUpdate) => void
-    clearVideoFormDraft: () => void
-    reset: () => void
+    ) => Promise<DeleteVideoHomeResult>
 }
 
-const initialState: Pick<
-    VideosHomeStore,
-    'videos' | 'isLoading' | 'initialized' | 'videoFormDraft'
-> = {
+export const useHomeVideosStore = create<HomeVideosStore>((set) => ({
     videos: [],
-    isLoading: false,
     initialized: false,
-    videoFormDraft: null,
-}
 
-export const useHomeVideosStore = create<VideosHomeStore>()(
-    immer((set, get) => ({
-        ...initialState,
+    isFetching: false,
+    isCreating: false,
+    updatingVideoIds: [],
+    deletingVideoIds: [],
 
-        initVideoFormDraft: (draft) => {
-            set((state) => {
-                state.videoFormDraft = draft
-            })
-        },
+    fetchVideos: async () => {
+        set({
+            isFetching: true,
+        })
 
-        updateVideoFormDraft: (update) => {
-            set((state) => {
-                const current = state.videoFormDraft
+        const response = await apiClientSide<VideosHomeListResponse>(
+            localApiEndpoints.ADMIN.VIDEOS,
+        )
 
-                if (!current) {
-                    return
-                }
+        set({
+            isFetching: false,
+            initialized: true,
+        })
 
-                const changes =
-                    typeof update === 'function' ? update(current) : update
+        if (!response.ok) {
+            return
+        }
 
-                state.videoFormDraft = {
-                    ...current,
-                    ...changes,
-                }
-            })
-        },
+        const videos = await response.json()
 
-        clearVideoFormDraft: () => {
-            set((state) => {
-                state.videoFormDraft = null
-            })
-        },
+        set({
+            videos,
+        })
+    },
 
-        reset: () => {
-            set((state) => {
-                state.videos = []
-                state.isLoading = false
-                state.initialized = false
-                state.videoFormDraft = null
-            })
-        },
+    createVideo: async (payload) => {
+        set({
+            isCreating: true,
+        })
 
-        fetchVideos: async (manageLoading = true) => {
-            if (manageLoading) {
-                set((state) => {
-                    state.isLoading = true
-                })
-            }
+        const response = await apiClientSide<CreateVideoHomeResult>(
+            localApiEndpoints.ADMIN.VIDEOS,
+            {
+                method: 'POST',
+                json: payload,
+            },
+        )
 
-            try {
-                const apiResponse = await apiClientSide(
-                    localApiEndpoints.ADMIN.VIDEOS,
-                )
+        const result = await response.json()
 
-                if (!apiResponse.ok) {
-                    return false
-                }
+        set({
+            isCreating: false,
+        })
 
-                const rawResponse: unknown = await apiResponse.json()
+        if (!response.ok || !result.success) {
+            return result
+        }
 
-                const parsedResponse =
-                    VideosHomeListResponseSchema.safeParse(rawResponse)
+        set((state) => ({
+            videos: [...state.videos, result.video],
+        }))
 
-                if (!parsedResponse.success) {
-                    return false
-                }
+        return result
+    },
 
-                set((state) => {
-                    state.videos = parsedResponse.data
-                })
+    updateVideo: async (payload) => {
+        set((state) => ({
+            updatingVideoIds: state.updatingVideoIds.includes(payload._id)
+                ? state.updatingVideoIds
+                : [...state.updatingVideoIds, payload._id],
+        }))
 
-                return true
-            } catch {
-                return false
-            } finally {
-                if (manageLoading) {
-                    set((state) => {
-                        state.isLoading = false
-                        state.initialized = true
-                    })
-                }
-            }
-        },
+        const response = await apiClientSide<UpdateVideoHomeResult>(
+            localApiEndpoints.ADMIN.VIDEOS,
+            {
+                method: 'PATCH',
+                json: payload,
+            },
+        )
 
-        createVideo: async (payload) => {
-            set((state) => {
-                state.isLoading = true
-            })
+        const result = await response.json()
 
-            try {
-                const apiResponse = await apiClientSide.post(
-                    localApiEndpoints.ADMIN.VIDEOS,
-                    {
-                        json: payload,
-                    },
-                )
+        set((state) => ({
+            updatingVideoIds: state.updatingVideoIds.filter(
+                (videoId) => videoId !== payload._id,
+            ),
+        }))
 
-                if (!apiResponse.ok) {
-                    return {
-                        success: false,
-                        message:
-                            apiResponse.statusText || 'Video creation failed',
-                    }
-                }
+        if (!response.ok || !result.success) {
+            return result
+        }
 
-                const refreshed = await get().fetchVideos(false)
+        set((state) => ({
+            videos: state.videos.map((video) =>
+                video._id === payload._id
+                    ? {
+                          ...video,
+                          ...(payload.videoUrl !== undefined && {
+                              videoUrl: payload.videoUrl,
+                          }),
+                          ...(payload.videoId !== undefined && {
+                              videoId: payload.videoId,
+                          }),
+                          ...(payload.screenTypes !== undefined && {
+                              screenTypes: payload.screenTypes,
+                          }),
+                      }
+                    : video,
+            ),
+        }))
 
-                if (!refreshed) {
-                    return {
-                        success: false,
-                        message: 'Video created, but refreshing videos failed',
-                    }
-                }
+        return result
+    },
 
-                set((state) => {
-                    state.videoFormDraft = null
-                })
+    deleteVideo: async (payload) => {
+        set((state) => ({
+            deletingVideoIds: state.deletingVideoIds.includes(payload._id)
+                ? state.deletingVideoIds
+                : [...state.deletingVideoIds, payload._id],
+        }))
 
-                return {
-                    success: true,
-                    message: 'Video created',
-                }
-            } catch {
-                return {
-                    success: false,
-                    message: 'Video creation failed',
-                }
-            } finally {
-                set((state) => {
-                    state.isLoading = false
-                })
-            }
-        },
+        const response = await apiClientSide<VideoHomeCRUDResult>(
+            localApiEndpoints.ADMIN.VIDEOS,
+            {
+                method: 'DELETE',
+                json: payload,
+            },
+        )
 
-        updateVideo: async (payload) => {
-            set((state) => {
-                state.isLoading = true
-            })
+        const result = await response.json()
 
-            try {
-                const apiResponse = await apiClientSide.patch(
-                    localApiEndpoints.ADMIN.VIDEOS,
-                    {
-                        json: payload,
-                    },
-                )
+        set((state) => ({
+            deletingVideoIds: state.deletingVideoIds.filter(
+                (videoId) => videoId !== payload._id,
+            ),
+        }))
 
-                if (!apiResponse.ok) {
-                    return {
-                        success: false,
-                        message:
-                            apiResponse.statusText || 'Video update failed',
-                    }
-                }
+        if (!response.ok || !result.success) {
+            return result
+        }
 
-                const refreshed = await get().fetchVideos(false)
+        set((state) => ({
+            videos: state.videos.filter((video) => video._id !== payload._id),
+        }))
 
-                if (!refreshed) {
-                    return {
-                        success: false,
-                        message: 'Video updated, but refreshing videos failed',
-                    }
-                }
-
-                set((state) => {
-                    state.videoFormDraft = null
-                })
-
-                return {
-                    success: true,
-                    message: 'Video updated',
-                }
-            } catch {
-                return {
-                    success: false,
-                    message: 'Video update failed',
-                }
-            } finally {
-                set((state) => {
-                    state.isLoading = false
-                })
-            }
-        },
-
-        deleteVideo: async (payload) => {
-            set((state) => {
-                state.isLoading = true
-            })
-
-            try {
-                const apiResponse = await apiClientSide.delete(
-                    localApiEndpoints.ADMIN.VIDEOS,
-                    {
-                        json: payload,
-                    },
-                )
-
-                if (!apiResponse.ok) {
-                    return {
-                        success: false,
-                        message:
-                            apiResponse.statusText || 'Video deletion failed',
-                    }
-                }
-
-                const refreshed = await get().fetchVideos(false)
-
-                if (!refreshed) {
-                    return {
-                        success: false,
-                        message: 'Video deleted, but refreshing videos failed',
-                    }
-                }
-
-                set((state) => {
-                    state.videoFormDraft = null
-                })
-
-                return {
-                    success: true,
-                    message: 'Video deleted',
-                }
-            } catch {
-                return {
-                    success: false,
-                    message: 'Video deletion failed',
-                }
-            } finally {
-                set((state) => {
-                    state.isLoading = false
-                })
-            }
-        },
-    })),
-)
+        return result
+    },
+}))

@@ -13,7 +13,7 @@ import { ToastColorVariant } from '@/types/ui/toast'
 import ProjectImagesGrid from '@/components/admin/projects/ProjectImagesGrid'
 import FormSeparator from '@/components/admin/projects/FormSeparator'
 import WYSIWYG from '@/components/admin/WYSIWYG'
-import { X } from 'lucide-react'
+import { ImagePlus, Info, Upload, X } from 'lucide-react'
 import { ProjectCategorySchema } from '@/types/projectCategory/schema'
 import { embedSrcBuilder } from '@/utils/functions/video'
 import { VideoPlayerType } from '@/types/project'
@@ -229,7 +229,10 @@ const FormProject = ({
 
             {/* Form content */}
             <div className='box-border flex w-full min-w-0 max-w-full flex-col overflow-x-hidden px-3 pb-28 sm:px-4'>
-                <FormSeparator title='Information' />
+                <FormSeparator
+                    title='Information'
+                    icon={<Info />}
+                />
 
                 <div className='w-full min-w-0 max-w-full'>
                     <TextField
@@ -329,31 +332,36 @@ const FormProject = ({
 
                 {/* Images */}
                 <div className='mt-4 flex w-full min-w-0 max-w-full flex-col overflow-hidden'>
-                    <FormSeparator title='Images' />
+                    <FormSeparator
+                        title='Images'
+                        icon={<ImagePlus />}
+                    />
 
                     <ButtonGeneric
                         type='button'
                         onPress={onImageUploadClick}
                         className='w-full min-w-0 font-mono'
                     >
-                        Upload Images
+                        <Upload /> <span className='ml-2'>Upload Images</span>
                     </ButtonGeneric>
 
-                    <div className='w-full min-w-0 max-w-full overflow-x-auto'>
-                        <ProjectImagesGrid
-                            images={formDraft.images}
-                            onImagesChange={(images) => {
-                                setIsImageTypeMissing(
-                                    images.some(
-                                        (image) => !image.types?.length,
-                                    ),
-                                )
+                    {!!formDraft.images.length && (
+                        <div className='w-full min-w-0 max-w-full overflow-x-auto'>
+                            <ProjectImagesGrid
+                                images={formDraft.images}
+                                onImagesChange={(images) => {
+                                    setIsImageTypeMissing(
+                                        images.some(
+                                            (image) => !image.types?.length,
+                                        ),
+                                    )
 
-                                updateDraft({ images })
-                            }}
-                            isTypeMissing={isImageTypeMissing}
-                        />
-                    </div>
+                                    updateDraft({ images })
+                                }}
+                                isTypeMissing={isImageTypeMissing}
+                            />
+                        </div>
+                    )}
                 </div>
 
                 {/* Video */}

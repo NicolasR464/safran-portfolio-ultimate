@@ -475,6 +475,7 @@ const TableProjects = () => {
                             cloudinaryFolders.MAIN +
                             cloudinaryFolders.PORTFOLIO,
                         resourceType: 'image',
+                        clientAllowedFormats: ['image'],
                     }}
                     onSuccess={(result) => {
                         if (!result?.info || typeof result.info === 'string') {
